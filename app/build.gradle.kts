@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.coil.network.ktor3)
     implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
