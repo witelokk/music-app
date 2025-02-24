@@ -78,6 +78,12 @@ fun LoginVerificationScreen(
         }
     }
 
+    LaunchedEffect(state.isAuthorized) {
+        if (state.isAuthorized) {
+            navController.navigate("home") { popUpTo(0) }
+        }
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
