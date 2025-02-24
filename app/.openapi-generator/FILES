@@ -38,5 +38,6 @@ src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsSongs.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsStartFollowingRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsStopFollowingRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsTokensRequest.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsTokensResponse.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsUpdatePlaylistRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsVerificationCodeRequest.kt

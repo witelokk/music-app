@@ -16,6 +16,12 @@ coilNetworkKtor3 = "3.1.0"
 ktorClientAndroid = "3.1.0"
 ktorClientContentNegotiation = "3.1.0"
 openApi = "7.11.0"
+credentials = "1.5.0-rc01"
+googleid = "1.1.1"
+credentialsPlayServicesAuth = "1.5.0-rc01"
+koinAndroidxCompose = "4.1.0-Beta5"
+ktorSerializationKotlinxJson = "3.1.0"
+ktorClientLogging = "3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,10 +45,16 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 coil-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coilNetworkKtor3" }
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinAndroidxCompose" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorClientLogging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 openapi-generator = { id = "org.openapi.generator", version.ref="openApi" }
-
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

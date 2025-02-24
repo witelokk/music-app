@@ -9,16 +9,20 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.witelokk.musicapp.data.Artist
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.data.Song
 import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.screens.HomeScreen
 import com.witelokk.musicapp.screens.LoginScreen
+import com.witelokk.musicapp.screens.LoginVerification
 import com.witelokk.musicapp.screens.LoginVerificationScreen
 import com.witelokk.musicapp.screens.PlaylistScreen
 import com.witelokk.musicapp.screens.QueueScreen
+import com.witelokk.musicapp.screens.Registration
 import com.witelokk.musicapp.screens.RegistrationScreen
+import com.witelokk.musicapp.screens.RegistrationVerification
 import com.witelokk.musicapp.screens.RegistrationVerificationScreen
 import com.witelokk.musicapp.screens.SettingsScreen
 import com.witelokk.musicapp.screens.WelcomeScreen
@@ -36,9 +40,13 @@ fun App() {
                     "Die in My Heart",
                     listOf(
                         Artist(
-                            "Solid Reasons", 123, "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
+                            "Solid Reasons",
+                            123,
+                            "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
                         ), Artist(
-                            "Solid Reasons", 123, "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
+                            "Solid Reasons",
+                            123,
+                            "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
                         )
                     ),
                     2.minutes, true,
@@ -64,14 +72,17 @@ fun App() {
             composable("login") {
                 LoginScreen(navController)
             }
-            composable("login_verification") {
-                LoginVerificationScreen(navController)
+            composable<LoginVerification> {
+                val loginVerification = it.toRoute<LoginVerification>()
+                LoginVerificationScreen(navController, loginVerification)
             }
-            composable("registration") {
-                RegistrationScreen(navController)
+            composable<Registration> {
+                val registration = it.toRoute<Registration>()
+                RegistrationScreen(navController, registration)
             }
-            composable("registration_verification") {
-                RegistrationVerificationScreen(navController)
+            composable<RegistrationVerification> {
+                val registrationVerification = it.toRoute<RegistrationVerification>()
+                RegistrationVerificationScreen(navController, registrationVerification)
             }
             composable("home") {
                 HomeScreen(navController, playerState)
@@ -90,5 +101,4 @@ fun App() {
             }
         }
     }
-
 }

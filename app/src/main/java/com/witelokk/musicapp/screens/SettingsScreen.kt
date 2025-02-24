@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.components.Avatar
 
@@ -61,7 +62,7 @@ fun SettingsScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Avatar("R", radius = 100f, modifier = Modifier.size(100.dp))
+                    Avatar("R", radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Name: Roman")
                         Spacer(modifier = Modifier.height(8.dp))
