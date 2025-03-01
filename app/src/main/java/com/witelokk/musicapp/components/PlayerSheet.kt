@@ -25,7 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -43,7 +45,9 @@ fun PlayerSheetScaffold(
     navController: NavController,
     playerState: PlayerState,
     modifier: Modifier = Modifier,
-    scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
+    scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        rememberStandardBottomSheetState(skipHiddenState = false, confirmValueChange = { value -> value != SheetValue.Hidden })
+    ),
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {

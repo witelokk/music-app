@@ -52,11 +52,13 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
         Song(
             "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
             "Die in My Heart",
-            listOf(Artist(
-                "Solid Reasons",
-                123,
-                ""
-            )),
+            listOf(
+                Artist(
+                    "Solid Reasons",
+                    123,
+                    ""
+                )
+            ),
             Duration.parse("2m"),
             true
         )
@@ -109,15 +111,18 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             item(span = { GridItemSpan(2) }) {
                 Column {
                     AsyncImage(
-                        artist.cover, null, modifier = Modifier.fillMaxWidth().clip(
-                            RoundedCornerShape(16.dp)
-                        )
+                        artist.cover, null, modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(
+                                RoundedCornerShape(16.dp)
+                            )
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -132,7 +137,9 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
 
             items(popular, span = { GridItemSpan(2) }) { track ->
                 TrackListItem(
-                    track, modifier = Modifier.clickable { }.padding(vertical = 8.dp)
+                    track, modifier = Modifier
+                        .clickable { }
+                        .padding(vertical = 8.dp)
                 )
             }
 
@@ -158,9 +165,11 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
             }
 
             items(releases) { release ->
-                EntityCard(release, modifier = Modifier.padding(bottom = 16.dp).clickable {
-                    navController.navigate("playlist")
-                })
+                EntityCard(release, modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .clickable {
+                        navController.navigate("playlist")
+                    })
             }
         }
     }
