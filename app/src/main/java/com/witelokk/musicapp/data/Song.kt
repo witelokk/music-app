@@ -3,7 +3,7 @@ package com.witelokk.musicapp.data
 import kotlin.time.Duration
 
 data class Song(
-    val cover: String,
+    val cover: String?,
     val name: String,
     val artists: List<Artist>,
     val duration: Duration,

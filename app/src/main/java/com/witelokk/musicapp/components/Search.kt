@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -36,14 +39,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
+import com.witelokk.musicapp.data.Artist
+import com.witelokk.musicapp.data.Playlist
+import com.witelokk.musicapp.data.Song
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Search(navController: NavController, modifier: Modifier, expanded: MutableState<Boolean> = rememberSaveable {mutableStateOf(false)}, content: @Composable () -> Unit) {
+fun Search(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    expanded: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) },
+    onQueryChanged: (String) -> Unit = {},
+    content: @Composable () -> Unit
+) {
     var query by rememberSaveable { mutableStateOf("") }
     var expanded by expanded
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val searchBarPadding by animateDpAsState(
         targetValue = if (expanded) 0.dp else 16.dp, label = "Search bar padding"
@@ -58,7 +75,7 @@ fun Search(navController: NavController, modifier: Modifier, expanded: MutableSt
     SearchBar(modifier = modifier.padding(horizontal = searchBarPadding), inputField = {
         SearchBarDefaults.InputField(
             query = query,
-            onQueryChange = { query = it },
+            onQueryChange = { query = it; onQueryChanged(it) },
             expanded = expanded,
             onExpandedChange = { expanded = it },
             placeholder = { Text("Search songs, albums and artists") },
@@ -82,7 +99,10 @@ fun Search(navController: NavController, modifier: Modifier, expanded: MutableSt
             trailingIcon = {
                 if (expanded) {
                     AnimatedVisibility(query.isNotEmpty(), enter = fadeIn(), exit = fadeOut()) {
-                        IconButton(onClick = { query = "" }) {
+                        IconButton(onClick = {
+                            query =
+                                ""; onQueryChanged(""); keyboardController?.hide()
+                        }) {
                             Icon(
                                 Icons.Default.Clear,
                                 "Close",
@@ -103,21 +123,88 @@ fun Search(navController: NavController, modifier: Modifier, expanded: MutableSt
 }
 
 @Composable
-fun SearchContent(modifier: Modifier = Modifier) {
-    val filters = listOf("Saved", "Playlists", "Track", "Artists")
+fun SearchContent(
+    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    modifier: Modifier = Modifier
+) {
+    val filters = listOf("Playlists", "Songs", "Artists")
     val selected = List(filters.size) { rememberSaveable { mutableStateOf(false) } }
+    var filter by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+
+    fun onFilterSelected(index: Int) {
+        filters.forEachIndexed { i, _ ->
+            if (i != index) {
+                selected[i].value = false
+            }
+        }
+
+        selected[index].value = !selected[index].value
+
+        filter = if (selected[index].value) {
+            filters[index]
+        } else {
+            null
+        }
+    }
 
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            filters.forEachIndexed { i, filter ->
-                FilterChip(
-                    selected[i].value,
-                    { selected[i].value = !selected[i].value },
-                    { Text(filter) },
-                )
+        if (results.isNotEmpty()) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                filters.forEachIndexed { i, filter ->
+                    FilterChip(
+                        selected[i].value,
+                        {
+                            onFilterSelected(i)
+                        },
+                        { Text(filter) },
+                    )
+                }
+            }
+        }
+        LazyColumn {
+            items(results) {
+                if (it.type == "song" && (filter == "Songs" || filter == null)) {
+                    TrackListItem(
+                        Song(
+                            cover = it.song!!.coverUrl,
+                            name = it.song.name,
+                            artists = it.song.artists.map { artist ->
+                                Artist(
+                                    name = artist.name,
+                                    followers = 0,
+                                    cover = artist.avatarUrl,
+                                )
+                            },
+                            duration = it.song.durationSeconds.seconds,
+                            liked = it.song.isFavorite
+                        ),
+                        modifier = itemModifier,
+                    )
+                } else if (it.type == "artist" && (filter == "Artists" || filter == null)) {
+                    ArtistListItem(
+                        Artist(
+                            name = it.artist!!.name,
+                            followers = 0,
+                            cover = it.artist.avatarUrl
+                        ),
+                        modifier = itemModifier,
+                    )
+                } else if (it.type == "playlist" && (filter == "Playlists" || filter == null)) {
+                    PlaylistListItem(
+                        Playlist(
+                            name = it.playlist!!.name,
+                            coverUrl = it.playlist.coverUrl,
+                            id = it.playlist.id.toString(),
+                            songsCount = it.playlist.songsCount,
+                        ),
+                        modifier = itemModifier,
+                    )
+                }
             }
         }
     }
@@ -131,17 +218,28 @@ fun SearchEmptyContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SearchFailedContent(modifier: Modifier = Modifier) {
+fun SearchFailedContent(retry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Text("Search failed", modifier = Modifier.padding(16.dp))
-        Button(onClick = {}) {
+        Button(onClick = { retry() }) {
             Icon(Icons.Default.Replay, "Retry")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Retry")
         }
+    }
+}
+
+@Composable
+fun SearchLoadingContent(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }

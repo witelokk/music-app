@@ -44,7 +44,7 @@ import io.ktor.http.ParametersBuilder
         */
         open suspend fun followingsDelete(comwitelokkmusicmodelsStopFollowingRequest: ComwitelokkmusicmodelsStopFollowingRequest?): HttpResponse<Unit> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = comwitelokkmusicmodelsStopFollowingRequest
 
@@ -57,7 +57,7 @@ import io.ktor.http.ParametersBuilder
             "/followings",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return jsonRequest(
@@ -75,7 +75,7 @@ import io.ktor.http.ParametersBuilder
             @Suppress("UNCHECKED_CAST")
         open suspend fun followingsGet(): HttpResponse<ComwitelokkmusicmodelsShortArtists> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = 
                     io.ktor.client.utils.EmptyContent
@@ -89,7 +89,7 @@ import io.ktor.http.ParametersBuilder
             "/followings",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return request(
@@ -107,7 +107,7 @@ import io.ktor.http.ParametersBuilder
         */
         open suspend fun followingsPost(comwitelokkmusicmodelsStartFollowingRequest: ComwitelokkmusicmodelsStartFollowingRequest?): HttpResponse<Unit> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = comwitelokkmusicmodelsStartFollowingRequest
 
@@ -120,7 +120,7 @@ import io.ktor.http.ParametersBuilder
             "/followings",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return jsonRequest(

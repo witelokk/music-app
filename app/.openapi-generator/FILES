@@ -6,6 +6,7 @@ src/main/kotlin/com/witelokk/musicapp/api/apis/FavoritesApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/FollowingsApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/PlaylistsApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/ReleasesApi.kt
+src/main/kotlin/com/witelokk/musicapp/api/apis/SearchApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/SongsApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/UsersApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/auth/ApiKeyAuth.kt
@@ -29,10 +30,13 @@ src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsPlaylist.
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsRelease.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsRemoveFavoriteSongRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsRemoveSongFromPlaylistRequest.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsSearchResult.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsSearchResultItem.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsShortArtist.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsShortArtists.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsShortPlaylist.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsShortPlaylists.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsShortRelease.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsSong.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsSongs.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ComwitelokkmusicmodelsStartFollowingRequest.kt

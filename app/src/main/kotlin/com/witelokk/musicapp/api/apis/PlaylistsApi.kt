@@ -49,7 +49,7 @@ import io.ktor.http.ParametersBuilder
             @Suppress("UNCHECKED_CAST")
         open suspend fun playlistsGet(): HttpResponse<ComwitelokkmusicmodelsShortPlaylists> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = 
                     io.ktor.client.utils.EmptyContent
@@ -63,7 +63,7 @@ import io.ktor.http.ParametersBuilder
             "/playlists",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return request(
@@ -179,7 +179,7 @@ import io.ktor.http.ParametersBuilder
         */
         open suspend fun playlistsIdSongsDelete(id: kotlin.String, comwitelokkmusicmodelsRemoveSongFromPlaylistRequest: ComwitelokkmusicmodelsRemoveSongFromPlaylistRequest?): HttpResponse<Unit> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = comwitelokkmusicmodelsRemoveSongFromPlaylistRequest
 
@@ -192,7 +192,7 @@ import io.ktor.http.ParametersBuilder
             "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return jsonRequest(
@@ -211,7 +211,7 @@ import io.ktor.http.ParametersBuilder
             @Suppress("UNCHECKED_CAST")
         open suspend fun playlistsIdSongsGet(id: kotlin.String): HttpResponse<ComwitelokkmusicmodelsSongs> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = 
                     io.ktor.client.utils.EmptyContent
@@ -225,7 +225,7 @@ import io.ktor.http.ParametersBuilder
             "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return request(
@@ -244,7 +244,7 @@ import io.ktor.http.ParametersBuilder
         */
         open suspend fun playlistsIdSongsPost(id: kotlin.String, comwitelokkmusicmodelsAddSongToPlaylistRequest: ComwitelokkmusicmodelsAddSongToPlaylistRequest?): HttpResponse<Unit> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = comwitelokkmusicmodelsAddSongToPlaylistRequest
 
@@ -257,7 +257,7 @@ import io.ktor.http.ParametersBuilder
             "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return jsonRequest(
@@ -276,7 +276,7 @@ import io.ktor.http.ParametersBuilder
             @Suppress("UNCHECKED_CAST")
         open suspend fun playlistsPost(comwitelokkmusicmodelsCreatePlaylistRequest: ComwitelokkmusicmodelsCreatePlaylistRequest?): HttpResponse<ComwitelokkmusicmodelsCreatePlaylistResponse> {
 
-            val localVariableAuthNames = listOf<String>()
+            val localVariableAuthNames = listOf<String>("Authorization")
 
             val localVariableBody = comwitelokkmusicmodelsCreatePlaylistRequest
 
@@ -289,7 +289,7 @@ import io.ktor.http.ParametersBuilder
             "/playlists",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
             )
 
             return jsonRequest(

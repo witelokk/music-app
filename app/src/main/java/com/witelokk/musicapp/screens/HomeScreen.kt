@@ -20,6 +20,8 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -30,20 +32,31 @@ import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.Search
+import com.witelokk.musicapp.components.SearchContent
+import com.witelokk.musicapp.components.SearchEmptyContent
 import com.witelokk.musicapp.components.SearchFailedContent
+import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, playerState: PlayerState) {
+fun HomeScreen(
+    navController: NavController,
+    playerState: PlayerState,
+    viewModel: HomeScreenViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
     val scaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
             confirmValueChange = { value -> value != SheetValue.Hidden })
     )
     val searchExpanded = rememberSaveable { mutableStateOf(false) }
+    var query = ""
 
     val layout = HomeLayout(
         playlists = listOf(), sections = listOf(
@@ -96,13 +109,31 @@ fun HomeScreen(navController: NavController, playerState: PlayerState) {
 
     PlayerSheetScaffold(navController, playerState, scaffoldState = scaffoldState) { innerPadding ->
         Column {
-//            Search(navController, modifier = Modifier.fillMaxWidth()) { SearchContent() }
-//            Search(navController, modifier = Modifier.fillMaxWidth()) { SearchEmpty() }
             Search(
                 navController,
                 expanded = searchExpanded,
-                modifier = Modifier.fillMaxWidth()
-            ) { SearchFailedContent() }
+                onQueryChanged = {
+                    query = it
+                    if (it.isNotEmpty()) {
+                        viewModel.search(it)
+                    } else {
+                        viewModel.clearResults()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                if (state.isLoading) {
+                    SearchLoadingContent()
+                } else if (state.isFailure) {
+                    SearchFailedContent({
+                        viewModel.search(query)
+                    })
+                } else if (state.searchResults?.results?.isEmpty() == true) {
+                    SearchEmptyContent()
+                } else {
+                    SearchContent(state.searchResults?.results ?: listOf())
+                }
+            }
             LazyColumn(contentPadding = innerPadding) {
                 item {
                     Text(

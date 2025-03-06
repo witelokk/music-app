@@ -1,0 +1,1577 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Music API",
+    "version" : "latest"
+  },
+  "externalDocs" : {
+    "url" : "/"
+  },
+  "servers" : [ ],
+  "tags" : [ ],
+  "paths" : {
+    "/users" : {
+      "post" : {
+        "tags" : [ "users" ],
+        "description" : "Create a user",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.CreateUserRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "User already exists",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/verification-code-request" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "description" : "Request a verification code",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.VerificationCodeRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "429" : {
+            "description" : "Too many verification requests",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/tokens" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "description" : "Get tokens",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.TokensRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.TokensResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/artists/{id}" : {
+      "get" : {
+        "tags" : [ "artists" ],
+        "description" : "Get artist by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Artist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.Artist"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Artist not found",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/songs/{id}" : {
+      "get" : {
+        "tags" : [ "songs" ],
+        "description" : "Get song by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Song ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.Song"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Song not found",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/favorites" : {
+      "get" : {
+        "tags" : [ "favorites" ],
+        "description" : "Get favorite songs",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "title" : "*"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "favorites" ],
+        "description" : "Add favorite song",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.AddFavoriteSongRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "favorites" ],
+        "description" : "Remove favorite song",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.RemoveFavoriteSongRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/followings" : {
+      "get" : {
+        "tags" : [ "followings" ],
+        "description" : "Get a list of followed artists",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtists"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "followings" ],
+        "description" : "Start following an artist",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.StartFollowingRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "followings" ],
+        "description" : "Stop following an artist",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.StopFollowingRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/releases/{id}" : {
+      "get" : {
+        "tags" : [ "releases" ],
+        "description" : "Get release by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Release ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.Release"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Release not found",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/playlists/{id}" : {
+      "get" : {
+        "tags" : [ "playlists" ],
+        "description" : "Get playlist by ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.Playlist"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Playlist not found",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "playlists" ],
+        "description" : "Update a playlist",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.UpdatePlaylistRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "playlists" ],
+        "description" : "Delete a playlist",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/playlists" : {
+      "get" : {
+        "tags" : [ "playlists" ],
+        "description" : "Get a list of playlists",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.ShortPlaylists"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "playlists" ],
+        "description" : "Create a new playlist",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.CreatePlaylistRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.CreatePlaylistResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/playlists/{id}/songs" : {
+      "get" : {
+        "tags" : [ "playlists" ],
+        "description" : "Get playlist songs",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.Songs"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "playlists" ],
+        "description" : "Add song to playlist",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.AddSongToPlaylistRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "playlists" ],
+        "description" : "Remove song from playlist",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Playlist ID",
+          "required" : true,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/com.witelokk.music.models.RemoveSongFromPlaylistRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/search" : {
+      "get" : {
+        "tags" : [ "search" ],
+        "description" : "Search for artists, songs, albums, and playlists",
+        "parameters" : [ {
+          "name" : "q",
+          "in" : "query",
+          "description" : "Search query",
+          "required" : false,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Search type",
+          "required" : false,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number",
+          "required" : false,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Results per page",
+          "required" : false,
+          "deprecated" : false,
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.SearchResult"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Token is not valid or has expired",
+            "headers" : { },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/com.witelokk.music.models.FailureResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false,
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "com.witelokk.music.models.FailureResponse" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "message" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "error", "message" ],
+        "title" : "FailureResponse"
+      },
+      "com.witelokk.music.models.CreateUserRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "code" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "code", "email", "name" ],
+        "title" : "CreateUserRequest"
+      },
+      "com.witelokk.music.models.VerificationCodeRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "email" ],
+        "title" : "VerificationCodeRequest"
+      },
+      "com.witelokk.music.models.TokensRequest" : {
+        "type" : "object",
+        "properties" : {
+          "grant_type" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "email" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "code" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "google_token" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          }
+        },
+        "required" : [ "grant_type" ],
+        "title" : "TokensRequest"
+      },
+      "com.witelokk.music.models.TokensResponse" : {
+        "type" : "object",
+        "properties" : {
+          "accessToken" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "accessToken" ],
+        "title" : "TokensResponse"
+      },
+      "com.witelokk.music.models.Artist" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "avatar_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "followers" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "following" : {
+            "type" : "boolean",
+            "title" : "Boolean"
+          }
+        },
+        "required" : [ "followers", "following", "id", "name" ],
+        "title" : "Artist"
+      },
+      "com.witelokk.music.models.ShortArtist" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "avatar_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          }
+        },
+        "required" : [ "id", "name" ],
+        "title" : "ShortArtist"
+      },
+      "com.witelokk.music.models.Song" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "is_favorite" : {
+            "type" : "boolean",
+            "title" : "Boolean"
+          },
+          "duration_seconds" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "artists" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtist"
+            },
+            "title" : "ArrayList_ShortArtist"
+          },
+          "stream_url" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "artists", "duration_seconds", "id", "is_favorite", "name", "stream_url" ],
+        "title" : "Song"
+      },
+      "com.witelokk.music.models.AddFavoriteSongRequest" : {
+        "type" : "object",
+        "properties" : {
+          "song_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "song_id" ],
+        "title" : "AddFavoriteSongRequest"
+      },
+      "com.witelokk.music.models.RemoveFavoriteSongRequest" : {
+        "type" : "object",
+        "properties" : {
+          "song_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "song_id" ],
+        "title" : "RemoveFavoriteSongRequest"
+      },
+      "com.witelokk.music.models.ShortArtists" : {
+        "type" : "object",
+        "properties" : {
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "artists" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtist"
+            },
+            "title" : "ArrayList_ShortArtist"
+          },
+          "names" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "artists", "count", "names" ],
+        "title" : "ShortArtists"
+      },
+      "com.witelokk.music.models.StartFollowingRequest" : {
+        "type" : "object",
+        "properties" : {
+          "artist_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "artist_id" ],
+        "title" : "StartFollowingRequest"
+      },
+      "com.witelokk.music.models.StopFollowingRequest" : {
+        "type" : "object",
+        "properties" : {
+          "artist_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "artist_id" ],
+        "title" : "StopFollowingRequest"
+      },
+      "com.witelokk.music.models.Songs" : {
+        "type" : "object",
+        "properties" : {
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "songs" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.Song"
+            },
+            "title" : "ArrayList_Song"
+          }
+        },
+        "required" : [ "count", "songs" ],
+        "title" : "Songs"
+      },
+      "com.witelokk.music.models.Release" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "type" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "released_at" : {
+            "type" : "string",
+            "format" : "date-time",
+            "title" : "DateTime"
+          },
+          "songs" : {
+            "$ref" : "#/components/schemas/com.witelokk.music.models.Songs"
+          },
+          "artists" : {
+            "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtists"
+          }
+        },
+        "required" : [ "artists", "id", "name", "released_at", "songs", "type" ],
+        "title" : "Release"
+      },
+      "com.witelokk.music.models.Playlist" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "songs_count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "songs" : {
+            "$ref" : "#/components/schemas/com.witelokk.music.models.Songs"
+          }
+        },
+        "required" : [ "id", "name", "songs", "songs_count" ],
+        "title" : "Playlist"
+      },
+      "com.witelokk.music.models.ShortPlaylist" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "songs_count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          }
+        },
+        "required" : [ "id", "name", "songs_count" ],
+        "title" : "ShortPlaylist"
+      },
+      "com.witelokk.music.models.ShortPlaylists" : {
+        "type" : "object",
+        "properties" : {
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "playlists" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortPlaylist"
+            },
+            "title" : "ArrayList_ShortPlaylist"
+          }
+        },
+        "required" : [ "count", "playlists" ],
+        "title" : "ShortPlaylists"
+      },
+      "com.witelokk.music.models.CreatePlaylistRequest" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "name" ],
+        "title" : "CreatePlaylistRequest"
+      },
+      "com.witelokk.music.models.CreatePlaylistResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "id" ],
+        "title" : "CreatePlaylistResponse"
+      },
+      "com.witelokk.music.models.UpdatePlaylistRequest" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          }
+        },
+        "required" : [ "name" ],
+        "title" : "UpdatePlaylistRequest"
+      },
+      "com.witelokk.music.models.AddSongToPlaylistRequest" : {
+        "type" : "object",
+        "properties" : {
+          "song_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "song_id" ],
+        "title" : "AddSongToPlaylistRequest"
+      },
+      "com.witelokk.music.models.RemoveSongFromPlaylistRequest" : {
+        "type" : "object",
+        "properties" : {
+          "song_id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          }
+        },
+        "required" : [ "song_id" ],
+        "title" : "RemoveSongFromPlaylistRequest"
+      },
+      "com.witelokk.music.models.SearchResultItem" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "song" : {
+            "oneOf" : [ {
+              "type" : "null"
+            }, {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.Song"
+            } ]
+          },
+          "release" : {
+            "oneOf" : [ {
+              "type" : "null"
+            }, {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortRelease"
+            } ]
+          },
+          "artist" : {
+            "oneOf" : [ {
+              "type" : "null"
+            }, {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtist {
+            "oneOf" : [ {
+              "type" : "null"
+            }, {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.ShortPlaylist"
+            } ]
+          }
+        },
+        "required" : [ "type" ],
+        "title" : "SearchResultItem"
+      },
+      "com.witelokk.music.models.ShortRelease" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "title" : "UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "cover_url" : {
+            "type" : [ "null", "string" ],
+            "title" : "String"
+          },
+          "type" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "released_at" : {
+            "type" : "string",
+            "format" : "date-time",
+            "title" : "DateTime"
+          },
+          "artists" : {
+            "$ref" : "#/components/schemas/com.witelokk.music.models.ShortArtists"
+          }
+        },
+        "required" : [ "artists", "id", "name", "released_at", "type" ],
+        "title" : "ShortRelease"
+      },
+      "com.witelokk.music.models.SearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string",
+            "title" : "String"
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "limit" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Int"
+          },
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/com.witelokk.music.models.SearchResultItem"
+            },
+            "title" : "ArrayList_SearchResultItem"
+          }
+        },
+        "required" : [ "limit", "page", "query", "results", "total" ],
+        "title" : "SearchResult"
+      }
+    },
+    "examples" : { },
+    "securitySchemes" : {
+      "Authorization" : {
+        "type" : "http",
+        "scheme" : "bearer"
+      }
+    }
+  }
+}
