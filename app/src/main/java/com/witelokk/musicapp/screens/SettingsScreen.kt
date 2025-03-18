@@ -25,9 +25,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,10 +38,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.components.Avatar
+import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
+import com.witelokk.musicapp.viewmodel.ThemeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
+fun SettingsScreen(
+    navController: NavController,
+    viewModel: SettingsScreenViewModel = koinViewModel(),
+    themeViewModel: ThemeViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.isLoggedOut) {
+        if (state.isLoggedOut) {
+            navController.navigate("welcome") {
+                popUpTo(0)
+            }
+        }
+    }
+
     Scaffold(topBar = {
         TopAppBar(title = { Text("Settings") }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
@@ -46,8 +66,6 @@ fun SettingsScreen(navController: NavController) {
             }
         })
     }) { innerPadding ->
-        var songCachingEnabled by remember { mutableStateOf(false) }
-
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Text(
@@ -64,14 +82,12 @@ fun SettingsScreen(navController: NavController) {
                 ) {
                     Avatar("R", radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Name: Roman")
+                        Text("Name: ${state.accountName}")
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Email: test@test.com")
+                        Text("Email: ${state.accountEmail}")
                     }
                     IconButton(onClick = {
-                        navController.navigate("welcome") {
-                            popUpTo(0)
-                        }
+                        viewModel.logout()
                     }) {
                         Icon(Icons.AutoMirrored.Filled.Logout, null)
                     }
@@ -87,7 +103,6 @@ fun SettingsScreen(navController: NavController) {
             }
             item {
                 var expanded by remember { mutableStateOf(false) }
-                var selected by remember { mutableStateOf("System") }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -99,7 +114,12 @@ fun SettingsScreen(navController: NavController) {
 
                     ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
                         OutlinedTextField(
-                            selected,
+                            when (state.theme) {
+                                "system" -> "System"
+                                "light" -> "Light"
+                                "dark" -> "Dark"
+                                else -> "System"
+                            },
                             onValueChange = {},
                             readOnly = true,
                             singleLine = true,
@@ -112,15 +132,27 @@ fun SettingsScreen(navController: NavController) {
                         ExposedDropdownMenu(expanded, { expanded = false }) {
                             DropdownMenuItem(
                                 text = { Text("System") },
-                                onClick = { selected = "System"; expanded = false },
+                                onClick = {
+                                    viewModel.setTheme("system")
+                                    themeViewModel.setTheme("system")
+                                    expanded = false
+                                },
                             )
                             DropdownMenuItem(
                                 text = { Text("Light") },
-                                onClick = { selected = "Light"; expanded = false },
+                                onClick = {
+                                    viewModel.setTheme("light")
+                                    themeViewModel.setTheme("light")
+                                    expanded = false
+                                },
                             )
                             DropdownMenuItem(
                                 text = { Text("Dark") },
-                                onClick = { selected = "Dark"; expanded = false },
+                                onClick = {
+                                    viewModel.setTheme("dark")
+                                    themeViewModel.setTheme("dark")
+                                    expanded = false
+                                },
                             )
                         }
                     }
@@ -134,7 +166,12 @@ fun SettingsScreen(navController: NavController) {
                         .padding(horizontal = 16.dp)
                 ) {
                     Text("Song caching", modifier = Modifier.weight(1f))
-                    Switch(songCachingEnabled, onCheckedChange = { songCachingEnabled = it })
+                    Switch(
+                        state.songCachingEnabled ?: false,
+                        onCheckedChange = {
+                            viewModel.setSongCachingEnabled(it)
+                        }
+                    )
                 }
             }
         }

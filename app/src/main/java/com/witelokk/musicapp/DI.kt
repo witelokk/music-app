@@ -6,6 +6,8 @@ import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
+import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
+import com.witelokk.musicapp.viewmodel.ThemeViewModel
 import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
@@ -107,4 +109,9 @@ val appModule = module {
     viewModelOf(::LoginVerificationScreenViewModel)
     viewModelOf(::RegistrationVerificationScreenViewModel)
     viewModelOf(::HomeScreenViewModel)
+    viewModelOf(::SettingsScreenViewModel)
+
+    single {
+        ThemeViewModel(get())
+    }
 }

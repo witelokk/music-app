@@ -2,14 +2,19 @@ package com.witelokk.musicapp
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.witelokk.musicapp.data.Artist
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.data.Song
@@ -27,11 +32,34 @@ import com.witelokk.musicapp.screens.RegistrationVerificationScreen
 import com.witelokk.musicapp.screens.SettingsScreen
 import com.witelokk.musicapp.screens.WelcomeScreen
 import com.witelokk.musicapp.ui.theme.MusicAppTheme
+import com.witelokk.musicapp.viewmodel.ThemeViewModel
+import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun App() {
+fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
+    val theme by themeViewModel.theme.collectAsState()
+    val systemUiController = rememberSystemUiController()
+    val isSystemDarkTheme = isSystemInDarkTheme()
+
+    LaunchedEffect(theme, isSystemDarkTheme) {
+        when(theme) {
+            "light" -> systemUiController.setSystemBarsColor(
+                color = Color.Transparent,
+                darkIcons = true
+            )
+            "dark" -> systemUiController.setSystemBarsColor(
+                color = Color.Transparent,
+                darkIcons = false
+            )
+            else -> systemUiController.setSystemBarsColor(
+                color = Color.Transparent,
+                darkIcons = !isSystemDarkTheme
+            )
+        }
+    }
+
     val playerState by remember {
         mutableStateOf(
             PlayerState(
@@ -60,7 +88,15 @@ fun App() {
     }
 
     val navController = rememberNavController()
-    MusicAppTheme {
+    MusicAppTheme(
+        darkTheme = when (theme) {
+            "light" -> false
+            "dark" -> true
+            else -> {
+                isSystemInDarkTheme()
+            }
+        }
+    ) {
         NavHost(navController, startDestination = "welcome", enterTransition = {
             EnterTransition.None
         }, exitTransition = {

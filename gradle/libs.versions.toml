@@ -22,6 +22,7 @@ credentialsPlayServicesAuth = "1.5.0-rc01"
 koinAndroidxCompose = "4.1.0-Beta5"
 ktorSerializationKotlinxJson = "3.1.0"
 ktorClientLogging = "3.1.0"
+accompanistSystemuicontroller = "0.36.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,7 @@ androidx-credentials-play-services-auth = { group = "androidx.credentials", name
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinAndroidxCompose" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorClientLogging" }
+accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
