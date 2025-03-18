@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
@@ -123,15 +125,65 @@ fun Search(
 }
 
 @Composable
+fun SearchResults(
+    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    modifier: Modifier = Modifier,
+    itemModifier: Modifier = Modifier,
+    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
+    filter: String? = null
+) {
+    LazyColumn(modifier = modifier) {
+        items(results) {
+            if (it.type == "song" && (filter == "Songs" || filter == null)) {
+                TrackListItem(
+                    Song(
+                        cover = it.song!!.coverUrl,
+                        name = it.song.name,
+                        artists = it.song.artists.map { artist ->
+                            Artist(
+                                name = artist.name,
+                                followers = 0,
+                                cover = artist.avatarUrl,
+                            )
+                        },
+                        duration = it.song.durationSeconds.seconds,
+                        liked = it.song.isFavorite
+                    ),
+                    modifier = itemModifier.clickable { onResultClick(it) },
+                )
+            } else if (it.type == "artist" && (filter == "Artists" || filter == null)) {
+                ArtistListItem(
+                    Artist(
+                        name = it.artist!!.name,
+                        followers = 0,
+                        cover = it.artist.avatarUrl
+                    ),
+                    modifier = itemModifier.clickable { onResultClick(it) },
+                )
+            } else if (it.type == "playlist" && (filter == "Playlists" || filter == null)) {
+                PlaylistListItem(
+                    Playlist(
+                        name = it.playlist!!.name,
+                        coverUrl = it.playlist.coverUrl,
+                        id = it.playlist.id.toString(),
+                        songsCount = it.playlist.songsCount,
+                    ),
+                    modifier = itemModifier.clickable { onResultClick(it) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SearchContent(
     results: List<ComwitelokkmusicmodelsSearchResultItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
 ) {
     val filters = listOf("Playlists", "Songs", "Artists")
     val selected = List(filters.size) { rememberSaveable { mutableStateOf(false) } }
     var filter by rememberSaveable { mutableStateOf<String?>(null) }
-
-    val itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 
     fun onFilterSelected(index: Int) {
         filters.forEachIndexed { i, _ ->
@@ -166,46 +218,38 @@ fun SearchContent(
                 }
             }
         }
-        LazyColumn {
-            items(results) {
-                if (it.type == "song" && (filter == "Songs" || filter == null)) {
-                    TrackListItem(
-                        Song(
-                            cover = it.song!!.coverUrl,
-                            name = it.song.name,
-                            artists = it.song.artists.map { artist ->
-                                Artist(
-                                    name = artist.name,
-                                    followers = 0,
-                                    cover = artist.avatarUrl,
-                                )
-                            },
-                            duration = it.song.durationSeconds.seconds,
-                            liked = it.song.isFavorite
-                        ),
-                        modifier = itemModifier,
-                    )
-                } else if (it.type == "artist" && (filter == "Artists" || filter == null)) {
-                    ArtistListItem(
-                        Artist(
-                            name = it.artist!!.name,
-                            followers = 0,
-                            cover = it.artist.avatarUrl
-                        ),
-                        modifier = itemModifier,
-                    )
-                } else if (it.type == "playlist" && (filter == "Playlists" || filter == null)) {
-                    PlaylistListItem(
-                        Playlist(
-                            name = it.playlist!!.name,
-                            coverUrl = it.playlist.coverUrl,
-                            id = it.playlist.id.toString(),
-                            songsCount = it.playlist.songsCount,
-                        ),
-                        modifier = itemModifier,
-                    )
-                }
-            }
+        SearchResults(
+            results,
+            filter = filter,
+            itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            onResultClick = onResultClick
+        )
+    }
+}
+
+@Composable
+fun SearchHistoryContent(
+    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    modifier: Modifier = Modifier,
+    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
+    onClearClick: () -> Unit = {},
+) {
+    if (results.isEmpty()) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Search history is empty", modifier = Modifier.padding(16.dp))
+        }
+        return
+    }
+
+    Column(modifier = modifier) {
+        Text("Recent searches", modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold)
+        SearchResults(
+            results.reversed(),
+            itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            onResultClick = onResultClick
+        )
+        TextButton(onClearClick) {
+            Text("Clear", modifier = Modifier.padding(start = 8.dp))
         }
     }
 }

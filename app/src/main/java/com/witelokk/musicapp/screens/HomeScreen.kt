@@ -35,6 +35,7 @@ import com.witelokk.musicapp.components.Search
 import com.witelokk.musicapp.components.SearchContent
 import com.witelokk.musicapp.components.SearchEmptyContent
 import com.witelokk.musicapp.components.SearchFailedContent
+import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
@@ -101,6 +102,7 @@ fun HomeScreen(
 
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
+            viewModel.clearSearchState()
             scaffoldState.bottomSheetState.partialExpand()
         } else {
             scaffoldState.bottomSheetState.hide()
@@ -130,8 +132,27 @@ fun HomeScreen(
                     })
                 } else if (state.searchResults?.results?.isEmpty() == true) {
                     SearchEmptyContent()
+                } else if (query.isBlank()) {
+                    SearchHistoryContent(state.searchHistory, onResultClick = {
+                        when(it.type) {
+                            "song" -> navController.navigate("song")
+                            "release" -> navController.navigate("release")
+                            "artist" -> navController.navigate("artist")
+                            "playlist" -> navController.navigate("playlist")
+                        }
+                    }, onClearClick = {
+                        viewModel.clearSearchHistory()
+                    })
                 } else {
-                    SearchContent(state.searchResults?.results ?: listOf())
+                    SearchContent(state.searchResults?.results ?: listOf(), onResultClick = {
+                        viewModel.addToSearchHistory(it)
+                        when(it.type) {
+                            "song" -> navController.navigate("song")
+                            "release" -> navController.navigate("release")
+                            "artist" -> navController.navigate("artist")
+                            "playlist" -> navController.navigate("playlist")
+                        }
+                    })
                 }
             }
             LazyColumn(contentPadding = innerPadding) {

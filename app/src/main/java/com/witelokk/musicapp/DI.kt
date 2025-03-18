@@ -56,24 +56,26 @@ val customSerializersModule = SerializersModule {
 //    contextual(Instant::class, DateTimeSerializer)
 }
 
+val json = Json {
+    serializersModule = customSerializersModule
+    prettyPrint = true
+    isLenient = true
+}
+
 fun HttpClientConfig<*>.default() {
     install(Logging) {
         logger = CustomHttpLogger()
         level = LogLevel.ALL
     }
     install(ContentNegotiation) {
-        json(
-            Json {
-                serializersModule = customSerializersModule
-                prettyPrint = true
-                isLenient = true
-            }
-        )
+        json(json)
     }
 }
 
 val appModule = module {
     val baseUrl = "https://music.witelokk.ru/"
+
+    single { json }
 
     single {
         androidApplication().getSharedPreferences("prefs", 0)
