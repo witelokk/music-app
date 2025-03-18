@@ -32,7 +32,6 @@ fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
             if (isImageLoading) {
                 Box(
                     modifier = Modifier.size(155.dp),
-//                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()

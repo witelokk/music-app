@@ -20,12 +20,15 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.FavoriteCard
@@ -41,9 +44,18 @@ import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -57,7 +69,15 @@ fun HomeScreen(
             confirmValueChange = { value -> value != SheetValue.Hidden })
     )
     val searchExpanded = rememberSaveable { mutableStateOf(false) }
-    var query = ""
+    var searchQuery = remember { MutableStateFlow("") }
+
+    LaunchedEffect(Unit) {
+        viewModel.viewModelScope.launch {
+            searchQuery.debounce(2.seconds).collectLatest {
+                viewModel.search(it)
+            }
+        }
+    }
 
     val layout = HomeLayout(
         playlists = listOf(), sections = listOf(
@@ -109,18 +129,16 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(searchQuery) {
+    }
+
     PlayerSheetScaffold(navController, playerState, scaffoldState = scaffoldState) { innerPadding ->
         Column {
             Search(
                 navController,
                 expanded = searchExpanded,
                 onQueryChanged = {
-                    query = it
-                    if (it.isNotEmpty()) {
-                        viewModel.search(it)
-                    } else {
-                        viewModel.clearResults()
-                    }
+                    searchQuery.value = it
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -128,14 +146,14 @@ fun HomeScreen(
                     SearchLoadingContent()
                 } else if (state.isFailure) {
                     SearchFailedContent({
-                        viewModel.search(query)
+                        viewModel.search(searchQuery.value)
                     })
                 } else if (state.searchResults?.results?.isEmpty() == true) {
                     SearchEmptyContent()
-                } else if (query.isBlank()) {
+                } else if (searchQuery.collectAsState().value.isBlank()) {
                     SearchHistoryContent(state.searchHistory, onResultClick = {
                         when(it.type) {
-                            "song" -> navController.navigate("song")
+                            "song" -> {/* TODO: implement */}
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate("artist")
                             "playlist" -> navController.navigate("playlist")
@@ -147,7 +165,7 @@ fun HomeScreen(
                     SearchContent(state.searchResults?.results ?: listOf(), onResultClick = {
                         viewModel.addToSearchHistory(it)
                         when(it.type) {
-                            "song" -> navController.navigate("song")
+                            "song" -> {/* TODO: implement */}
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate("artist")
                             "playlist" -> navController.navigate("playlist")

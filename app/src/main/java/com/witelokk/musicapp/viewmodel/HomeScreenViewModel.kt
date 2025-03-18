@@ -57,6 +57,10 @@ class HomeScreenViewModel(
     }
 
     fun search(query: String) {
+        if (query.isEmpty()) {
+            return
+        }
+
         _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
@@ -89,16 +93,6 @@ class HomeScreenViewModel(
                     )
                 }
             }
-        }
-    }
-
-    fun clearResults() {
-        _state.update {
-            it.copy(
-                isLoading = false,
-                isFailure = false,
-                searchResults = null
-            )
         }
     }
 
