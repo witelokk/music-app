@@ -26,7 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -48,9 +50,10 @@ fun WelcomeScreen(
         }
     }
 
+    val context = LocalContext.current
     LaunchedEffect(state.signInFailed) {
         if (state.signInFailed) {
-            snackbarHostState.showSnackbar("Sign in failed")
+            snackbarHostState.showSnackbar(context.getString(R.string.sign_in_failed_toast))
         }
     }
 
@@ -74,7 +77,7 @@ fun WelcomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                "Welcome to Music App, where\n" + "you can listen to your favorite music",
+                stringResource(R.string.welcome_message),
                 textAlign = TextAlign.Center
             )
 
@@ -84,7 +87,7 @@ fun WelcomeScreen(
                 onClick = { navController.navigate("login") },
                 modifier = Modifier.requiredWidth(284.dp)
             ) {
-                Text("Sign in")
+                Text(stringResource(R.string.sign_in))
             }
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -93,12 +96,12 @@ fun WelcomeScreen(
                 onClick = { navController.navigate(Registration()) },
                 modifier = Modifier.requiredWidth(284.dp)
             ) {
-                Text("Sign up")
+                Text(stringResource(R.string.sign_up))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Sign in with")
+            Text(stringResource(R.string.sign_in_with))
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -108,7 +111,7 @@ fun WelcomeScreen(
                 Image(
                     painterResource(R.drawable.google),
                     contentScale = ContentScale.FillWidth,
-                    contentDescription = "Sign in with Google"
+                    contentDescription = stringResource(R.string.sign_in_with_google)
                 )
             }
         }

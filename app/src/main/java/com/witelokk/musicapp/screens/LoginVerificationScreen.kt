@@ -27,9 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.CodeField
 import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
 import kotlinx.serialization.Serializable
@@ -64,15 +67,21 @@ fun LoginVerificationScreen(
         isButtonEnabled = state.isButtonEnabled
     }
 
+    val context = LocalContext.current
     LaunchedEffect(state.signInFailed) {
         if (state.signInFailed) {
-            snackHostState.showSnackbar("Failed to sing in")
+            snackHostState.showSnackbar(context.getString(R.string.sign_in_error_toast))
         }
     }
 
     LaunchedEffect(state.isUserNotFound) {
         if (state.isUserNotFound) {
-            snackHostState.showSnackbar("You are not registered", "Sign up").run {
+            snackHostState.showSnackbar(
+                context.getString(R.string.not_registered_error_toast),
+                context.getString(
+                    R.string.sign_up
+                )
+            ).run {
                 navController.navigate(Registration(loginVerification.email, code))
             }
         }
@@ -87,9 +96,9 @@ fun LoginVerificationScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
-            TopAppBar(title = { Text("Confirm your login") }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(R.string.confirm_your_login)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             })
         }) { innerPadding ->
@@ -102,7 +111,7 @@ fun LoginVerificationScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "We send you a four-digit code\n" + "Enter the code below",
+                stringResource(R.string.code_prompt),
                 textAlign = TextAlign.Center
             )
 
@@ -126,7 +135,7 @@ fun LoginVerificationScreen(
                 viewModel.signIn(loginVerification.email, code)
                 viewModel.clearState()
             }, enabled = isButtonEnabled, modifier = Modifier.fillMaxWidth()) {
-                Text("Sign in")
+                Text(stringResource(R.string.sign_in))
             }
         }
     }

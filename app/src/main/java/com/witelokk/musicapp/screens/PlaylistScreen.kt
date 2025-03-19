@@ -16,8 +16,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.TrackListItem
 import com.witelokk.musicapp.data.Artist
@@ -50,11 +52,11 @@ fun PlaylistScreen(navController: NavController, playerState: PlayerState) {
         topBar = {
             TopAppBar(title = { Text("Playlist") }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             }, actions = {
                 IconButton(onClick = {}) {
-                    Icon(Icons.Outlined.PlayArrow, "Play")
+                    Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
                 }
             }, scrollBehavior = scrollBehavior)
         },

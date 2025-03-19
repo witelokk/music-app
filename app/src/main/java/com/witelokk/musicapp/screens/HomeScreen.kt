@@ -20,16 +20,17 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.EntityCard
@@ -82,20 +83,20 @@ fun HomeScreen(
     val layout = HomeLayout(
         playlists = listOf(), sections = listOf(
             Pair(
-                "Recent", listOf(
+                stringResource(R.string.recent), listOf(
                     Entity(
                         "Solid Reasons",
-                        "Artist",
+                        stringResource(R.string.artist),
                         "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
                     ),
                     Entity(
                         "4locked",
-                        "Artist",
+                        stringResource(R.string.artist),
                         "https://avatars.yandex.net/get-music-content/12799091/a464f783.a.34980238-1/520x520"
                     ),
                     Entity(
                         "Solid Reasons",
-                        "Artist",
+                        stringResource(R.string.artist),
                         "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
                     ),
                 )
@@ -176,7 +177,7 @@ fun HomeScreen(
             LazyColumn(contentPadding = innerPadding) {
                 item {
                     Text(
-                        "Playlists",
+                        stringResource(R.string.playlists),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(24.dp)
                     )

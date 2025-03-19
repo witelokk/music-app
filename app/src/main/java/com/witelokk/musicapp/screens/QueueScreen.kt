@@ -19,8 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.TrackListItem
 import com.witelokk.musicapp.data.Artist
@@ -65,9 +67,9 @@ fun QueueScreen(navController: NavController, playerState: PlayerState) {
         playerState,
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(title = { Text("Queue") }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(R.string.queue)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             }, scrollBehavior = scrollBehavior)
         },

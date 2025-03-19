@@ -34,9 +34,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
@@ -60,16 +62,16 @@ fun SettingsScreen(
     }
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text("Settings") }, navigationIcon = {
+        TopAppBar(title = { Text(stringResource(R.string.settings)) }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
-                Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
             }
         })
     }) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Text(
-                    "Account",
+                    stringResource(R.string.account),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -82,9 +84,9 @@ fun SettingsScreen(
                 ) {
                     Avatar("R", radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Name: ${state.accountName}")
+                        Text(stringResource(R.string.name_label, state.accountName?:""))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Email: ${state.accountEmail}")
+                        Text(stringResource(R.string.email_label, state.accountEmail?:""))
                     }
                     IconButton(onClick = {
                         viewModel.logout()
@@ -96,7 +98,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    "App",
+                    stringResource(R.string.app),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -110,15 +112,15 @@ fun SettingsScreen(
                         .height(66.dp)
                         .padding(horizontal = 16.dp)
                 ) {
-                    Text("Theme", modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.theme), modifier = Modifier.weight(1f))
 
                     ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
                         OutlinedTextField(
                             when (state.theme) {
-                                "system" -> "System"
-                                "light" -> "Light"
-                                "dark" -> "Dark"
-                                else -> "System"
+                                "system" -> stringResource(R.string.system)
+                                "light" -> stringResource(R.string.light)
+                                "dark" -> stringResource(R.string.dark)
+                                else -> stringResource(R.string.system)
                             },
                             onValueChange = {},
                             readOnly = true,
@@ -131,7 +133,7 @@ fun SettingsScreen(
                         )
                         ExposedDropdownMenu(expanded, { expanded = false }) {
                             DropdownMenuItem(
-                                text = { Text("System") },
+                                text = { Text(stringResource(R.string.system)) },
                                 onClick = {
                                     viewModel.setTheme("system")
                                     themeViewModel.setTheme("system")
@@ -139,7 +141,7 @@ fun SettingsScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text("Light") },
+                                text = { Text(stringResource(R.string.light)) },
                                 onClick = {
                                     viewModel.setTheme("light")
                                     themeViewModel.setTheme("light")
@@ -147,7 +149,7 @@ fun SettingsScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text("Dark") },
+                                text = { Text(stringResource(R.string.dark)) },
                                 onClick = {
                                     viewModel.setTheme("dark")
                                     themeViewModel.setTheme("dark")
@@ -165,7 +167,7 @@ fun SettingsScreen(
                         .height(56.dp)
                         .padding(horizontal = 16.dp)
                 ) {
-                    Text("Song caching", modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.song_caching), modifier = Modifier.weight(1f))
                     Switch(
                         state.songCachingEnabled ?: false,
                         onCheckedChange = {

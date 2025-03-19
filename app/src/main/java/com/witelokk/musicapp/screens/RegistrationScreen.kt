@@ -31,9 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -75,15 +78,16 @@ fun RegistrationScreen(
         }
     }
 
+    val context = LocalContext.current
     LaunchedEffect(state.verificationCodeRequestFailed) {
         if (state.verificationCodeRequestFailed) {
-            snackbarHostState.showSnackbar("Failed to send verification code")
+            snackbarHostState.showSnackbar(context.getString(R.string.verification_request_error_toast))
         }
     }
 
     LaunchedEffect(state.isCodeInvalid) {
         if (state.isCodeInvalid) {
-            snackbarHostState.showSnackbar("Invalid code")
+            snackbarHostState.showSnackbar(context.getString(R.string.invalid_code_toast))
             viewModel.sendVerificationCode(email)
             viewModel.clearState()
             navController.navigate(RegistrationVerification(name, email))
@@ -92,7 +96,7 @@ fun RegistrationScreen(
 
     LaunchedEffect(state.registrationFailed) {
         if (state.registrationFailed) {
-            snackbarHostState.showSnackbar("Registration failed")
+            snackbarHostState.showSnackbar(context.getString(R.string.registration_failed_toast))
             viewModel.clearState()
         }
     }
@@ -108,9 +112,9 @@ fun RegistrationScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("Sign up") }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(R.string.sign_up_title)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             })
         }) { innerPadding ->
@@ -127,7 +131,7 @@ fun RegistrationScreen(
             OutlinedTextField(
                 name,
                 { name = it },
-                placeholder = { Text("Name") },
+                placeholder = { Text(stringResource(R.string.name)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
@@ -138,7 +142,7 @@ fun RegistrationScreen(
             OutlinedTextField(
                 email,
                 { email = it },
-                placeholder = { Text("Email") },
+                placeholder = { Text(stringResource(R.string.email)) },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 enabled = registration.email == null,
                 isError = isEmailFieldError,
@@ -159,7 +163,7 @@ fun RegistrationScreen(
                 },
                 enabled = name.isNotEmpty() && email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Register") }
+            ) { Text(stringResource(R.string.register)) }
         }
     }
 }

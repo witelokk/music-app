@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,9 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
 import com.witelokk.musicapp.data.Artist
 import com.witelokk.musicapp.data.Playlist
@@ -80,7 +84,13 @@ fun Search(
             onQueryChange = { query = it; onQueryChanged(it) },
             expanded = expanded,
             onExpandedChange = { expanded = it },
-            placeholder = { Text("Search songs, albums and artists") },
+            placeholder = {
+                Text(
+                    stringResource(R.string.search_placeholder),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
             leadingIcon = {
                 if (expanded) {
                     IconButton(onClick = { expanded = false }) {
@@ -242,14 +252,14 @@ fun SearchHistoryContent(
     }
 
     Column(modifier = modifier) {
-        Text("Recent searches", modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.recent_searches), modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold)
         SearchResults(
             results.reversed(),
             itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             onResultClick = onResultClick
         )
         TextButton(onClearClick) {
-            Text("Clear", modifier = Modifier.padding(start = 8.dp))
+            Text(stringResource(R.string.clear), modifier = Modifier.padding(start = 8.dp))
         }
     }
 }
@@ -257,7 +267,7 @@ fun SearchHistoryContent(
 @Composable
 fun SearchEmptyContent(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("No results", modifier = Modifier.padding(16.dp))
+        Text(stringResource(R.string.no_results), modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -268,11 +278,11 @@ fun SearchFailedContent(retry: () -> Unit, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("Search failed", modifier = Modifier.padding(16.dp))
+        Text(stringResource(R.string.search_failed), modifier = Modifier.padding(16.dp))
         Button(onClick = { retry() }) {
-            Icon(Icons.Default.Replay, "Retry")
+            Icon(Icons.Default.Replay, stringResource(R.string.retry))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Retry")
+            Text(stringResource(R.string.retry))
         }
     }
 }

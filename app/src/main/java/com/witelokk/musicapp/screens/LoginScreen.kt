@@ -31,9 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -66,9 +69,10 @@ fun LoginScreen(
         }
     }
 
+    val context = LocalContext.current
     LaunchedEffect(state.verificationCodeRequestFailed) {
         if (state.verificationCodeRequestFailed) {
-            snackbarHostState.showSnackbar("Failed to send verification code")
+            snackbarHostState.showSnackbar(context.getString(R.string.verification_request_error_toast))
         }
     }
 
@@ -77,7 +81,7 @@ fun LoginScreen(
         topBar = {
             TopAppBar(title = { Text("Sign in") }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             })
         }
@@ -97,7 +101,7 @@ fun LoginScreen(
                     email = it
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                placeholder = { Text("Email") },
+                placeholder = { Text(stringResource(R.string.email)) },
                 isError = isEmailFieldError, // todo: fix
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +114,7 @@ fun LoginScreen(
                 onClick = { viewModel.sendVerificationCode(email) },
                 enabled = email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Send verification code") }
+            ) { Text(stringResource(R.string.send_verification_code)) }
         }
     }
 }

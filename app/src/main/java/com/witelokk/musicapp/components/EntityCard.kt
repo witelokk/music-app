@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +28,7 @@ import com.witelokk.musicapp.data.Entity
 @Composable
 fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
     var isImageLoading by remember { mutableStateOf(true) }
-    OutlinedCard(modifier = modifier) {
+    OutlinedCard(modifier = modifier.width(155.dp)) {
         Column {
             if (isImageLoading) {
                 Box(

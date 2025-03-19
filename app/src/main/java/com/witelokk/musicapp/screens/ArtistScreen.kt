@@ -33,9 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.TrackListItem
@@ -67,15 +69,15 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
     val releases = listOf(
         Entity(
             "Die in My Heart",
-            "Single",
+            stringResource(R.string.single),
             "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520"
         ), Entity(
             "Zloy",
-            "Single",
+            stringResource(R.string.single),
             "https://avatars.yandex.net/get-music-content/14715139/c1e5abf6.a.34140674-1/400x400"
         ), Entity(
             "Teach Me How to Lie",
-            "Single",
+            stringResource(R.string.single),
             "https://avatars.yandex.net/get-music-content/13529784/9688d738.a.33520932-1/400x400"
         )
     )
@@ -98,12 +100,12 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
         }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
                 Icon(
-                    Icons.AutoMirrored.Default.ArrowBack, "Back"
+                    Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back)
                 )
             }
         }, actions = {
             IconButton(onClick = {}) {
-                Icon(Icons.Outlined.PlayArrow, "Play")
+                Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
             }
         }, scrollBehavior = scrollBehavior)
     }) { innerPadding ->
@@ -128,7 +130,7 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        "Popular",
+                        stringResource(R.string.popular),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
                     )
@@ -146,7 +148,7 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
             item(span = { GridItemSpan(2) }) {
                 Column {
                     Text(
-                        "Releases",
+                        stringResource(R.string.releases),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
                     )
@@ -154,10 +156,10 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(playlistsFilter,
                             onClick = { playlistsFilter = !playlistsFilter },
-                            { Text("Albums") })
+                            { Text(stringResource(R.string.albums)) })
                         FilterChip(singlesEPFilter,
                             onClick = { singlesEPFilter = !singlesEPFilter },
-                            { Text("Singles and EPs") })
+                            { Text(stringResource(R.string.singles_and_eps)) })
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
