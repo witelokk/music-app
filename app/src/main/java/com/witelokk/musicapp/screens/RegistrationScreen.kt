@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,7 +68,7 @@ fun RegistrationScreen(
 
     LaunchedEffect(state.isVerificationCodeSent) {
         if (state.isVerificationCodeSent) {
-            navController.navigate(LoginVerification(email))
+            navController.navigate(RegistrationVerification(name, email))
         }
         viewModel.clearState()
     }
@@ -125,7 +126,6 @@ fun RegistrationScreen(
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -164,6 +164,17 @@ fun RegistrationScreen(
                 enabled = name.isNotEmpty() && email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.register)) }
+
+            TextButton(
+                onClick = {
+                    navController.navigate(RegistrationVerification(name, email))
+                },
+                enabled = name.isNotEmpty() && email.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.i_already_have_a_code))
+            }
+
         }
     }
 }

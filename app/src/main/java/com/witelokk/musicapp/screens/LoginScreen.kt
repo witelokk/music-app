@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,7 +80,7 @@ fun LoginScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("Sign in") }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(R.string.login_title)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
@@ -115,6 +116,16 @@ fun LoginScreen(
                 enabled = email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) { Text(stringResource(R.string.send_verification_code)) }
+
+            TextButton(
+                onClick = {
+                    navController.navigate(LoginVerification(email))
+                },
+                enabled = email.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.i_already_have_a_code))
+            }
         }
     }
 }

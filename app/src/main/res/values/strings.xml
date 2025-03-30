@@ -20,6 +20,7 @@
     <string name="queue">Queue</string>
     <string name="invalid_code_toast">Invalid code</string>
     <string name="registration_failed_toast">Registration failed</string>
+    <string name="login_title">Login</string>
     <string name="sign_up_title">Sign up</string>
     <string name="name">Name</string>
     <string name="register">Register</string>
@@ -48,4 +49,5 @@
     <string name="no_results">No results</string>
     <string name="search_failed">Search failed</string>
     <string name="retry">Retry</string>
+    <string name="i_already_have_a_code">I already have a code</string>
 </resources>
