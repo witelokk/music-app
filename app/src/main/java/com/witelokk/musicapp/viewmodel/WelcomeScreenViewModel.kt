@@ -14,7 +14,7 @@ import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsTokensRequest
+import com.witelokk.musicapp.api.models.TokensRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -113,7 +113,7 @@ class WelcomeScreenViewModel(
 
     private suspend fun signIn(googleIdToken: String) {
         val response = authApi.tokensPost(
-            ComwitelokkmusicmodelsTokensRequest(
+            TokensRequest(
                 grantType = "google_token",
                 googleToken = googleIdToken,
             )

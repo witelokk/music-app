@@ -23,26 +23,14 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param grantType 
- * @param email 
- * @param code 
- * @param googleToken 
+ * @param songId 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsTokensRequest (
+data class AddSongToPlaylistRequest (
 
-    @SerialName(value = "grant_type")
-    val grantType: kotlin.String,
-
-    @SerialName(value = "email")
-    val email: kotlin.String? = null,
-
-    @SerialName(value = "code")
-    val code: kotlin.String? = null,
-
-    @SerialName(value = "google_token")
-    val googleToken: kotlin.String? = null
+    @SerialName(value = "song_id")
+    val songId: kotlin.String
 
 ) {
 

@@ -23,14 +23,26 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param songId 
+ * @param id 
+ * @param name 
+ * @param songsCount 
+ * @param coverUrl 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsAddSongToPlaylistRequest (
+data class ShortPlaylist (
 
-    @Contextual @SerialName(value = "song_id")
-    val songId: java.util.UUID
+    @SerialName(value = "id")
+    val id: kotlin.String,
+
+    @SerialName(value = "name")
+    val name: kotlin.String,
+
+    @SerialName(value = "songs_count")
+    val songsCount: kotlin.Int,
+
+    @SerialName(value = "cover_url")
+    val coverUrl: kotlin.String? = null
 
 ) {
 

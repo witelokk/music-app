@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResult
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.SearchResult
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -24,59 +24,54 @@ import io.ktor.client.request.forms.formData
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.http.ParametersBuilder
 
-open class SearchApi(
+    open class SearchApi(
     baseUrl: String = ApiClient.BASE_URL,
     httpClientEngine: HttpClientEngine? = null,
     httpClientConfig: ((HttpClientConfig<*>) -> Unit)? = null,
-) : ApiClient(
-    baseUrl,
-    httpClientEngine,
-    httpClientConfig,
-) {
+    ) : ApiClient(
+        baseUrl,
+        httpClientEngine,
+        httpClientConfig,
+    ) {
 
-    /**
-     *
-     * Search for artists, songs, albums, and playlists
-     * @param q Search query (optional)
-     * @param type Search type (optional)
-     * @param page Page number (optional)
-     * @param limit Results per page (optional)
-     * @return ComwitelokkmusicmodelsSearchResult
-     */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun searchGet(
-        q: kotlin.String?,
-        type: kotlin.String?,
-        page: kotlin.String?,
-        limit: kotlin.String?
-    ): HttpResponse<ComwitelokkmusicmodelsSearchResult> {
+        /**
+        * 
+        * Search for artists, songs, albums, and playlists
+         * @param q Search query (optional)
+         * @param type Search type (optional)
+         * @param page Page number (optional)
+         * @param limit Results per page (optional)
+         * @return SearchResult
+        */
+            @Suppress("UNCHECKED_CAST")
+        open suspend fun searchGet(q: kotlin.String?, type: kotlin.String?, page: kotlin.String?, limit: kotlin.String?): HttpResponse<SearchResult> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+            val localVariableAuthNames = listOf<String>("Authorization")
 
-        val localVariableBody =
-            io.ktor.client.utils.EmptyContent
+            val localVariableBody = 
+                    io.ktor.client.utils.EmptyContent
 
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        q?.apply { localVariableQuery["q"] = listOf("$q") }
-        type?.apply { localVariableQuery["type"] = listOf("$type") }
-        page?.apply { localVariableQuery["page"] = listOf("$page") }
-        limit?.apply { localVariableQuery["limit"] = listOf("$limit") }
+            val localVariableQuery = mutableMapOf<String, List<String>>()
+            q?.apply { localVariableQuery["q"] = listOf("$q") }
+            type?.apply { localVariableQuery["type"] = listOf("$type") }
+            page?.apply { localVariableQuery["page"] = listOf("$page") }
+            limit?.apply { localVariableQuery["limit"] = listOf("$limit") }
 
-        val localVariableHeaders = mutableMapOf<String, String>()
+            val localVariableHeaders = mutableMapOf<String, String>()
 
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            val localVariableConfig = RequestConfig<kotlin.Any?>(
             RequestMethod.GET,
             "/search",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,
-        )
+            )
 
-        return request(
+            return request(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
-        ).wrap()
-    }
+            ).wrap()
+            }
 
-}
+        }

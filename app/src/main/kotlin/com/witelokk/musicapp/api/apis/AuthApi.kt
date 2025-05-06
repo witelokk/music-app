@@ -15,10 +15,10 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsTokensRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsTokensResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsVerificationCodeRequest
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.api.models.TokensResponse
+import com.witelokk.musicapp.api.models.VerificationCodeRequest
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -39,15 +39,15 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get tokens
-         * @param comwitelokkmusicmodelsTokensRequest  (optional)
-         * @return ComwitelokkmusicmodelsTokensResponse
+         * @param tokensRequest  (optional)
+         * @return TokensResponse
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun tokensPost(comwitelokkmusicmodelsTokensRequest: ComwitelokkmusicmodelsTokensRequest?): HttpResponse<ComwitelokkmusicmodelsTokensResponse> {
+        open suspend fun tokensPost(tokensRequest: TokensRequest?): HttpResponse<TokensResponse> {
 
             val localVariableAuthNames = listOf<String>()
 
-            val localVariableBody = comwitelokkmusicmodelsTokensRequest
+            val localVariableBody = tokensRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -71,14 +71,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Request a verification code
-         * @param comwitelokkmusicmodelsVerificationCodeRequest  (optional)
+         * @param verificationCodeRequest  (optional)
          * @return void
         */
-        open suspend fun verificationCodeRequestPost(comwitelokkmusicmodelsVerificationCodeRequest: ComwitelokkmusicmodelsVerificationCodeRequest?): HttpResponse<Unit> {
+        open suspend fun verificationCodeRequestPost(verificationCodeRequest: VerificationCodeRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>()
 
-            val localVariableBody = comwitelokkmusicmodelsVerificationCodeRequest
+            val localVariableBody = verificationCodeRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 

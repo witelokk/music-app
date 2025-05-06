@@ -15,7 +15,6 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortArtist
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -24,22 +23,18 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param count 
- * @param artists 
- * @param names 
+ * @param error 
+ * @param message 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsShortArtists (
+data class FailureResponse (
 
-    @SerialName(value = "count")
-    val count: kotlin.Int,
+    @SerialName(value = "error")
+    val error: kotlin.String,
 
-    @SerialName(value = "artists")
-    val artists: kotlin.collections.List<ComwitelokkmusicmodelsShortArtist>,
-
-    @SerialName(value = "names")
-    val names: kotlin.String
+    @SerialName(value = "message")
+    val message: kotlin.String
 
 ) {
 

@@ -15,9 +15,10 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsAddFavoriteSongRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsRemoveFavoriteSongRequest
+import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
+import com.witelokk.musicapp.api.models.Songs
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -38,14 +39,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Remove favorite song
-         * @param comwitelokkmusicmodelsRemoveFavoriteSongRequest  (optional)
+         * @param removeFavoriteSongRequest  (optional)
          * @return void
         */
-        open suspend fun favoritesDelete(comwitelokkmusicmodelsRemoveFavoriteSongRequest: ComwitelokkmusicmodelsRemoveFavoriteSongRequest?): HttpResponse<Unit> {
+        open suspend fun favoritesDelete(removeFavoriteSongRequest: RemoveFavoriteSongRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsRemoveFavoriteSongRequest
+            val localVariableBody = removeFavoriteSongRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -69,10 +70,10 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get favorite songs
-         * @return kotlin.Any
+         * @return Songs
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun favoritesGet(): HttpResponse<kotlin.Any> {
+        open suspend fun favoritesGet(): HttpResponse<Songs> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
@@ -101,14 +102,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Add favorite song
-         * @param comwitelokkmusicmodelsAddFavoriteSongRequest  (optional)
+         * @param addFavoriteSongRequest  (optional)
          * @return void
         */
-        open suspend fun favoritesPost(comwitelokkmusicmodelsAddFavoriteSongRequest: ComwitelokkmusicmodelsAddFavoriteSongRequest?): HttpResponse<Unit> {
+        open suspend fun favoritesPost(addFavoriteSongRequest: AddFavoriteSongRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsAddFavoriteSongRequest
+            val localVariableBody = addFavoriteSongRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 

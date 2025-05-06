@@ -15,10 +15,10 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortArtists
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsStartFollowingRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsStopFollowingRequest
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.ShortArtists
+import com.witelokk.musicapp.api.models.StartFollowingRequest
+import com.witelokk.musicapp.api.models.StopFollowingRequest
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -39,14 +39,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Stop following an artist
-         * @param comwitelokkmusicmodelsStopFollowingRequest  (optional)
+         * @param stopFollowingRequest  (optional)
          * @return void
         */
-        open suspend fun followingsDelete(comwitelokkmusicmodelsStopFollowingRequest: ComwitelokkmusicmodelsStopFollowingRequest?): HttpResponse<Unit> {
+        open suspend fun followingsDelete(stopFollowingRequest: StopFollowingRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsStopFollowingRequest
+            val localVariableBody = stopFollowingRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -70,10 +70,10 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get a list of followed artists
-         * @return ComwitelokkmusicmodelsShortArtists
+         * @return ShortArtists
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun followingsGet(): HttpResponse<ComwitelokkmusicmodelsShortArtists> {
+        open suspend fun followingsGet(): HttpResponse<ShortArtists> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
@@ -102,14 +102,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Start following an artist
-         * @param comwitelokkmusicmodelsStartFollowingRequest  (optional)
+         * @param startFollowingRequest  (optional)
          * @return void
         */
-        open suspend fun followingsPost(comwitelokkmusicmodelsStartFollowingRequest: ComwitelokkmusicmodelsStartFollowingRequest?): HttpResponse<Unit> {
+        open suspend fun followingsPost(startFollowingRequest: StartFollowingRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsStartFollowingRequest
+            val localVariableBody = startFollowingRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 

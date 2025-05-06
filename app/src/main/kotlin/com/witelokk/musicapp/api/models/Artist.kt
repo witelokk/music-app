@@ -15,6 +15,8 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.Releases
+import com.witelokk.musicapp.api.models.Songs
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -25,21 +27,37 @@ import kotlinx.serialization.Contextual
  *
  * @param id 
  * @param name 
- * @param songsCount 
+ * @param followers 
+ * @param following 
+ * @param popularSongs 
+ * @param releases 
+ * @param avatarUrl 
  * @param coverUrl 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsShortPlaylist (
+data class Artist (
 
-    @Contextual @SerialName(value = "id")
-    val id: java.util.UUID,
+    @SerialName(value = "id")
+    val id: kotlin.String,
 
     @SerialName(value = "name")
     val name: kotlin.String,
 
-    @SerialName(value = "songs_count")
-    val songsCount: kotlin.Int,
+    @SerialName(value = "followers")
+    val followers: kotlin.Int,
+
+    @SerialName(value = "following")
+    val following: kotlin.Boolean,
+
+    @SerialName(value = "popularSongs")
+    val popularSongs: Songs,
+
+    @SerialName(value = "releases")
+    val releases: Releases,
+
+    @SerialName(value = "avatar_url")
+    val avatarUrl: kotlin.String? = null,
 
     @SerialName(value = "cover_url")
     val coverUrl: kotlin.String? = null

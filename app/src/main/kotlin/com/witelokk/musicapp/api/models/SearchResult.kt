@@ -15,7 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
+import com.witelokk.musicapp.api.models.SearchResultItem
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -32,7 +32,7 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsSearchResult (
+data class SearchResult (
 
     @SerialName(value = "query")
     val query: kotlin.String,
@@ -47,7 +47,7 @@ data class ComwitelokkmusicmodelsSearchResult (
     val total: kotlin.Int,
 
     @SerialName(value = "results")
-    val results: kotlin.collections.List<ComwitelokkmusicmodelsSearchResultItem>
+    val results: kotlin.collections.List<SearchResultItem>
 
 ) {
 

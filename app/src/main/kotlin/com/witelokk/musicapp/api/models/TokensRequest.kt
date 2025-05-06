@@ -23,18 +23,26 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param error 
- * @param message 
+ * @param grantType 
+ * @param email 
+ * @param code 
+ * @param googleToken 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsFailureResponse (
+data class TokensRequest (
 
-    @SerialName(value = "error")
-    val error: kotlin.String,
+    @SerialName(value = "grant_type")
+    val grantType: kotlin.String,
 
-    @SerialName(value = "message")
-    val message: kotlin.String
+    @SerialName(value = "email")
+    val email: kotlin.String? = null,
+
+    @SerialName(value = "code")
+    val code: kotlin.String? = null,
+
+    @SerialName(value = "google_token")
+    val googleToken: kotlin.String? = null
 
 ) {
 

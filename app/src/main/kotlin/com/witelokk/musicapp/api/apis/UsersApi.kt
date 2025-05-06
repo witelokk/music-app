@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsCreateUserRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
+import com.witelokk.musicapp.api.models.CreateUserRequest
+import com.witelokk.musicapp.api.models.FailureResponse
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -37,14 +37,14 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Create a user
-         * @param comwitelokkmusicmodelsCreateUserRequest  (optional)
+         * @param createUserRequest  (optional)
          * @return void
         */
-        open suspend fun usersPost(comwitelokkmusicmodelsCreateUserRequest: ComwitelokkmusicmodelsCreateUserRequest?): HttpResponse<Unit> {
+        open suspend fun usersPost(createUserRequest: CreateUserRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>()
 
-            val localVariableBody = comwitelokkmusicmodelsCreateUserRequest
+            val localVariableBody = createUserRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 

@@ -15,7 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortArtist
+import com.witelokk.musicapp.api.models.ShortArtist
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -34,10 +34,10 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsSong (
+data class Song (
 
-    @Contextual @SerialName(value = "id")
-    val id: java.util.UUID,
+    @SerialName(value = "id")
+    val id: kotlin.String,
 
     @SerialName(value = "name")
     val name: kotlin.String,
@@ -49,7 +49,7 @@ data class ComwitelokkmusicmodelsSong (
     val durationSeconds: kotlin.Int,
 
     @SerialName(value = "artists")
-    val artists: kotlin.collections.List<ComwitelokkmusicmodelsShortArtist>,
+    val artists: kotlin.collections.List<ShortArtist>,
 
     @SerialName(value = "stream_url")
     val streamUrl: kotlin.String,

@@ -15,15 +15,15 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsAddSongToPlaylistRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsCreatePlaylistRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsCreatePlaylistResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsPlaylist
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsRemoveSongFromPlaylistRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortPlaylists
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSongs
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsUpdatePlaylistRequest
+import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
+import com.witelokk.musicapp.api.models.CreatePlaylistRequest
+import com.witelokk.musicapp.api.models.CreatePlaylistResponse
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.Playlist
+import com.witelokk.musicapp.api.models.RemoveSongFromPlaylistRequest
+import com.witelokk.musicapp.api.models.ShortPlaylists
+import com.witelokk.musicapp.api.models.Songs
+import com.witelokk.musicapp.api.models.UpdatePlaylistRequest
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -44,10 +44,10 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get a list of playlists
-         * @return ComwitelokkmusicmodelsShortPlaylists
+         * @return ShortPlaylists
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun playlistsGet(): HttpResponse<ComwitelokkmusicmodelsShortPlaylists> {
+        open suspend fun playlistsGet(): HttpResponse<ShortPlaylists> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
@@ -109,10 +109,10 @@ import io.ktor.http.ParametersBuilder
         * 
         * Get playlist by ID
          * @param id Playlist ID 
-         * @return ComwitelokkmusicmodelsPlaylist
+         * @return Playlist
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun playlistsIdGet(id: kotlin.String): HttpResponse<ComwitelokkmusicmodelsPlaylist> {
+        open suspend fun playlistsIdGet(id: kotlin.String): HttpResponse<Playlist> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
@@ -142,14 +142,14 @@ import io.ktor.http.ParametersBuilder
         * 
         * Update a playlist
          * @param id Playlist ID 
-         * @param comwitelokkmusicmodelsUpdatePlaylistRequest  (optional)
+         * @param updatePlaylistRequest  (optional)
          * @return void
         */
-        open suspend fun playlistsIdPut(id: kotlin.String, comwitelokkmusicmodelsUpdatePlaylistRequest: ComwitelokkmusicmodelsUpdatePlaylistRequest?): HttpResponse<Unit> {
+        open suspend fun playlistsIdPut(id: kotlin.String, updatePlaylistRequest: UpdatePlaylistRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsUpdatePlaylistRequest
+            val localVariableBody = updatePlaylistRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -174,14 +174,14 @@ import io.ktor.http.ParametersBuilder
         * 
         * Remove song from playlist
          * @param id Playlist ID 
-         * @param comwitelokkmusicmodelsRemoveSongFromPlaylistRequest  (optional)
+         * @param removeSongFromPlaylistRequest  (optional)
          * @return void
         */
-        open suspend fun playlistsIdSongsDelete(id: kotlin.String, comwitelokkmusicmodelsRemoveSongFromPlaylistRequest: ComwitelokkmusicmodelsRemoveSongFromPlaylistRequest?): HttpResponse<Unit> {
+        open suspend fun playlistsIdSongsDelete(id: kotlin.String, removeSongFromPlaylistRequest: RemoveSongFromPlaylistRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsRemoveSongFromPlaylistRequest
+            val localVariableBody = removeSongFromPlaylistRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -206,10 +206,10 @@ import io.ktor.http.ParametersBuilder
         * 
         * Get playlist songs
          * @param id Playlist ID 
-         * @return ComwitelokkmusicmodelsSongs
+         * @return Songs
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun playlistsIdSongsGet(id: kotlin.String): HttpResponse<ComwitelokkmusicmodelsSongs> {
+        open suspend fun playlistsIdSongsGet(id: kotlin.String): HttpResponse<Songs> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
@@ -239,14 +239,14 @@ import io.ktor.http.ParametersBuilder
         * 
         * Add song to playlist
          * @param id Playlist ID 
-         * @param comwitelokkmusicmodelsAddSongToPlaylistRequest  (optional)
+         * @param addSongToPlaylistRequest  (optional)
          * @return void
         */
-        open suspend fun playlistsIdSongsPost(id: kotlin.String, comwitelokkmusicmodelsAddSongToPlaylistRequest: ComwitelokkmusicmodelsAddSongToPlaylistRequest?): HttpResponse<Unit> {
+        open suspend fun playlistsIdSongsPost(id: kotlin.String, addSongToPlaylistRequest: AddSongToPlaylistRequest?): HttpResponse<Unit> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsAddSongToPlaylistRequest
+            val localVariableBody = addSongToPlaylistRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 
@@ -270,15 +270,15 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Create a new playlist
-         * @param comwitelokkmusicmodelsCreatePlaylistRequest  (optional)
-         * @return ComwitelokkmusicmodelsCreatePlaylistResponse
+         * @param createPlaylistRequest  (optional)
+         * @return CreatePlaylistResponse
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun playlistsPost(comwitelokkmusicmodelsCreatePlaylistRequest: ComwitelokkmusicmodelsCreatePlaylistRequest?): HttpResponse<ComwitelokkmusicmodelsCreatePlaylistResponse> {
+        open suspend fun playlistsPost(createPlaylistRequest: CreatePlaylistRequest?): HttpResponse<CreatePlaylistResponse> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 
-            val localVariableBody = comwitelokkmusicmodelsCreatePlaylistRequest
+            val localVariableBody = createPlaylistRequest
 
             val localVariableQuery = mutableMapOf<String, List<String>>()
 

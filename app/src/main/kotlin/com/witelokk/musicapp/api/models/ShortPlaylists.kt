@@ -15,6 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.ShortPlaylist
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -23,14 +24,18 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param name 
+ * @param count 
+ * @param playlists 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsUpdatePlaylistRequest (
+data class ShortPlaylists (
 
-    @SerialName(value = "name")
-    val name: kotlin.String
+    @SerialName(value = "count")
+    val count: kotlin.Int,
+
+    @SerialName(value = "playlists")
+    val playlists: kotlin.collections.List<ShortPlaylist>
 
 ) {
 

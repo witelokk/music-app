@@ -23,14 +23,14 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param artistId 
+ * @param email 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsStopFollowingRequest (
+data class VerificationCodeRequest (
 
-    @Contextual @SerialName(value = "artist_id")
-    val artistId: java.util.UUID
+    @SerialName(value = "email")
+    val email: kotlin.String
 
 ) {
 

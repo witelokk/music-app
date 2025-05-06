@@ -4,7 +4,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsVerificationCodeRequest
+import com.witelokk.musicapp.api.models.VerificationCodeRequest
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +29,7 @@ class LoginScreenViewModel(private val authApi: AuthApi) : ViewModel() {
 
         viewModelScope.launch {
             val response = authApi.verificationCodeRequestPost(
-                ComwitelokkmusicmodelsVerificationCodeRequest(
+                VerificationCodeRequest(
                     email = email
                 )
             )

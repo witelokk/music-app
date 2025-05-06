@@ -48,7 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
+import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.data.Artist
 import com.witelokk.musicapp.data.Playlist
 import com.witelokk.musicapp.data.Song
@@ -136,10 +136,10 @@ fun Search(
 
 @Composable
 fun SearchResults(
-    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
     itemModifier: Modifier = Modifier,
-    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
+    onResultClick: (SearchResultItem) -> Unit = {},
     filter: String? = null
 ) {
     LazyColumn(modifier = modifier) {
@@ -187,9 +187,9 @@ fun SearchResults(
 
 @Composable
 fun SearchContent(
-    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
-    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
+    onResultClick: (SearchResultItem) -> Unit = {},
 ) {
     val filters = listOf("Playlists", "Songs", "Artists")
     val selected = List(filters.size) { rememberSaveable { mutableStateOf(false) } }
@@ -239,9 +239,9 @@ fun SearchContent(
 
 @Composable
 fun SearchHistoryContent(
-    results: List<ComwitelokkmusicmodelsSearchResultItem>,
+    results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
-    onResultClick: (ComwitelokkmusicmodelsSearchResultItem) -> Unit = {},
+    onResultClick: (SearchResultItem) -> Unit = {},
     onClearClick: () -> Unit = {},
 ) {
     if (results.isEmpty()) {

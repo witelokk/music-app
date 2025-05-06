@@ -23,14 +23,14 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param accessToken 
+ * @param songId 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsTokensResponse (
+data class AddFavoriteSongRequest (
 
-    @SerialName(value = "accessToken")
-    val accessToken: kotlin.String
+    @SerialName(value = "song_id")
+    val songId: kotlin.String
 
 ) {
 

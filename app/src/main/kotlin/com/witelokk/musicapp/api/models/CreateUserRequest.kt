@@ -24,13 +24,21 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param email 
+ * @param name 
+ * @param code 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsVerificationCodeRequest (
+data class CreateUserRequest (
 
     @SerialName(value = "email")
-    val email: kotlin.String
+    val email: kotlin.String,
+
+    @SerialName(value = "name")
+    val name: kotlin.String,
+
+    @SerialName(value = "code")
+    val code: kotlin.String
 
 ) {
 

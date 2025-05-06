@@ -3,10 +3,10 @@ package com.witelokk.musicapp
 import android.content.SharedPreferences
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.UsersApi
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsCreateUserRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsTokensRequest
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsVerificationCodeRequest
+import com.witelokk.musicapp.api.models.CreateUserRequest
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.api.models.VerificationCodeRequest
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.reflect.TypeInfo
 
@@ -24,7 +24,7 @@ class Auth(
 
     suspend fun signIn(email: String, code: String) {
         val response = authApi.tokensPost(
-            ComwitelokkmusicmodelsTokensRequest(
+            TokensRequest(
                 grantType = "code",
                 email = email,
                 code = code
@@ -32,8 +32,8 @@ class Auth(
         )
 
         if (response.status == HttpStatusCode.BadRequest.value) {
-            val errorResponse = response.typedBody<ComwitelokkmusicmodelsFailureResponse>(
-                TypeInfo(ComwitelokkmusicmodelsFailureResponse::class)
+            val errorResponse = response.typedBody<FailureResponse>(
+                TypeInfo(FailureResponse::class)
             )
 
             if (errorResponse.error == "invalid_code") {
@@ -54,7 +54,7 @@ class Auth(
 
     suspend fun createUserAndSignIn(name: String, email: String, code: String) {
         val response = usersApi.usersPost(
-            ComwitelokkmusicmodelsCreateUserRequest(
+            CreateUserRequest(
                 name = name,
                 email = email,
                 code = code,
@@ -74,7 +74,7 @@ class Auth(
 
     suspend fun verificationCodeRequestPost(email: String) {
         val response =
-            authApi.verificationCodeRequestPost(ComwitelokkmusicmodelsVerificationCodeRequest(email))
+            authApi.verificationCodeRequestPost(VerificationCodeRequest(email))
 
         if (!response.success and (response.status != HttpStatusCode.TooManyRequests.value)) {
             error(response)

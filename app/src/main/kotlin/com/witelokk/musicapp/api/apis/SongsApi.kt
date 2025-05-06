@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsFailureResponse
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSong
+import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.Song
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -38,10 +38,10 @@ import io.ktor.http.ParametersBuilder
         * 
         * Get song by ID
          * @param id Song ID 
-         * @return ComwitelokkmusicmodelsSong
+         * @return Song
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun songsIdGet(id: kotlin.String): HttpResponse<ComwitelokkmusicmodelsSong> {
+        open suspend fun songsIdGet(id: kotlin.String): HttpResponse<Song> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 

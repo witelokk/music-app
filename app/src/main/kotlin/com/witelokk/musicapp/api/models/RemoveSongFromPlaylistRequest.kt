@@ -23,14 +23,14 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param id 
+ * @param songId 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsCreatePlaylistResponse (
+data class RemoveSongFromPlaylistRequest (
 
-    @Contextual @SerialName(value = "id")
-    val id: java.util.UUID
+    @SerialName(value = "song_id")
+    val songId: kotlin.String
 
 ) {
 

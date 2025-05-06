@@ -15,10 +15,10 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortArtist
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortPlaylist
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsShortRelease
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSong
+import com.witelokk.musicapp.api.models.ShortArtist
+import com.witelokk.musicapp.api.models.ShortPlaylist
+import com.witelokk.musicapp.api.models.ShortRelease
+import com.witelokk.musicapp.api.models.Song
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -35,22 +35,22 @@ import kotlinx.serialization.Contextual
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsSearchResultItem (
+data class SearchResultItem (
 
     @SerialName(value = "type")
     val type: kotlin.String,
 
     @SerialName(value = "song")
-    val song: ComwitelokkmusicmodelsSong? = null,
+    val song: Song? = null,
 
     @SerialName(value = "release")
-    val release: ComwitelokkmusicmodelsShortRelease? = null,
+    val release: ShortRelease? = null,
 
     @SerialName(value = "artist")
-    val artist: ComwitelokkmusicmodelsShortArtist? = null,
+    val artist: ShortArtist? = null,
 
     @SerialName(value = "playlist")
-    val playlist: ComwitelokkmusicmodelsShortPlaylist? = null
+    val playlist: ShortPlaylist? = null
 
 ) {
 

@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.api.apis.SearchApi
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResult
-import com.witelokk.musicapp.api.models.ComwitelokkmusicmodelsSearchResultItem
+import com.witelokk.musicapp.api.models.SearchResult
+import com.witelokk.musicapp.api.models.SearchResultItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,8 +16,8 @@ import java.net.UnknownHostException
 data class HomeViewModelState(
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
-    val searchResults: ComwitelokkmusicmodelsSearchResult? = null,
-    val searchHistory: List<ComwitelokkmusicmodelsSearchResultItem> = emptyList()
+    val searchResults: SearchResult? = null,
+    val searchHistory: List<SearchResultItem> = emptyList()
 )
 
 class HomeScreenViewModel(
@@ -46,7 +46,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun addToSearchHistory(result: ComwitelokkmusicmodelsSearchResultItem) {
+    fun addToSearchHistory(result: SearchResultItem) {
         val history = _state.value.searchHistory.toMutableList()
         history.add(result)
         if (history.size > 10) {

@@ -23,14 +23,14 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param songId 
+ * @param artistId 
  */
 @Serializable
 
-data class ComwitelokkmusicmodelsAddFavoriteSongRequest (
+data class StopFollowingRequest (
 
-    @Contextual @SerialName(value = "song_id")
-    val songId: java.util.UUID
+    @SerialName(value = "artist_id")
+    val artistId: kotlin.String
 
 ) {
 
