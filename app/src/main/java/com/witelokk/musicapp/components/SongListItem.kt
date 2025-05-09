@@ -60,7 +60,7 @@ fun SongListItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
-                Text(song.artists.map { it.name }.joinToString { " & " }, style = MaterialTheme.typography.bodyMedium)
+                Text(song.artists.map { it.name }.joinToString(", ad"), style = MaterialTheme.typography.bodyMedium)
             }
         }
 

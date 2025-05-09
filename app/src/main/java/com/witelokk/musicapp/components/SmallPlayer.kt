@@ -56,7 +56,7 @@ fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
                             modifier = Modifier.basicMarquee()
                         )
                         Text(
-                            playerState?.song?.artists?.map { it.name }?.joinToString { " & " }
+                            playerState?.song?.artists?.map { it.name }?.joinToString(", ")
                                 ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.basicMarquee()

@@ -123,7 +123,9 @@ fun ArtistScreen(
             items(state.artist?.popularSongs?.songs ?: emptyList(), span = { GridItemSpan(2) }) { song ->
                 SongListItem(
                     song, showDuration = true, modifier = Modifier
-                        .clickable { }
+                        .clickable {
+                            musicPlayer.playSong(song)
+                        }
                         .padding(vertical = 8.dp)
                 )
             }

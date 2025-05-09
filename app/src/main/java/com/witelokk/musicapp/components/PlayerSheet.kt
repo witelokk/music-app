@@ -58,9 +58,9 @@ fun PlayerSheetScaffold(
     val playerState by musicPlayer.state.collectAsState()
 
     LaunchedEffect(playerState) {
-        if (playerState == null) {
+        if (playerState == null){// && scaffoldState.bottomSheetState.currentValue != SheetValue.Hidden) {
             scaffoldState.bottomSheetState.hide()
-        } else {
+        } else if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded){
             scaffoldState.bottomSheetState.show()
         }
     }

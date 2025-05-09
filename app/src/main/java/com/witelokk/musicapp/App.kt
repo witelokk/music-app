@@ -30,6 +30,7 @@ import com.witelokk.musicapp.screens.WelcomeScreen
 import com.witelokk.musicapp.ui.theme.MusicAppTheme
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
@@ -54,7 +55,7 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
         }
     }
 
-    val musicPlayer = MusicPlayer()
+    val musicPlayer = koinInject<MusicPlayer>()
 
     val navController = rememberNavController()
     MusicAppTheme(

@@ -2,11 +2,15 @@ package com.witelokk.musicapp
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
-import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
@@ -75,6 +79,7 @@ fun HttpClientConfig<*>.default() {
     }
 }
 
+@OptIn(UnstableApi::class)
 val appModule = module {
     val baseUrl = "https://music.witelokk.ru/"
 //    val baseUrl = "http://10.0.2.2:8080/"
@@ -86,7 +91,19 @@ val appModule = module {
     }
 
     single {
-        MusicPlayer()
+        val dataSourceFactory = DefaultHttpDataSource.Factory().apply {
+            setDefaultRequestProperties(mapOf("Authorization" to "Bearer "
+                    + (get<SharedPreferences>().getString("access_token", "") ?: "")))
+        }
+        HlsMediaSource.Factory(dataSourceFactory)
+    }
+
+    single {
+        ExoPlayer.Builder(get()).build()
+    }
+
+    single {
+        MusicPlayer(get(), get())
     }
 
     single {

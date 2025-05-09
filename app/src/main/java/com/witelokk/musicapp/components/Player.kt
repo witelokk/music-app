@@ -37,6 +37,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -55,6 +56,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -64,6 +66,14 @@ fun formatDuration(duration: Duration): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
     return "$minutes:${if (seconds < 10) "0$seconds" else seconds}"
+}
+
+fun calculateSliderPosition(playerState: PlayerState?): Float {
+    if (playerState == null) {
+        return 0f
+    }
+
+    return (1f * (playerState.currentPosition.inWholeSeconds) / (playerState.song.durationSeconds))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,13 +88,16 @@ fun Player(
 
     var sliderPosition by remember {
         mutableFloatStateOf(
-            (1f * (playerState?.currentPosition?.inWholeSeconds
-                ?: 0) / (playerState?.song?.durationSeconds ?: 0))
+            calculateSliderPosition(playerState)
         )
     }
     var openArtistsDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var scope = rememberCoroutineScope()
+
+    LaunchedEffect(playerState?.currentPosition) {
+        sliderPosition = calculateSliderPosition(playerState)
+    }
 
     Column(
         modifier = modifier
@@ -115,7 +128,7 @@ fun Player(
                             navController.navigate("playlist")
                         }
                         .basicMarquee())
-                Text(playerState?.song?.artists?.map { it.name }?.joinToString { " & " } ?: "",
+                Text(playerState?.song?.artists?.map { it.name }?.joinToString(", ") ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .clickable {
