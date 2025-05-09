@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,7 +65,7 @@ fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
                     }
                     IconButton(onClick = {}) {
                         Icon(
-                            if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                            if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = null,
                             tint = if (playerState?.song?.isFavorite == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )

@@ -1,6 +1,5 @@
 package com.witelokk.musicapp.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -87,7 +85,10 @@ fun ArtistScreen(
                 )
             }
         }, actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                val songs = state.artist?.popularSongs?.songs ?: listOf()
+                musicPlayer.setQueueAndPlay(songs, 0)
+            }) {
                 Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
             }
         }, scrollBehavior = scrollBehavior)
@@ -107,7 +108,7 @@ fun ArtistScreen(
                             .clip(
                                 RoundedCornerShape(16.dp)
                             )
-                            .aspectRatio(21f/9)
+                            .aspectRatio(21f / 9)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -120,11 +121,16 @@ fun ArtistScreen(
                 }
             }
 
-            items(state.artist?.popularSongs?.songs ?: emptyList(), span = { GridItemSpan(2) }) { song ->
+            items(
+                state.artist?.popularSongs?.songs ?: emptyList(),
+                span = { GridItemSpan(2) }) { song ->
                 SongListItem(
                     song, showDuration = true, modifier = Modifier
                         .clickable {
-                            musicPlayer.playSong(song)
+                            musicPlayer.setQueueAndPlay(
+                                state.artist!!.popularSongs.songs,
+                                state.artist!!.popularSongs.songs.indexOf(song)
+                            )
                         }
                         .padding(vertical = 8.dp)
                 )

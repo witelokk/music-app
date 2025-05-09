@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -163,9 +164,9 @@ fun Player(
             }
             IconButton(onClick = {}) {
                 Icon(
-                    if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                    if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
+                    tint = if (playerState?.song?.isFavorite == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -195,7 +196,7 @@ fun Player(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = { musicPlayer.seekToPrevious() }) {
                 Icon(
                     Icons.Default.SkipPrevious,
                     contentDescription = null,
@@ -217,7 +218,7 @@ fun Player(
                 )
             }
             Spacer(modifier = Modifier.width(24.dp))
-            IconButton(onClick = {}) {
+            IconButton(onClick = { musicPlayer.seekToNext() }) {
                 Icon(
                     Icons.Default.SkipNext,
                     contentDescription = null,

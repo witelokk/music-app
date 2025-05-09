@@ -30,6 +30,9 @@ class MusicPlayer
     val state = _state.asStateFlow()
 
     private lateinit var controller: MediaController
+    private val queue = arrayListOf<Song>()
+    private var queueIndex = 0;
+
 
     init {
         initializeMediaController()
@@ -69,13 +72,29 @@ class MusicPlayer
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                _state.update {
-                    it?.copy(
-                        playing = isPlaying
-                    )
-                }
+                this@MusicPlayer.onIsPlayingChanged(isPlaying)
+            }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+
+                onMediaItemChanged(mediaItem)
             }
         })
+    }
+
+    private fun onMediaItemChanged(mediaItem: MediaItem?) {
+        queue.find { it.streamUrl == mediaItem?.mediaId }.let { song ->
+            _state.update {
+                PlayerState(
+                    song = song!!,
+                    playing = true,
+                    currentPosition = 0.seconds,
+                    previousTrackAvailable = false,
+                    nextTrackAvailable = false,
+                )
+            }
+        }
     }
 
     private fun onCurrentPositionChanged(currentPosition: Long) {
@@ -94,6 +113,29 @@ class MusicPlayer
         }
     }
 
+    private fun onIsPlayingChanged(isPlaying: Boolean) {
+        _state.update {
+            it?.copy(
+                playing = isPlaying
+            )
+        }
+    }
+
+    private fun createMediaItem(song: Song): MediaItem {
+        val mediaItem = MediaItem.Builder()
+            .setMediaId(song.streamUrl)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setArtworkUri(Uri.parse(song.coverUrl))
+                    .setDisplayTitle(song.name)
+                    .setTitle(song.name)
+                    .setArtist(song.artists.joinToString(", ") { it.name })
+                    .build()
+            )
+            .build()
+        return mediaItem
+    }
+
     fun playPause() {
         _state.update { it?.copy(playing = !it.playing) }
 
@@ -110,31 +152,26 @@ class MusicPlayer
         controller.seekTo(to.inWholeMilliseconds)
     }
 
-    fun playSong(song: Song) {
-        _state.update {
-            PlayerState(
-                song = song,
-                playing = true,
-                currentPosition = 0.seconds,
-                previousTrackAvailable = false,
-                nextTrackAvailable = false,
-            )
-        }
+    fun setQueueAndPlay(songs: List<Song>, index: Int) {
+        controller.stop()
 
-        val mediaItem = MediaItem.Builder()
-            .setMediaId(song.streamUrl)
-            .setMediaMetadata(MediaMetadata.Builder()
-                .setArtworkUri(Uri.parse(song.coverUrl))
-                .setDisplayTitle(song.name)
-                .setTitle(song.name)
-                .setArtist(song.artists.joinToString(", ") { it.name })
-                .build())
-            .build()
+        queue.clear()
+        queue.addAll(songs)
+        controller.setMediaItems(songs.map { createMediaItem(it) })
+        queueIndex = index
 
-        controller.setMediaItem(mediaItem)
-        controller.prepare()
         controller.play()
 
-        Log.d("abfdsvdf", controller.mediaMetadata.displayTitle.toString());
+        repeat(index) {
+            controller.seekToNextMediaItem()
+        }
+    }
+
+    fun seekToNext() {
+        controller.seekToNextMediaItem()
+    }
+
+    fun seekToPrevious() {
+        controller.seekToPrevious()
     }
 }

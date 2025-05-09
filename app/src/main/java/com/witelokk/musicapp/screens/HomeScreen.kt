@@ -155,7 +155,7 @@ fun HomeScreen(
                 } else if (searchQuery.collectAsState().value.isBlank()) {
                     SearchHistoryContent(state.searchHistory, onResultClick = {
                         when (it.type) {
-                            "song" -> musicPlayer.playSong(it.song!!)
+                            "song" -> musicPlayer.setQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
                             "playlist" -> navController.navigate("playlist")
@@ -167,7 +167,7 @@ fun HomeScreen(
                     SearchContent(state.searchResults?.results ?: listOf(), onResultClick = {
                         viewModel.addToSearchHistory(it)
                         when (it.type) {
-                            "song" -> musicPlayer.playSong(it.song!!)
+                            "song" -> musicPlayer.setQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id.toString()))
                             "playlist" -> navController.navigate("playlist")
