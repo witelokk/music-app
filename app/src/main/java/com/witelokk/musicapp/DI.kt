@@ -1,5 +1,6 @@
 package com.witelokk.musicapp
 
+import android.content.ComponentName
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.annotation.OptIn
@@ -7,6 +8,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.MediaSourceFactory
+import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionToken
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.SearchApi
@@ -91,19 +96,30 @@ val appModule = module {
     }
 
     single {
+        val sessionToken =
+            SessionToken(get(), ComponentName(get(), PlayerSessionService::class.java))
+        MediaController.Builder(get(), sessionToken).buildAsync()
+    }
+
+    single {
         val dataSourceFactory = DefaultHttpDataSource.Factory().apply {
-            setDefaultRequestProperties(mapOf("Authorization" to "Bearer "
-                    + (get<SharedPreferences>().getString("access_token", "") ?: "")))
+            setDefaultRequestProperties(
+                mapOf(
+                    "Authorization" to "Bearer "
+                            + (get<SharedPreferences>().getString("access_token", "") ?: "")
+                )
+            )
         }
-        HlsMediaSource.Factory(dataSourceFactory)
+        val factory = HlsMediaSource.Factory(dataSourceFactory)
+        ExoPlayer.Builder(get()).setMediaSourceFactory(factory).build()
     }
 
     single {
-        ExoPlayer.Builder(get()).build()
+        MediaSession.Builder(get(), get<ExoPlayer>()).build()
     }
 
     single {
-        MusicPlayer(get(), get())
+        MusicPlayer(get())
     }
 
     single {

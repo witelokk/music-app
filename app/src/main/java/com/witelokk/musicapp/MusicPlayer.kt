@@ -1,17 +1,17 @@
 package com.witelokk.musicapp
 
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.analytics.AnalyticsListener
-import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.session.MediaController
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,33 +24,58 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(UnstableApi::class)
 class MusicPlayer
     (
-    private val exoPlayer: ExoPlayer,
-    private val hlsMediaSourceFactory: HlsMediaSource.Factory,
+    private val mediaControllerFuture: ListenableFuture<MediaController>
 ) {
     private val _state = MutableStateFlow<PlayerState?>(null)
     val state = _state.asStateFlow()
 
+    private lateinit var controller: MediaController
+
     init {
-        exoPlayer.playWhenReady = true
+        initializeMediaController()
+    }
 
-        exoPlayer.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    onSongEnded()
-                }
-            }
-        })
+    private fun initializeMediaController() {
+        mediaControllerFuture.apply {
+            addListener({
+                controller = get()
+                configureMediaController()
+            }, MoreExecutors.directExecutor())
+        }
+    }
 
+    private fun configureMediaController() {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object : Runnable {
             override fun run() {
-                val position = exoPlayer.currentPosition
+                val position = controller.currentPosition
                 onCurrentPositionChanged(position)
                 handler.postDelayed(this, 500)
             }
         }
         handler.post(runnable)
 
+        controller.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_ENDED) {
+                    onSongEnded()
+                }
+            }
+
+            override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                super.onMediaMetadataChanged(mediaMetadata)
+                Log.d("onMediaMetadataChanged", mediaMetadata.displayTitle.toString())
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                _state.update {
+                    it?.copy(
+                        playing = isPlaying
+                    )
+                }
+            }
+        })
     }
 
     private fun onCurrentPositionChanged(currentPosition: Long) {
@@ -72,17 +97,17 @@ class MusicPlayer
     fun playPause() {
         _state.update { it?.copy(playing = !it.playing) }
 
-        if (exoPlayer.isPlaying) {
-            exoPlayer.pause()
+        if (controller.isPlaying) {
+            controller.pause()
         } else {
-            exoPlayer.play()
+            controller.play()
         }
     }
 
     fun seek(to: Duration) {
         _state.update { it?.copy(currentPosition = to, playing = true) }
 
-        exoPlayer.seekTo(to.inWholeMilliseconds)
+        controller.seekTo(to.inWholeMilliseconds)
     }
 
     fun playSong(song: Song) {
@@ -96,8 +121,20 @@ class MusicPlayer
             )
         }
 
-        exoPlayer.setMediaSource(hlsMediaSourceFactory.createMediaSource(MediaItem.fromUri(song.streamUrl)))
-        exoPlayer.prepare()
-        exoPlayer.play()
+        val mediaItem = MediaItem.Builder()
+            .setMediaId(song.streamUrl)
+            .setMediaMetadata(MediaMetadata.Builder()
+                .setArtworkUri(Uri.parse(song.coverUrl))
+                .setDisplayTitle(song.name)
+                .setTitle(song.name)
+                .setArtist(song.artists.joinToString(", ") { it.name })
+                .build())
+            .build()
+
+        controller.setMediaItem(mediaItem)
+        controller.prepare()
+        controller.play()
+
+        Log.d("abfdsvdf", controller.mediaMetadata.displayTitle.toString());
     }
 }
