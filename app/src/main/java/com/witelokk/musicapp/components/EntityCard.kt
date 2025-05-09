@@ -37,18 +37,17 @@ fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
                 ) {
                     CircularProgressIndicator()
                 }
-            } else {
-                AsyncImage(
-                    entity.pictureUrl,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.FillWidth,
-                    onSuccess = { isImageLoading = false },
-                    onError = { isImageLoading = false },
-                    contentDescription = null,
-                    error = painterResource(R.drawable.artist_placeholder)
-                    // TODO: FIX NOT SHOWING IMAGE AND ADD THE SAME STUFF TO PLAYER
-                )
             }
+            AsyncImage(
+                entity.pictureUrl,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth,
+                onSuccess = { isImageLoading = false },
+                onError = { isImageLoading = false },
+                contentDescription = null,
+                error = painterResource(R.drawable.artist_placeholder),
+                // TODO: FIX NOT SHOWING IMAGE AND ADD THE SAME STUFF TO PLAYER
+            )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(entity.name, style = MaterialTheme.typography.titleMedium)
                 Text(entity.type, style = MaterialTheme.typography.bodyMedium)

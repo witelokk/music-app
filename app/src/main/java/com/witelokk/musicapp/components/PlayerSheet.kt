@@ -13,8 +13,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,33 +26,48 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.MusicPlayer
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSheetScaffold(
     navController: NavController,
-    playerState: PlayerState,
+    musicPlayer: MusicPlayer,
     modifier: Modifier = Modifier,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        rememberStandardBottomSheetState(skipHiddenState = false, confirmValueChange = { value -> value != SheetValue.Hidden })
+        rememberStandardBottomSheetState(
+            skipHiddenState = false,
+            confirmValueChange = { value -> value != SheetValue.Hidden },
+            initialValue = if (musicPlayer.state.value == null) SheetValue.Hidden else SheetValue.PartiallyExpanded
+        )
     ),
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val playerState by musicPlayer.state.collectAsState()
+
+    LaunchedEffect(playerState) {
+        if (playerState == null) {
+            scaffoldState.bottomSheetState.hide()
+        } else {
+            scaffoldState.bottomSheetState.show()
+        }
+    }
 
     BottomSheetScaffold(scaffoldState = scaffoldState, sheetPeekHeight = 150.dp, sheetContent = {
-        SheetContent(navController, scaffoldState.bottomSheetState, playerState, scaffoldState)
+        if (playerState != null)
+            SheetContent(navController, scaffoldState.bottomSheetState, musicPlayer, scaffoldState)
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
         content(innerPadding)
     }
@@ -72,14 +85,14 @@ fun PlayerSheetScaffold(
 fun SheetContent(
     navController: NavController,
     sheetState: SheetState,
-    playerState: PlayerState,
+    musicPlayer: MusicPlayer,
     scaffoldState: BottomSheetScaffoldState,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
 
     Column(
-        Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(810.dp)
             .clickable(
@@ -100,12 +113,12 @@ fun SheetContent(
             exit = slideOutVertically() + shrinkVertically() + fadeOut()) {
 
             Column {
-                SmallPlayer(playerState, modifier = Modifier.padding(horizontal = 16.dp))
+                SmallPlayer(musicPlayer, modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(38.dp))
             }
         }
 
-        Player(navController, sheetState, playerState)
+        Player(navController, sheetState, musicPlayer)
     }
 }
 

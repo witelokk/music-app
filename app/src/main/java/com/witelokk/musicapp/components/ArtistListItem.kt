@@ -17,15 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.data.Artist
+import com.witelokk.musicapp.api.models.ArtistSummary
 
 @Composable
 fun ArtistListItem(
-    artist: Artist, modifier: Modifier = Modifier,
+    artist: ArtistSummary, modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
-            artist.cover,
+            artist.avatarUrl,
             "Cover",
             modifier = Modifier
                 .size(40.dp)

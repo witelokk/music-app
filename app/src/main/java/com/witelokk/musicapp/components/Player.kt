@@ -25,15 +25,11 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
@@ -41,6 +37,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,15 +51,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.data.Artist
-import com.witelokk.musicapp.data.PlayerState
-import com.witelokk.musicapp.ui.theme.MusicAppTheme
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 fun formatDuration(duration: Duration): String {
     val totalSeconds = duration.inWholeSeconds
@@ -76,16 +71,23 @@ fun formatDuration(duration: Duration): String {
 fun Player(
     navController: NavController,
     sheetState: SheetState,
-    playerState: PlayerState,
+    musicPlayer: MusicPlayer,
     modifier: Modifier = Modifier
 ) {
-    var sliderPosition by remember { mutableFloatStateOf((1f * playerState.currentPosition.inWholeSeconds) / playerState.song.duration.inWholeSeconds) }
+    val playerState by musicPlayer.state.collectAsState()
+
+    var sliderPosition by remember {
+        mutableFloatStateOf(
+            (1f * (playerState?.currentPosition?.inWholeSeconds
+                ?: 0) / (playerState?.song?.durationSeconds ?: 0))
+        )
+    }
     var openArtistsDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(horizontal = 16.dp)
             .verticalScroll(scrollState),
@@ -93,7 +95,7 @@ fun Player(
     ) {
 
         AsyncImage(
-            playerState.song.cover,
+            playerState?.song?.coverUrl ?: "",
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6)),
@@ -106,18 +108,18 @@ fun Player(
 
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(playerState.song.name,
+                Text(playerState?.song?.name ?: "",
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
                             navController.navigate("playlist")
                         }
                         .basicMarquee())
-                Text(playerState.song.artistName,
+                Text(playerState?.song?.artists?.map { it.name }?.joinToString { " & " } ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .clickable {
-                            if (playerState.song.artists.size == 1) {
+                            if (playerState?.song?.artists?.size == 1) {
                                 navController.navigate("artist")
                             } else {
                                 openArtistsDialog = true
@@ -131,9 +133,7 @@ fun Player(
                 }
                 if (navController.currentDestination?.route !== "queue") {
                     navController.navigate("queue")
-                } else {
                 }
-
             }) {
                 Icon(
                     Icons.AutoMirrored.Filled.QueueMusic,
@@ -150,7 +150,7 @@ fun Player(
             }
             IconButton(onClick = {}) {
                 Icon(
-                    if (playerState.song.liked) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                    if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.Favorite,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -165,13 +165,16 @@ fun Player(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(formatDuration(playerState.currentPosition))
-            Text(formatDuration(playerState.song.duration))
+            Text(formatDuration(playerState?.currentPosition ?: 0.seconds))
+            Text(formatDuration((playerState?.song?.durationSeconds?.seconds ?: 0.seconds)))
         }
 
         Slider(modifier = Modifier.padding(horizontal = 16.dp),
             value = sliderPosition,
-            onValueChange = { sliderPosition = it })
+            onValueChange = {
+                musicPlayer.seek(((playerState?.song?.durationSeconds ?: 0) * it).toInt().seconds)
+                sliderPosition = it
+            })
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -190,9 +193,11 @@ fun Player(
             Spacer(modifier = Modifier.width(24.dp))
             Button(modifier = Modifier
                 .width(100.dp)
-                .height(100.dp), onClick = {}) {
+                .height(100.dp), onClick = {
+                musicPlayer.playPause()
+            }) {
                 Icon(
-                    if (playerState.playing) Icons.Default.Pause else Icons.Default.PlayArrow,
+                    if (playerState?.playing == true) Icons.Default.Pause else Icons.Default.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
@@ -223,7 +228,7 @@ fun Player(
             }) { Text("Close") }
         }, text = {
             LazyColumn {
-                items(playerState.song.artists) { artist ->
+                items(playerState?.song?.artists ?: listOf()) { artist ->
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable {
@@ -232,7 +237,7 @@ fun Player(
                             .fillParentMaxWidth()
                             .padding(vertical = 8.dp)) {
                         AsyncImage(
-                            artist.cover,
+                            artist.avatarUrl,
                             "",
                             error = painterResource(R.drawable.artist_placeholder),
                             modifier = Modifier

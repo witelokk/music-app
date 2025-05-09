@@ -7,18 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.witelokk.musicapp.data.Artist
-import com.witelokk.musicapp.data.PlayerState
-import com.witelokk.musicapp.data.Song
 import com.witelokk.musicapp.screens.ArtistScreen
+import com.witelokk.musicapp.screens.ArtistScreenRoute
 import com.witelokk.musicapp.screens.HomeScreen
 import com.witelokk.musicapp.screens.LoginScreen
 import com.witelokk.musicapp.screens.LoginVerification
@@ -34,8 +30,6 @@ import com.witelokk.musicapp.screens.WelcomeScreen
 import com.witelokk.musicapp.ui.theme.MusicAppTheme
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
 import org.koin.androidx.compose.koinViewModel
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
@@ -60,32 +54,7 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
         }
     }
 
-    val playerState by remember {
-        mutableStateOf(
-            PlayerState(
-                song = Song(
-                    "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
-                    "Die in My Heart",
-                    listOf(
-                        Artist(
-                            "Solid Reasons",
-                            123,
-                            "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
-                        ), Artist(
-                            "Solid Reasons",
-                            123,
-                            "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
-                        )
-                    ),
-                    2.minutes, true,
-                ),
-                playing = true,
-                currentPosition = 20.seconds,
-                previousTrackAvailable = true,
-                nextTrackAvailable = true
-            )
-        )
-    }
+    val musicPlayer = MusicPlayer()
 
     val navController = rememberNavController()
     MusicAppTheme(
@@ -121,16 +90,17 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
                 RegistrationVerificationScreen(navController, registrationVerification)
             }
             composable("home") {
-                HomeScreen(navController, playerState)
+                HomeScreen(navController, musicPlayer)
             }
             composable("playlist") {
-                PlaylistScreen(navController, playerState)
+                PlaylistScreen(navController, musicPlayer)
             }
-            composable("artist") {
-                ArtistScreen(navController, playerState)
+            composable<ArtistScreenRoute> {
+                val route = it.toRoute<ArtistScreenRoute>()
+                ArtistScreen(navController, musicPlayer, route)
             }
             composable("queue") {
-                QueueScreen(navController, playerState)
+                QueueScreen(navController, musicPlayer)
             }
             composable("settings") {
                 SettingsScreen(navController)

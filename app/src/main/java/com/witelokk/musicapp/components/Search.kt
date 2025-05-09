@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,9 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.SearchResultItem
-import com.witelokk.musicapp.data.Artist
 import com.witelokk.musicapp.data.Playlist
-import com.witelokk.musicapp.data.Song
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,29 +142,13 @@ fun SearchResults(
     LazyColumn(modifier = modifier) {
         items(results) {
             if (it.type == "song" && (filter == "Songs" || filter == null)) {
-                TrackListItem(
-                    Song(
-                        cover = it.song!!.coverUrl,
-                        name = it.song.name,
-                        artists = it.song.artists.map { artist ->
-                            Artist(
-                                name = artist.name,
-                                followers = 0,
-                                cover = artist.avatarUrl,
-                            )
-                        },
-                        duration = it.song.durationSeconds.seconds,
-                        liked = it.song.isFavorite
-                    ),
+                SongListItem(
+                    it.song!!,
                     modifier = itemModifier.clickable { onResultClick(it) },
                 )
             } else if (it.type == "artist" && (filter == "Artists" || filter == null)) {
                 ArtistListItem(
-                    Artist(
-                        name = it.artist!!.name,
-                        followers = 0,
-                        cover = it.artist.avatarUrl
-                    ),
+                    it.artist!!,
                     modifier = itemModifier.clickable { onResultClick(it) },
                 )
             } else if (it.type == "playlist" && (filter == "Playlists" || filter == null)) {
@@ -175,7 +156,7 @@ fun SearchResults(
                     Playlist(
                         name = it.playlist!!.name,
                         coverUrl = it.playlist.coverUrl,
-                        id = it.playlist.id.toString(),
+                        id = it.playlist.id,
                         songsCount = it.playlist.songsCount,
                     ),
                     modifier = itemModifier.clickable { onResultClick(it) },

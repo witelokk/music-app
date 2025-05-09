@@ -20,8 +20,8 @@ import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.CreatePlaylistResponse
 import com.witelokk.musicapp.api.models.FailureResponse
 import com.witelokk.musicapp.api.models.Playlist
+import com.witelokk.musicapp.api.models.PlaylistsSummary
 import com.witelokk.musicapp.api.models.RemoveSongFromPlaylistRequest
-import com.witelokk.musicapp.api.models.ShortPlaylists
 import com.witelokk.musicapp.api.models.Songs
 import com.witelokk.musicapp.api.models.UpdatePlaylistRequest
 
@@ -44,10 +44,10 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get a list of playlists
-         * @return ShortPlaylists
+         * @return PlaylistsSummary
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun playlistsGet(): HttpResponse<ShortPlaylists> {
+        open suspend fun playlistsGet(): HttpResponse<PlaylistsSummary> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 

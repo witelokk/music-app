@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.FavoriteCard
@@ -45,11 +46,8 @@ import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
@@ -60,14 +58,16 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun HomeScreen(
     navController: NavController,
-    playerState: PlayerState,
+    musicPlayer: MusicPlayer,
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val scaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
-            confirmValueChange = { value -> value != SheetValue.Hidden })
+            confirmValueChange = { value -> value != SheetValue.Hidden },
+            initialValue = SheetValue.Hidden
+        )
     )
     val searchExpanded = rememberSaveable { mutableStateOf(false) }
     var searchQuery = remember { MutableStateFlow("") }
@@ -124,7 +124,8 @@ fun HomeScreen(
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
             viewModel.clearSearchState()
-            scaffoldState.bottomSheetState.partialExpand()
+            if (musicPlayer.state.value != null)
+                scaffoldState.bottomSheetState.partialExpand()
         } else {
             scaffoldState.bottomSheetState.hide()
         }
@@ -133,7 +134,7 @@ fun HomeScreen(
     LaunchedEffect(searchQuery) {
     }
 
-    PlayerSheetScaffold(navController, playerState, scaffoldState = scaffoldState) { innerPadding ->
+    PlayerSheetScaffold(navController, musicPlayer, scaffoldState = scaffoldState) { innerPadding ->
         Column {
             Search(
                 navController,
@@ -153,10 +154,12 @@ fun HomeScreen(
                     SearchEmptyContent()
                 } else if (searchQuery.collectAsState().value.isBlank()) {
                     SearchHistoryContent(state.searchHistory, onResultClick = {
-                        when(it.type) {
-                            "song" -> {/* TODO: implement */}
+                        when (it.type) {
+                            "song" -> {/* TODO: implement */
+                            }
+
                             "release" -> navController.navigate("release")
-                            "artist" -> navController.navigate("artist")
+                            "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id.toString()))
                             "playlist" -> navController.navigate("playlist")
                         }
                     }, onClearClick = {
@@ -165,10 +168,12 @@ fun HomeScreen(
                 } else {
                     SearchContent(state.searchResults?.results ?: listOf(), onResultClick = {
                         viewModel.addToSearchHistory(it)
-                        when(it.type) {
-                            "song" -> {/* TODO: implement */}
+                        when (it.type) {
+                            "song" -> {/* TODO: implement */
+                            }
+
                             "release" -> navController.navigate("release")
-                            "artist" -> navController.navigate("artist")
+                            "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id.toString()))
                             "playlist" -> navController.navigate("playlist")
                         }
                     })
@@ -214,7 +219,7 @@ fun HomeScreen(
                             EntityCard(entity,
                                 modifier = Modifier
                                     .width(155.dp)
-                                    .clickable { navController.navigate("artist") })
+                                    .clickable { navController.navigate(ArtistScreenRoute("4784df13-073f-4d99-b346-a0c1146cb2be")) })
                         }
                     }
                 }

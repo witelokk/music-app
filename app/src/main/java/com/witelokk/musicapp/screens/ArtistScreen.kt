@@ -1,11 +1,14 @@
 package com.witelokk.musicapp.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,65 +42,43 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
-import com.witelokk.musicapp.components.TrackListItem
-import com.witelokk.musicapp.data.Artist
+import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.data.Entity
-import com.witelokk.musicapp.data.PlayerState
-import com.witelokk.musicapp.data.Song
-import kotlin.time.Duration
+import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
+import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
+
+@Serializable
+data class ArtistScreenRoute(
+    val id: String,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistScreen(navController: NavController, playerState: PlayerState) {
-    val popular = List(5) {
-        Song(
-            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
-            "Die in My Heart",
-            listOf(
-                Artist(
-                    "Solid Reasons",
-                    123,
-                    ""
-                )
-            ),
-            Duration.parse("2m"),
-            true
-        )
+fun ArtistScreen(
+    navController: NavController,
+    musicPlayer: MusicPlayer,
+    artist: ArtistScreenRoute,
+    viewModel: ArtistScreenViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadArtist(artist.id)
     }
-
-    val releases = listOf(
-        Entity(
-            "Die in My Heart",
-            stringResource(R.string.single),
-            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520"
-        ), Entity(
-            "Zloy",
-            stringResource(R.string.single),
-            "https://avatars.yandex.net/get-music-content/14715139/c1e5abf6.a.34140674-1/400x400"
-        ), Entity(
-            "Teach Me How to Lie",
-            stringResource(R.string.single),
-            "https://avatars.yandex.net/get-music-content/13529784/9688d738.a.33520932-1/400x400"
-        )
-    )
-
-    val artist = Artist(
-        "Solid Reasons",
-        123,
-        "https://image-cdn-fa.spotifycdn.com/image/ab676186000001943e825ee8cbd8453f9ee05aec"
-    )
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var playlistsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
 
-    PlayerSheetScaffold(navController, playerState, topBar = {
+    PlayerSheetScaffold(navController, musicPlayer, topBar = {
         TopAppBar({
             Column {
-                Text(artist.name)
+                Text(state.artist?.name ?: "name")
             }
         }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
@@ -108,23 +91,23 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
                 Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
             }
         }, scrollBehavior = scrollBehavior)
-    }) { innerPadding ->
+    }) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = Modifier
-                .padding(innerPadding)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             item(span = { GridItemSpan(2) }) {
                 Column {
                     AsyncImage(
-                        artist.cover, null, modifier = Modifier
+                        state.artist?.coverUrl ?: "", null, modifier = Modifier
                             .fillMaxWidth()
                             .clip(
                                 RoundedCornerShape(16.dp)
                             )
+                            .aspectRatio(21f/9)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -137,9 +120,9 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
                 }
             }
 
-            items(popular, span = { GridItemSpan(2) }) { track ->
-                TrackListItem(
-                    track, modifier = Modifier
+            items(state.artist?.popularSongs?.songs ?: emptyList(), span = { GridItemSpan(2) }) { song ->
+                SongListItem(
+                    song, showDuration = true, modifier = Modifier
                         .clickable { }
                         .padding(vertical = 8.dp)
                 )
@@ -166,8 +149,16 @@ fun ArtistScreen(navController: NavController, playerState: PlayerState) {
                 }
             }
 
-            items(releases) { release ->
-                EntityCard(release, modifier = Modifier
+            items(state.artist?.releases?.releases ?: listOf()) { release ->
+                EntityCard(Entity(
+                    name = release.name,
+                    type = when (release.type) {
+                        "single" -> stringResource(R.string.single)
+                        "album" -> stringResource(R.string.album)
+                        else -> release.type
+                    },
+                    pictureUrl = release.coverUrl
+                ), modifier = Modifier
                     .padding(bottom = 16.dp)
                     .clickable {
                         navController.navigate("playlist")

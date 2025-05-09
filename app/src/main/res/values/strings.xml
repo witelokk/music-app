@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">MusicApp</string>
     <string name="single">Single</string>
+    <string name="album">Album</string>
     <string name="releases">Releases</string>
     <string name="albums">Albums</string>
     <string name="singles_and_eps">Singles and EPs</string>

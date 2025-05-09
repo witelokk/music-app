@@ -15,7 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ShortArtists
+import com.witelokk.musicapp.api.models.ArtistsSummary
 import com.witelokk.musicapp.api.models.Songs
 
 import kotlinx.serialization.Serializable
@@ -53,7 +53,7 @@ data class Release (
     val songs: Songs,
 
     @SerialName(value = "artists")
-    val artists: ShortArtists,
+    val artists: ArtistsSummary,
 
     @SerialName(value = "cover_url")
     val coverUrl: kotlin.String? = null

@@ -22,32 +22,33 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.api.models.ArtistSummary
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.PlayerSheetScaffold
-import com.witelokk.musicapp.components.TrackListItem
-import com.witelokk.musicapp.data.Artist
-import com.witelokk.musicapp.data.PlayerState
-import com.witelokk.musicapp.data.Song
+import com.witelokk.musicapp.components.SongListItem
 import kotlin.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QueueScreen(navController: NavController, playerState: PlayerState) {
-    val songs = List(25) {
-        Song(
-            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
-            "Die in My Heart",
-            listOf(
-                Artist(
-                    "Solid Reasons",
-                    123,
-                    ""
-                )
-            ),
-            Duration.parse("2m"),
-            true
-        )
-    }
+fun QueueScreen(navController: NavController, musicPlayer: MusicPlayer) {
+//    val songs = List(25) {
+//        Song(
+//            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
+//            "Die in My Heart",
+//            listOf<ArtistSummary>(
+////                Artist(
+////                    "Solid Reasons",
+////                    123,
+////                    true, null, null
+////                )
+//            ),
+//            Duration.parse("2m"),
+//            true
+//        )
+//    }
+    val songs = listOf<Song>()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -64,7 +65,7 @@ fun QueueScreen(navController: NavController, playerState: PlayerState) {
 
     PlayerSheetScaffold(
         navController,
-        playerState,
+        musicPlayer = musicPlayer,
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.queue)) }, navigationIcon = {
@@ -77,7 +78,7 @@ fun QueueScreen(navController: NavController, playerState: PlayerState) {
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(songs) { track ->
-                TrackListItem(track,
+                SongListItem(track,
                     modifier = Modifier
                         .clickable { }
                         .padding(horizontal = 16.dp, vertical = 8.dp)

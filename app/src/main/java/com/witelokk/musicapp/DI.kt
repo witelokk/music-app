@@ -2,9 +2,11 @@ package com.witelokk.musicapp
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
+import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
@@ -12,6 +14,7 @@ import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
+import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -74,11 +77,16 @@ fun HttpClientConfig<*>.default() {
 
 val appModule = module {
     val baseUrl = "https://music.witelokk.ru/"
+//    val baseUrl = "http://10.0.2.2:8080/"
 
     single { json }
 
     single {
         androidApplication().getSharedPreferences("prefs", 0)
+    }
+
+    single {
+        MusicPlayer()
     }
 
     single {
@@ -105,6 +113,14 @@ val appModule = module {
         searchApi
     }
 
+    single {
+        val api = ArtistsApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
     viewModelOf(::WelcomeScreenViewModel)
     viewModelOf(::LoginScreenViewModel)
     viewModelOf(::RegistrationScreenViewModel)
@@ -112,6 +128,7 @@ val appModule = module {
     viewModelOf(::RegistrationVerificationScreenViewModel)
     viewModelOf(::HomeScreenViewModel)
     viewModelOf(::SettingsScreenViewModel)
+    viewModelOf(::ArtistScreenViewModel)
 
     single {
         ThemeViewModel(get())

@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
+import com.witelokk.musicapp.api.models.ArtistsSummary
 import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.ShortArtists
 import com.witelokk.musicapp.api.models.StartFollowingRequest
 import com.witelokk.musicapp.api.models.StopFollowingRequest
 
@@ -70,10 +70,10 @@ import io.ktor.http.ParametersBuilder
         /**
         * 
         * Get a list of followed artists
-         * @return ShortArtists
+         * @return ArtistsSummary
         */
             @Suppress("UNCHECKED_CAST")
-        open suspend fun followingsGet(): HttpResponse<ShortArtists> {
+        open suspend fun followingsGet(): HttpResponse<ArtistsSummary> {
 
             val localVariableAuthNames = listOf<String>("Authorization")
 

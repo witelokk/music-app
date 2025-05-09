@@ -15,25 +15,20 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ShortArtists
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Contextual
 
 /**
  * 
  *
  * @param id 
  * @param name 
- * @param type 
- * @param releasedAt 
- * @param artists 
- * @param coverUrl 
+ * @param avatarUrl 
  */
 @Serializable
 
-data class ShortRelease (
+data class ArtistSummary (
 
     @SerialName(value = "id")
     val id: kotlin.String,
@@ -41,17 +36,8 @@ data class ShortRelease (
     @SerialName(value = "name")
     val name: kotlin.String,
 
-    @SerialName(value = "type")
-    val type: kotlin.String,
-
-    @SerialName(value = "released_at")
-    val releasedAt: kotlin.String,
-
-    @SerialName(value = "artists")
-    val artists: ShortArtists,
-
-    @SerialName(value = "cover_url")
-    val coverUrl: kotlin.String? = null
+    @SerialName(value = "avatar_url")
+    val avatarUrl: kotlin.String? = null
 
 ) {
 

@@ -10,7 +10,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.outlined.Abc
+import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,15 +26,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.data.Song
+import com.witelokk.musicapp.api.models.Song
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun TrackListItem(
-    song: Song, modifier: Modifier = Modifier, showFavorite: Boolean = true
+fun SongListItem(
+    song: Song,
+    modifier: Modifier = Modifier,
+    showFavorite: Boolean = true,
+    showDuration: Boolean = false,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
-            song.cover,
+            song.coverUrl,
             "Cover",
             modifier = Modifier
                 .size(40.dp)
@@ -47,15 +54,22 @@ fun TrackListItem(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.height(24.dp)
             )
-            Text(song.artistName, style = MaterialTheme.typography.bodyMedium)
+            if (showDuration) {
+                Text(
+                    formatDuration(song.durationSeconds.seconds),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                Text(song.artists.map { it.name }.joinToString { " & " }, style = MaterialTheme.typography.bodyMedium)
+            }
         }
 
         if (showFavorite) {
             IconButton(onClick = {}) {
                 Icon(
-                    if (song.liked) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                    if (song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
-                    tint = if (song.liked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    tint = if (song.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
         }

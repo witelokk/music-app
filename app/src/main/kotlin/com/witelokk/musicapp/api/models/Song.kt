@@ -15,11 +15,8 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ShortArtist
-
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Contextual
 
 /**
  * 
@@ -49,7 +46,7 @@ data class Song (
     val durationSeconds: kotlin.Int,
 
     @SerialName(value = "artists")
-    val artists: kotlin.collections.List<ShortArtist>,
+    val artists: kotlin.collections.List<ArtistSummary>,
 
     @SerialName(value = "stream_url")
     val streamUrl: kotlin.String,

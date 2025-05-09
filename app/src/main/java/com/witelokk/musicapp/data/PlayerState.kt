@@ -1,5 +1,6 @@
 package com.witelokk.musicapp.data
 
+import com.witelokk.musicapp.api.models.Song
 import kotlin.time.Duration
 
 data class PlayerState(
