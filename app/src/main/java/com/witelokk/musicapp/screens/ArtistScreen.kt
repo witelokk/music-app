@@ -59,21 +59,22 @@ data class ArtistScreenRoute(
 @Composable
 fun ArtistScreen(
     navController: NavController,
-    musicPlayer: MusicPlayer,
     artist: ArtistScreenRoute,
-    viewModel: ArtistScreenViewModel = koinViewModel()
+    musicPlayer: MusicPlayer,
+    viewModel: ArtistScreenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val playerState by musicPlayer.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadArtist(artist.id)
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    var playlistsFilter by rememberSaveable { mutableStateOf(false) }
+    var albumsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
 
-    PlayerSheetScaffold(navController, musicPlayer, topBar = {
+    PlayerSheetScaffold(navController, topBar = {
         TopAppBar({
             Column {
                 Text(state.artist?.name ?: "name")
@@ -87,7 +88,7 @@ fun ArtistScreen(
         }, actions = {
             IconButton(onClick = {
                 val songs = state.artist?.popularSongs?.songs ?: listOf()
-                musicPlayer.setQueueAndPlay(songs, 0)
+                viewModel.playAllSongs()
             }) {
                 Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
             }
@@ -122,17 +123,20 @@ fun ArtistScreen(
             }
 
             items(
-                state.artist?.popularSongs?.songs ?: emptyList(),
+                state.artist?.popularSongs?.songs ?: listOf(),
                 span = { GridItemSpan(2) }) { song ->
                 SongListItem(
-                    song, showDuration = true, modifier = Modifier
+                    song = song,
+                    showDuration = true,
+                    modifier = Modifier
                         .clickable {
-                            musicPlayer.setQueueAndPlay(
-                                state.artist!!.popularSongs.songs,
-                                state.artist!!.popularSongs.songs.indexOf(song)
-                            )
+                            viewModel.playPopularSong(song)
                         }
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
+                    onFavoriteClick = {
+                        viewModel.toggleSongFavorite(song)
+                    },
+                    isPlaying = (song.id == playerState?.song?.id)
                 )
             }
 
@@ -145,11 +149,22 @@ fun ArtistScreen(
                     )
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(playlistsFilter,
-                            onClick = { playlistsFilter = !playlistsFilter },
+                        FilterChip(albumsFilter,
+                            onClick = {
+                                albumsFilter = !albumsFilter;
+                                singlesEPFilter = false;
+                                if (albumsFilter) {
+                                    viewModel.filterReleases("album")
+                                }
+                            },
                             { Text(stringResource(R.string.albums)) })
                         FilterChip(singlesEPFilter,
-                            onClick = { singlesEPFilter = !singlesEPFilter },
+                            onClick = {
+                                singlesEPFilter = !singlesEPFilter; albumsFilter = false;
+                                if (singlesEPFilter) {
+                                    viewModel.filterReleases("single")
+                                }
+                            },
                             { Text(stringResource(R.string.singles_and_eps)) })
                     }
 
@@ -157,7 +172,7 @@ fun ArtistScreen(
                 }
             }
 
-            items(state.artist?.releases?.releases ?: listOf()) { release ->
+            items(state.filteredArtist?.releases?.releases ?: listOf()) { release ->
                 EntityCard(Entity(
                     name = release.name,
                     type = when (release.type) {

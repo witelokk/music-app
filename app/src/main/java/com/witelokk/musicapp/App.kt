@@ -98,7 +98,7 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
             }
             composable<ArtistScreenRoute> {
                 val route = it.toRoute<ArtistScreenRoute>()
-                ArtistScreen(navController, musicPlayer, route)
+                ArtistScreen(navController, route, musicPlayer)
             }
             composable("queue") {
                 QueueScreen(navController, musicPlayer)

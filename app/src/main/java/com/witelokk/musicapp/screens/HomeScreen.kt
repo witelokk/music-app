@@ -134,7 +134,7 @@ fun HomeScreen(
     LaunchedEffect(searchQuery) {
     }
 
-    PlayerSheetScaffold(navController, musicPlayer, scaffoldState = scaffoldState) { innerPadding ->
+    PlayerSheetScaffold(navController, scaffoldState = scaffoldState) { innerPadding ->
         Column {
             Search(
                 navController,

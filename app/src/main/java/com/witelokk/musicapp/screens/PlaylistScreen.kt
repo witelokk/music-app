@@ -49,7 +49,6 @@ fun PlaylistScreen(navController: NavController, musicPlayer: MusicPlayer) {
 
     PlayerSheetScaffold(
         navController,
-        musicPlayer,
         topBar = {
             TopAppBar(title = { Text("Playlist") }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {

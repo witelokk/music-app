@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -35,6 +36,8 @@ fun SongListItem(
     modifier: Modifier = Modifier,
     showFavorite: Boolean = true,
     showDuration: Boolean = false,
+    isPlaying: Boolean = false,
+    onFavoriteClick: () -> Unit = {},
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
@@ -52,6 +55,7 @@ fun SongListItem(
             Text(
                 song.name,
                 style = MaterialTheme.typography.bodyLarge,
+                color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Unspecified,
                 modifier = Modifier.height(24.dp)
             )
             if (showDuration) {
@@ -60,12 +64,12 @@ fun SongListItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
-                Text(song.artists.map { it.name }.joinToString(", ad"), style = MaterialTheme.typography.bodyMedium)
+                Text(song.artists.map { it.name }.joinToString(", "), style = MaterialTheme.typography.bodyMedium)
             }
         }
 
         if (showFavorite) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onFavoriteClick) {
                 Icon(
                     if (song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,

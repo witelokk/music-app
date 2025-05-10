@@ -14,6 +14,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
+import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
@@ -148,6 +149,14 @@ val appModule = module {
 
     single {
         val api = ArtistsApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
+    single {
+        val api = FavoritesApi(baseUrl, httpClientConfig = {
             it.default()
         })
         api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")

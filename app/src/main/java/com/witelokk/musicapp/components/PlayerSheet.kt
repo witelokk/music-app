@@ -37,13 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.MusicPlayer
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSheetScaffold(
     navController: NavController,
-    musicPlayer: MusicPlayer,
     modifier: Modifier = Modifier,
+    musicPlayer: MusicPlayer = koinInject(),
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
@@ -58,7 +59,7 @@ fun PlayerSheetScaffold(
     val playerState by musicPlayer.state.collectAsState()
 
     LaunchedEffect(playerState) {
-        if (playerState == null){// && scaffoldState.bottomSheetState.currentValue != SheetValue.Hidden) {
+        if (playerState == null){
             scaffoldState.bottomSheetState.hide()
         } else if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded){
             scaffoldState.bottomSheetState.show()
