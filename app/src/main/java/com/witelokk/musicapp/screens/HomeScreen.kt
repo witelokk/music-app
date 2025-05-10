@@ -194,7 +194,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         item {
-                            FavoriteCard(modifier = Modifier.clickable { navController.navigate("playlist") })
+                            FavoriteCard(modifier = Modifier.clickable { navController.navigate("favorites") })
                         }
                         items(layout.playlists) { item ->
                             Spacer(modifier = Modifier.width(16.dp))

@@ -26,6 +26,7 @@ import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
+import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -163,6 +164,14 @@ val appModule = module {
         api
     }
 
+    single {
+        val api = FavoritesApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
     viewModelOf(::WelcomeScreenViewModel)
     viewModelOf(::LoginScreenViewModel)
     viewModelOf(::RegistrationScreenViewModel)
@@ -171,6 +180,7 @@ val appModule = module {
     viewModelOf(::HomeScreenViewModel)
     viewModelOf(::SettingsScreenViewModel)
     viewModelOf(::ArtistScreenViewModel)
+    viewModelOf(::FavoritesScreenViewModel)
 
     single {
         ThemeViewModel(get())

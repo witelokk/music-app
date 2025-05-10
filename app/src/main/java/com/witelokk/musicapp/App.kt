@@ -15,6 +15,7 @@ import androidx.navigation.toRoute
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.screens.ArtistScreenRoute
+import com.witelokk.musicapp.screens.FavoritesScreen
 import com.witelokk.musicapp.screens.HomeScreen
 import com.witelokk.musicapp.screens.LoginScreen
 import com.witelokk.musicapp.screens.LoginVerification
@@ -92,6 +93,9 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
             }
             composable("playlist") {
                 PlaylistScreen(navController)
+            }
+            composable("favorites") {
+                FavoritesScreen(navController)
             }
             composable<ArtistScreenRoute> {
                 val route = it.toRoute<ArtistScreenRoute>()
