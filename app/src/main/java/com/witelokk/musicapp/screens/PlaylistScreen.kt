@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -21,29 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.api.models.ArtistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
-import kotlin.time.Duration
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaylistScreen(navController: NavController, musicPlayer: MusicPlayer) {
-//    val songs = List(25) {
-//        Song(
-//            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
-//            "Die in My Heart",
-//            listOf(
-//                ArtistSummary(
-//                    "123","Solid Reasons", "https://avatars.yandex.net/get-music-content/14082060/d43d35e5.p.23107413/m1000x1000"
-//                )
-//            ),
-//            Duration.parse("2m"),
-//            true
-//        )
-//    }
+fun PlaylistScreen(navController: NavController) {
     val songs = listOf<Song>()
+    val playerState by koinInject<MusicPlayer>().state.collectAsState()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -61,6 +50,11 @@ fun PlaylistScreen(navController: NavController, musicPlayer: MusicPlayer) {
             }, scrollBehavior = scrollBehavior)
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        playerState = playerState,
+        onSeek = {},
+        onSeekToPrevious = {},
+        onSeekToNext = {},
+        onPlayPause = {},
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             items(songs) { track ->

@@ -36,39 +36,54 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.MusicPlayer
+import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import kotlin.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSheetScaffold(
     navController: NavController,
     modifier: Modifier = Modifier,
-    musicPlayer: MusicPlayer = koinInject(),
+    playerState: PlayerState?,
+    onSeek: (Duration) -> Unit,
+    onSeekToPrevious: () -> Unit,
+    onSeekToNext: () -> Unit,
+    onPlayPause: () -> Unit,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
             confirmValueChange = { value -> value != SheetValue.Hidden },
-            initialValue = if (musicPlayer.state.value == null) SheetValue.Hidden else SheetValue.PartiallyExpanded
+            initialValue = if (playerState == null) SheetValue.Hidden else SheetValue.PartiallyExpanded
         )
     ),
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val playerState by musicPlayer.state.collectAsState()
 
     LaunchedEffect(playerState) {
-        if (playerState == null){
+        if (playerState == null) {
             scaffoldState.bottomSheetState.hide()
-        } else if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded){
+        } else if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded) {
             scaffoldState.bottomSheetState.show()
         }
     }
 
     BottomSheetScaffold(scaffoldState = scaffoldState, sheetPeekHeight = 150.dp, sheetContent = {
         if (playerState != null)
-            SheetContent(navController, scaffoldState.bottomSheetState, musicPlayer, scaffoldState)
+            SheetContent(
+                navController,
+                scaffoldState.bottomSheetState,
+                scaffoldState,
+                playerState,
+                onSeek,
+                onSeekToPrevious,
+                onSeekToNext,
+                onPlayPause,
+                modifier
+            )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
         content(innerPadding)
     }
@@ -86,8 +101,12 @@ fun PlayerSheetScaffold(
 fun SheetContent(
     navController: NavController,
     sheetState: SheetState,
-    musicPlayer: MusicPlayer,
     scaffoldState: BottomSheetScaffoldState,
+    playerState: PlayerState,
+    onSeek: (Duration) -> Unit,
+    onSeekToPrevious: () -> Unit,
+    onSeekToNext: () -> Unit,
+    onPlayPause: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -114,12 +133,24 @@ fun SheetContent(
             exit = slideOutVertically() + shrinkVertically() + fadeOut()) {
 
             Column {
-                SmallPlayer(musicPlayer, modifier = Modifier.padding(horizontal = 16.dp))
+                SmallPlayer(
+                    playerState,
+                    onPlayPause,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
                 Spacer(modifier = Modifier.height(38.dp))
             }
         }
 
-        Player(navController, sheetState, musicPlayer)
+        Player(
+            navController,
+            sheetState,
+            playerState,
+            onSeek,
+            onSeekToPrevious,
+            onSeekToNext,
+            onPlayPause
+        )
     }
 }
 

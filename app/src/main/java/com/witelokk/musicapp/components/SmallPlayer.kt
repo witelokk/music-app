@@ -33,18 +33,22 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.data.PlayerState
 
 @Composable
-fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
-    val playerState by musicPlayer.state.collectAsState()
+fun SmallPlayer(
+    playerState: PlayerState,
+    onPlayPause: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                playerState?.song?.coverUrl ?: "",
+                playerState.song.coverUrl ?: "",
                 modifier = Modifier
                     .height(70.dp)
                     .clip(RoundedCornerShape(12)),
-                contentDescription = null, // decorative element
+                contentDescription = null,
                 error = painterResource(R.drawable.artist_placeholder)
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -52,12 +56,12 @@ fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
                 Row {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            playerState?.song?.name ?: "",
+                            playerState.song.name,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.basicMarquee()
                         )
                         Text(
-                            playerState?.song?.artists?.map { it.name }?.joinToString(", ")
+                            playerState.song.artists.joinToString(", ") { it.name }
                                 ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.basicMarquee()
@@ -65,14 +69,14 @@ fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
                     }
                     IconButton(onClick = {}) {
                         Icon(
-                            if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = null,
-                            tint = if (playerState?.song?.isFavorite == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            tint = if (playerState.song.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    IconButton(onClick = { musicPlayer.playPause() }) {
+                    IconButton(onClick = { onPlayPause() }) {
                         Icon(
-                            if (playerState?.playing == true) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            if (playerState.playing) Icons.Default.Pause else Icons.Default.PlayArrow,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface
                         )
@@ -83,8 +87,7 @@ fun SmallPlayer(musicPlayer: MusicPlayer, modifier: Modifier = Modifier) {
 
                 LinearProgressIndicator(
                     progress = {
-                        (1f * (playerState?.currentPosition?.inWholeSeconds
-                            ?: 0)) / (playerState?.song?.durationSeconds ?: 0)
+                        (1f * (playerState.currentPosition.inWholeSeconds)) / (playerState.song.durationSeconds)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

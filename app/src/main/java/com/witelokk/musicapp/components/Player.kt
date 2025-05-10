@@ -82,10 +82,13 @@ fun calculateSliderPosition(playerState: PlayerState?): Float {
 fun Player(
     navController: NavController,
     sheetState: SheetState,
-    musicPlayer: MusicPlayer,
+    playerState: PlayerState,
+    onSeek: (Duration) -> Unit,
+    onSeekToPrevious: () -> Unit,
+    onSeekToNext: () -> Unit,
+    onPlayPause: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val playerState by musicPlayer.state.collectAsState()
 
     var sliderPosition by remember {
         mutableFloatStateOf(
@@ -94,9 +97,9 @@ fun Player(
     }
     var openArtistsDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    var scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(playerState?.currentPosition) {
+    LaunchedEffect(playerState.currentPosition) {
         sliderPosition = calculateSliderPosition(playerState)
     }
 
@@ -107,14 +110,13 @@ fun Player(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-
         AsyncImage(
-            playerState?.song?.coverUrl ?: "",
+            playerState.song.coverUrl ?: "",
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6)),
             contentScale = ContentScale.FillWidth,
-            contentDescription = null, // decorative element
+            contentDescription = null,
             error = painterResource(R.drawable.artist_placeholder)
         )
 
@@ -122,18 +124,18 @@ fun Player(
 
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(playerState?.song?.name ?: "",
+                Text(playerState.song.name,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
                             navController.navigate("playlist")
                         }
                         .basicMarquee())
-                Text(playerState?.song?.artists?.map { it.name }?.joinToString(", ") ?: "",
+                Text(playerState.song.artists.joinToString(", ") { it.name } ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .clickable {
-                            if (playerState?.song?.artists?.size == 1) {
+                            if (playerState.song.artists.size == 1) {
                                 navController.navigate("artist")
                             } else {
                                 openArtistsDialog = true
@@ -164,9 +166,9 @@ fun Player(
             }
             IconButton(onClick = {}) {
                 Icon(
-                    if (playerState?.song?.isFavorite == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
-                    tint = if (playerState?.song?.isFavorite == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    tint = if (playerState.song.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -179,14 +181,14 @@ fun Player(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(formatDuration(playerState?.currentPosition ?: 0.seconds))
-            Text(formatDuration((playerState?.song?.durationSeconds?.seconds ?: 0.seconds)))
+            Text(formatDuration(playerState.currentPosition))
+            Text(formatDuration(playerState.song.durationSeconds.seconds))
         }
 
         Slider(modifier = Modifier.padding(horizontal = 16.dp),
             value = sliderPosition,
             onValueChange = {
-                musicPlayer.seek(((playerState?.song?.durationSeconds ?: 0) * it).toInt().seconds)
+                onSeek((playerState.song.durationSeconds * it).toInt().seconds)
                 sliderPosition = it
             })
 
@@ -196,7 +198,7 @@ fun Player(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { musicPlayer.seekToPrevious() }) {
+            IconButton(onClick = { onSeekToPrevious() }) {
                 Icon(
                     Icons.Default.SkipPrevious,
                     contentDescription = null,
@@ -207,18 +209,16 @@ fun Player(
             Spacer(modifier = Modifier.width(24.dp))
             Button(modifier = Modifier
                 .width(100.dp)
-                .height(100.dp), onClick = {
-                musicPlayer.playPause()
-            }) {
+                .height(100.dp), onClick = { onPlayPause() }) {
                 Icon(
-                    if (playerState?.playing == true) Icons.Default.Pause else Icons.Default.PlayArrow,
+                    if (playerState.playing) Icons.Default.Pause else Icons.Default.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
             Spacer(modifier = Modifier.width(24.dp))
-            IconButton(onClick = { musicPlayer.seekToNext() }) {
+            IconButton(onClick = { onSeekToNext() }) {
                 Icon(
                     Icons.Default.SkipNext,
                     contentDescription = null,
@@ -242,7 +242,7 @@ fun Player(
             }) { Text("Close") }
         }, text = {
             LazyColumn {
-                items(playerState?.song?.artists ?: listOf()) { artist ->
+                items(playerState.song.artists) { artist ->
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable {

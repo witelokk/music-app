@@ -3,9 +3,12 @@ package com.witelokk.musicapp.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.witelokk.musicapp.BaseViewModel
+import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.models.SearchResult
 import com.witelokk.musicapp.api.models.SearchResultItem
+import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,19 +20,29 @@ data class HomeViewModelState(
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
     val searchResults: SearchResult? = null,
-    val searchHistory: List<SearchResultItem> = emptyList()
+    val searchHistory: List<SearchResultItem> = emptyList(),
+    val playerState: PlayerState? = null,
 )
 
 class HomeScreenViewModel(
     private val searchApi: SearchApi,
     private val sharedPreferences: SharedPreferences,
     private val json: Json,
-) : ViewModel() {
-    private val _state = MutableStateFlow(HomeViewModelState())
+    musicPlayer: MusicPlayer,
+) : BaseViewModel(musicPlayer) {
+    private val _state = MutableStateFlow(HomeViewModelState(playerState=musicPlayer.state.value))
     val state = _state.asStateFlow()
 
     init {
         loadSearchHistory()
+
+        viewModelScope.launch {
+            musicPlayer.state.collect { newPlayerState ->
+                _state.update { currentState ->
+                    currentState.copy(playerState = newPlayerState)
+                }
+            }
+        }
     }
 
     fun loadSearchHistory() {

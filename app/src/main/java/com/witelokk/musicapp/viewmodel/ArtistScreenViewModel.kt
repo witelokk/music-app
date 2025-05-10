@@ -1,7 +1,7 @@
 package com.witelokk.musicapp.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
@@ -9,6 +9,7 @@ import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Artist
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,6 +20,7 @@ data class ArtistScreenState(
     val isLoading: Boolean = true,
     var isError: Boolean = false,
     val selectedReleaseType: String? = null,
+    val playerState: PlayerState? = null,
 ) {
     val filteredArtist: Artist?
         get() = if (selectedReleaseType == null) {
@@ -36,9 +38,19 @@ class ArtistScreenViewModel(
     private val artistsApi: ArtistsApi,
     private val favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer,
-) : ViewModel() {
-    private val _state = MutableStateFlow(ArtistScreenState())
+) : BaseViewModel(musicPlayer) {
+    private val _state = MutableStateFlow(ArtistScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            musicPlayer.state.collect { newPlayerState ->
+                _state.update { currentState ->
+                    currentState.copy(playerState = newPlayerState)
+                }
+            }
+        }
+    }
 
     fun loadArtist(artistId: String) {
         viewModelScope.launch {

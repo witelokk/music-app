@@ -60,11 +60,9 @@ data class ArtistScreenRoute(
 fun ArtistScreen(
     navController: NavController,
     artist: ArtistScreenRoute,
-    musicPlayer: MusicPlayer,
     viewModel: ArtistScreenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val playerState by musicPlayer.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadArtist(artist.id)
@@ -74,26 +72,33 @@ fun ArtistScreen(
     var albumsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
 
-    PlayerSheetScaffold(navController, topBar = {
-        TopAppBar({
-            Column {
-                Text(state.artist?.name ?: "name")
-            }
-        }, navigationIcon = {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(
-                    Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back)
-                )
-            }
-        }, actions = {
-            IconButton(onClick = {
-                val songs = state.artist?.popularSongs?.songs ?: listOf()
-                viewModel.playAllSongs()
-            }) {
-                Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
-            }
-        }, scrollBehavior = scrollBehavior)
-    }) {
+    PlayerSheetScaffold(
+        navController,
+        playerState = state.playerState,
+        onSeek = { viewModel.seekPlayer(it) },
+        onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
+        onSeekToNext = { viewModel.seekPlayerToNext() },
+        onPlayPause = { viewModel.playPausePlayer() },
+        topBar = {
+            TopAppBar({
+                Column {
+                    Text(state.artist?.name ?: "name")
+                }
+            }, navigationIcon = {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back)
+                    )
+                }
+            }, actions = {
+                IconButton(onClick = {
+                    val songs = state.artist?.popularSongs?.songs ?: listOf()
+                    viewModel.playAllSongs()
+                }) {
+                    Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
+                }
+            }, scrollBehavior = scrollBehavior)
+        }) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -136,7 +141,7 @@ fun ArtistScreen(
                     onFavoriteClick = {
                         viewModel.toggleSongFavorite(song)
                     },
-                    isPlaying = (song.id == playerState?.song?.id)
+                    isPlaying = (song.id == state.playerState?.song?.id),
                 )
             }
 

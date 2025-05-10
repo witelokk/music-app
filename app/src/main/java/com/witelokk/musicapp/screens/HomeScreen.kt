@@ -30,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.FavoriteCard
@@ -44,7 +43,6 @@ import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
-import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,10 +56,10 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun HomeScreen(
     navController: NavController,
-    musicPlayer: MusicPlayer,
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
     val scaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
@@ -124,7 +122,7 @@ fun HomeScreen(
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
             viewModel.clearSearchState()
-            if (musicPlayer.state.value != null)
+            if (state.playerState != null)
                 scaffoldState.bottomSheetState.partialExpand()
         } else {
             scaffoldState.bottomSheetState.hide()
@@ -134,7 +132,15 @@ fun HomeScreen(
     LaunchedEffect(searchQuery) {
     }
 
-    PlayerSheetScaffold(navController, scaffoldState = scaffoldState) { innerPadding ->
+    PlayerSheetScaffold(
+        navController,
+        playerState = state.playerState,
+        onSeek = {viewModel.seekPlayer(it)},
+        onSeekToPrevious = {viewModel.seekPlayerToPrevious()},
+        onSeekToNext = {viewModel.seekPlayerToNext()},
+        onPlayPause = {viewModel.playPausePlayer()},
+        scaffoldState = scaffoldState,
+    ) { innerPadding ->
         Column {
             Search(
                 navController,
@@ -155,7 +161,7 @@ fun HomeScreen(
                 } else if (searchQuery.collectAsState().value.isBlank()) {
                     SearchHistoryContent(state.searchHistory, onResultClick = {
                         when (it.type) {
-                            "song" -> musicPlayer.setQueueAndPlay(listOf(it.song!!), 0)
+                            "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
                             "playlist" -> navController.navigate("playlist")
@@ -167,9 +173,9 @@ fun HomeScreen(
                     SearchContent(state.searchResults?.results ?: listOf(), onResultClick = {
                         viewModel.addToSearchHistory(it)
                         when (it.type) {
-                            "song" -> musicPlayer.setQueueAndPlay(listOf(it.song!!), 0)
+                            "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
-                            "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id.toString()))
+                            "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
                             "playlist" -> navController.navigate("playlist")
                         }
                     })

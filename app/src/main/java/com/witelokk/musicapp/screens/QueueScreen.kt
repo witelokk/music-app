@@ -17,6 +17,8 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -28,27 +30,14 @@ import com.witelokk.musicapp.api.models.ArtistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QueueScreen(navController: NavController, musicPlayer: MusicPlayer) {
-//    val songs = List(25) {
-//        Song(
-//            "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520",
-//            "Die in My Heart",
-//            listOf<ArtistSummary>(
-////                Artist(
-////                    "Solid Reasons",
-////                    123,
-////                    true, null, null
-////                )
-//            ),
-//            Duration.parse("2m"),
-//            true
-//        )
-//    }
+fun QueueScreen(navController: NavController) {
     val songs = listOf<Song>()
+    val playerState by koinInject<MusicPlayer>().state.collectAsState()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -65,7 +54,11 @@ fun QueueScreen(navController: NavController, musicPlayer: MusicPlayer) {
 
     PlayerSheetScaffold(
         navController,
-        musicPlayer = musicPlayer,
+        playerState = playerState,
+        onSeek = {},
+        onSeekToPrevious = {},
+        onSeekToNext = {},
+        onPlayPause = {},
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.queue)) }, navigationIcon = {
