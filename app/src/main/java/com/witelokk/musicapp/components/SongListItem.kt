@@ -4,15 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.outlined.Abc
-import androidx.compose.material.icons.outlined.BrokenImage
-import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,12 +62,15 @@ fun SongListItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
-                Text(song.artists.map { it.name }.joinToString(", "), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    song.artists.map { it.name }.joinToString(", "),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
 
         if (showFavorite) {
-            IconButton(onClick = onFavoriteClick) {
+            IconButton(onClick = onFavoriteClick, modifier = Modifier.offset(x = 16.dp)) {
                 Icon(
                     if (song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
@@ -78,8 +79,8 @@ fun SongListItem(
             }
         }
 
-        IconButton(onClick = {}) {
-            Icon(Icons.Default.MoreHoriz, "More")
+        IconButton(onClick = {}, modifier = Modifier.offset(x = 16.dp)) {
+            Icon(Icons.Default.MoreVert, "More")
         }
     }
 }

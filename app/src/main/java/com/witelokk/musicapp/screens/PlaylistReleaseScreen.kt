@@ -33,7 +33,7 @@ import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
 @Serializable
-enum class PlaylistReleaseScreenType{
+enum class PlaylistReleaseScreenType {
     PLAYLIST, RELEASE
 }
 
@@ -100,7 +100,7 @@ fun PlaylistReleaseScreen(
                         onFavoriteClick = { viewModel.removeSongFromFavorites(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp))
+                            .padding(horizontal = 20.dp, vertical = 8.dp))
                 }
             }
         }
