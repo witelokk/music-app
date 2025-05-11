@@ -9,14 +9,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,12 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.api.models.ArtistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import org.koin.compose.koinInject
-import kotlin.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,18 +34,6 @@ fun QueueScreen(navController: NavController) {
     val playerState by koinInject<MusicPlayer>().state.collectAsState()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Expanded,
-            confirmValueChange = { true },
-            skipHiddenState = true,
-        )
-    )
-
-    LaunchedEffect(Unit) {
-        scaffoldState.bottomSheetState.partialExpand()
-    }
-
     PlayerSheetScaffold(
         navController,
         playerState = playerState,
@@ -59,7 +41,6 @@ fun QueueScreen(navController: NavController) {
         onSeekToPrevious = {},
         onSeekToNext = {},
         onPlayPause = {},
-        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.queue)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {

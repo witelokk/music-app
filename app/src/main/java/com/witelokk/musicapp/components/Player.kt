@@ -58,6 +58,7 @@ import coil3.compose.AsyncImage
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.screens.ArtistScreenRoute
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -131,12 +132,15 @@ fun Player(
                             navController.navigate("playlist")
                         }
                         .basicMarquee())
-                Text(playerState.song.artists.joinToString(", ") { it.name } ?: "",
+                Text(playerState.song.artists.joinToString(", ") { it.name },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .clickable {
                             if (playerState.song.artists.size == 1) {
-                                navController.navigate("artist")
+                                scope.launch {
+                                    sheetState.partialExpand()
+                                    navController.navigate(ArtistScreenRoute(playerState.song.artists[0].id))
+                                }
                             } else {
                                 openArtistsDialog = true
                             }
@@ -146,9 +150,9 @@ fun Player(
             IconButton(onClick = {
                 scope.launch {
                     sheetState.partialExpand()
-                }
-                if (navController.currentDestination?.route !== "queue") {
-                    navController.navigate("queue")
+                    if (navController.currentDestination?.route !== "queue") {
+                        navController.navigate("queue")
+                    }
                 }
             }) {
                 Icon(
@@ -246,7 +250,10 @@ fun Player(
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable {
-                                navController.navigate("artist")
+                                scope.launch {
+                                    sheetState.partialExpand()
+                                    navController.navigate(ArtistScreenRoute(playerState.song.artists[0].id))
+                                }
                             }
                             .fillParentMaxWidth()
                             .padding(vertical = 8.dp)) {
