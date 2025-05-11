@@ -9,4 +9,5 @@ data class PlayerState(
     val currentPosition: Duration,
     val previousTrackAvailable: Boolean,
     val nextTrackAvailable: Boolean,
+    val queue: List<Song>,
 )

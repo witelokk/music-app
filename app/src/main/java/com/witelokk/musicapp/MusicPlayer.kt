@@ -31,8 +31,6 @@ class MusicPlayer
 
     private lateinit var controller: MediaController
     private val queue = arrayListOf<Song>()
-    private var queueIndex = 0;
-
 
     init {
         initializeMediaController()
@@ -92,6 +90,7 @@ class MusicPlayer
                     currentPosition = 0.seconds,
                     previousTrackAvailable = false,
                     nextTrackAvailable = false,
+                    queue = queue,
                 )
             }
         }
@@ -158,13 +157,16 @@ class MusicPlayer
         queue.clear()
         queue.addAll(songs)
         controller.setMediaItems(songs.map { createMediaItem(it) })
-        queueIndex = index
+
+        _state.update { it?.copy(queue = songs) }
 
         controller.play()
 
-        repeat(index) {
-            controller.seekToNextMediaItem()
-        }
+        controller.seekTo(index, 0)
+    }
+
+    fun playSongInQueue(index: Int) {
+        controller.seekTo(index, 0)
     }
 
     fun seekToNext() {

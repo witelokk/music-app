@@ -29,6 +29,7 @@ import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
+import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -201,6 +202,7 @@ val appModule = module {
     viewModelOf(::ArtistScreenViewModel)
     viewModelOf(::FavoritesScreenViewModel)
     viewModelOf(::PlaylistReleaseScreenViewModel)
+    viewModelOf(::QueueScreenViewModel)
 
     single {
         ThemeViewModel(get())
