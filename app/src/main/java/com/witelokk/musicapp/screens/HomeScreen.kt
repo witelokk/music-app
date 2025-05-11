@@ -135,10 +135,10 @@ fun HomeScreen(
     PlayerSheetScaffold(
         navController,
         playerState = state.playerState,
-        onSeek = {viewModel.seekPlayer(it)},
-        onSeekToPrevious = {viewModel.seekPlayerToPrevious()},
-        onSeekToNext = {viewModel.seekPlayerToNext()},
-        onPlayPause = {viewModel.playPausePlayer()},
+        onSeek = { viewModel.seekPlayer(it) },
+        onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
+        onSeekToNext = { viewModel.seekPlayerToNext() },
+        onPlayPause = { viewModel.playPausePlayer() },
         scaffoldState = scaffoldState,
     ) { innerPadding ->
         Column {
@@ -162,9 +162,20 @@ fun HomeScreen(
                     SearchHistoryContent(state.searchHistory, onResultClick = {
                         when (it.type) {
                             "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
-                            "release" -> navController.navigate("release")
+                            "release" -> navController.navigate(
+                                PlaylistReleaseScreenRoute(
+                                    PlaylistReleaseScreenType.RELEASE,
+                                    it.release!!.id
+                                )
+                            )
+
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                            "playlist" -> navController.navigate(PlaylistScreenRoute(it.playlist!!.id))
+                            "playlist" -> navController.navigate(
+                                PlaylistReleaseScreenRoute(
+                                    PlaylistReleaseScreenType.PLAYLIST,
+                                    it.playlist!!.id
+                                )
+                            )
                         }
                     }, onClearClick = {
                         viewModel.clearSearchHistory()
@@ -174,9 +185,20 @@ fun HomeScreen(
                         viewModel.addToSearchHistory(it)
                         when (it.type) {
                             "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
-                            "release" -> navController.navigate("release")
+                            "release" -> navController.navigate(
+                                PlaylistReleaseScreenRoute(
+                                    PlaylistReleaseScreenType.RELEASE,
+                                    it.release!!.id
+                                )
+                            )
+
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                            "playlist" -> navController.navigate(PlaylistScreenRoute(it.playlist!!.id))
+                            "playlist" -> navController.navigate(
+                                PlaylistReleaseScreenRoute(
+                                    PlaylistReleaseScreenType.PLAYLIST,
+                                    it.playlist!!.id
+                                )
+                            )
                         }
                     })
                 }

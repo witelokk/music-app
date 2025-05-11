@@ -49,6 +49,8 @@ import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Serializable
 data class ArtistScreenRoute(
@@ -184,12 +186,17 @@ fun ArtistScreen(
                         "single" -> stringResource(R.string.single)
                         "album" -> stringResource(R.string.album)
                         else -> release.type
-                    },
+                    } + ", " + release.releasedAt.substring(0, 4),
                     pictureUrl = release.coverUrl
                 ), modifier = Modifier
                     .padding(bottom = 16.dp)
                     .clickable {
-                        navController.navigate("playlist")
+                        navController.navigate(
+                            PlaylistReleaseScreenRoute(
+                                PlaylistReleaseScreenType.RELEASE,
+                                release.id
+                            )
+                        )
                     })
             }
         }

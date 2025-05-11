@@ -8,7 +8,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
-import androidx.media3.exoplayer.source.MediaSourceFactory
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
@@ -16,6 +15,7 @@ import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
+import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
@@ -28,7 +28,7 @@ import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
-import com.witelokk.musicapp.viewmodel.PlaylistScreenViewModel
+import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -183,6 +183,14 @@ val appModule = module {
         api
     }
 
+    single {
+        val api = ReleasesApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
     viewModelOf(::WelcomeScreenViewModel)
     viewModelOf(::LoginScreenViewModel)
     viewModelOf(::RegistrationScreenViewModel)
@@ -192,7 +200,7 @@ val appModule = module {
     viewModelOf(::SettingsScreenViewModel)
     viewModelOf(::ArtistScreenViewModel)
     viewModelOf(::FavoritesScreenViewModel)
-    viewModelOf(::PlaylistScreenViewModel)
+    viewModelOf(::PlaylistReleaseScreenViewModel)
 
     single {
         ThemeViewModel(get())

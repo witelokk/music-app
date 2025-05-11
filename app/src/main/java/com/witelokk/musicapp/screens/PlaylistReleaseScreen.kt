@@ -28,26 +28,35 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
-import com.witelokk.musicapp.viewmodel.PlaylistScreenViewModel
+import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
 @Serializable
-data class PlaylistScreenRoute(
+enum class PlaylistReleaseScreenType{
+    PLAYLIST, RELEASE
+}
+
+@Serializable
+data class PlaylistReleaseScreenRoute(
+    val type: PlaylistReleaseScreenType,
     val id: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaylistScreen(
+fun PlaylistReleaseScreen(
     navController: NavController,
-    route: PlaylistScreenRoute,
-    viewModel: PlaylistScreenViewModel = koinInject()
+    route: PlaylistReleaseScreenRoute,
+    viewModel: PlaylistReleaseScreenViewModel = koinInject()
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadPlaylist(route.id)
+        if (route.type == PlaylistReleaseScreenType.PLAYLIST)
+            viewModel.loadPlaylist(route.id)
+        else
+            viewModel.loadRelease(route.id)
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -56,7 +65,7 @@ fun PlaylistScreen(
         navController,
         topBar = {
             TopAppBar(
-                title = { Text(state.playlist?.name ?: "") },
+                title = { Text(state.name) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
@@ -78,13 +87,13 @@ fun PlaylistScreen(
         onPlayPause = { viewModel.playPausePlayer() },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            if (state.playlist?.songs?.count == 0) {
+            if (state.songs.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(stringResource(R.string.playlist_is_empty))
                 }
             }
             LazyColumn {
-                items(state.playlist?.songs?.songs ?: listOf()) { song ->
+                items(state.songs) { song ->
                     SongListItem(
                         song = song,
                         isPlaying = state.playerState?.song?.id == song.id,
