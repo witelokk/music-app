@@ -164,7 +164,7 @@ fun HomeScreen(
                             "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                            "playlist" -> navController.navigate("playlist")
+                            "playlist" -> navController.navigate(PlaylistScreenRoute(it.playlist!!.id))
                         }
                     }, onClearClick = {
                         viewModel.clearSearchHistory()
@@ -176,7 +176,7 @@ fun HomeScreen(
                             "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                             "release" -> navController.navigate("release")
                             "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                            "playlist" -> navController.navigate("playlist")
+                            "playlist" -> navController.navigate(PlaylistScreenRoute(it.playlist!!.id))
                         }
                     })
                 }

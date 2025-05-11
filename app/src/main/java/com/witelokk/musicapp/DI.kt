@@ -15,6 +15,7 @@ import androidx.media3.session.SessionToken
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
+import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
@@ -27,6 +28,7 @@ import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
+import com.witelokk.musicapp.viewmodel.PlaylistScreenViewModel
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -164,6 +166,15 @@ val appModule = module {
         api
     }
 
+
+    single {
+        val api = PlaylistsApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
     single {
         val api = FavoritesApi(baseUrl, httpClientConfig = {
             it.default()
@@ -181,6 +192,7 @@ val appModule = module {
     viewModelOf(::SettingsScreenViewModel)
     viewModelOf(::ArtistScreenViewModel)
     viewModelOf(::FavoritesScreenViewModel)
+    viewModelOf(::PlaylistScreenViewModel)
 
     single {
         ThemeViewModel(get())

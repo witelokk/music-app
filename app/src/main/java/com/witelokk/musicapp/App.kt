@@ -21,6 +21,7 @@ import com.witelokk.musicapp.screens.LoginScreen
 import com.witelokk.musicapp.screens.LoginVerification
 import com.witelokk.musicapp.screens.LoginVerificationScreen
 import com.witelokk.musicapp.screens.PlaylistScreen
+import com.witelokk.musicapp.screens.PlaylistScreenRoute
 import com.witelokk.musicapp.screens.QueueScreen
 import com.witelokk.musicapp.screens.Registration
 import com.witelokk.musicapp.screens.RegistrationScreen
@@ -91,8 +92,9 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
             composable("home") {
                 HomeScreen(navController)
             }
-            composable("playlist") {
-                PlaylistScreen(navController)
+            composable<PlaylistScreenRoute> {
+                val route = it.toRoute<PlaylistScreenRoute>()
+                PlaylistScreen(navController, route)
             }
             composable("favorites") {
                 FavoritesScreen(navController)

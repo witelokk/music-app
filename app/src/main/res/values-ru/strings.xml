@@ -50,4 +50,5 @@
     <string name="search_failed">Поиск не удался</string>
     <string name="retry">Повторить</string>
     <string name="i_already_have_a_code">У меня уже есть код</string>
+    <string name="playlist_is_empty">Плейлист пуст</string>
 </resources>
