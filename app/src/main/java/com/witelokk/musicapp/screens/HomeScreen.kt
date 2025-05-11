@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.AddCard
+import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
@@ -76,6 +78,28 @@ fun HomeScreen(
                 viewModel.search(it)
             }
         }
+    }
+
+    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
+    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(showAddToPlaylistDialog) {
+        if (showAddToPlaylistDialog) {
+            viewModel.loadPlaylists()
+        }
+    }
+
+    if (showAddToPlaylistDialog) {
+        AddToPlaylistsDialog(
+            state.playlists,
+            onDismissRequest = { showAddToPlaylistDialog = false },
+            onAddRequest = { playlists ->
+                viewModel.addSongToPlaylists(
+                    songIdToAddToPlaylists!!,
+                    playlists
+                ); showAddToPlaylistDialog = false
+            },
+        )
     }
 
     val layout = HomeLayout(
@@ -135,11 +159,15 @@ fun HomeScreen(
     PlayerSheetScaffold(
         navController,
         playerState = state.playerState,
+        scaffoldState = scaffoldState,
         onSeek = { viewModel.seekPlayer(it) },
         onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
-        scaffoldState = scaffoldState,
+        onAddToPlaylist = { song ->
+            songIdToAddToPlaylists = song.id
+            showAddToPlaylistDialog = true
+        }
     ) { innerPadding ->
         Column {
             Search(

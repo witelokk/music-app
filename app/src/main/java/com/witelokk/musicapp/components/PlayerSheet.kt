@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.MusicPlayer
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -51,6 +52,7 @@ fun PlayerSheetScaffold(
     onSeekToPrevious: () -> Unit,
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
+    onAddToPlaylist: (Song) -> Unit,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
@@ -82,6 +84,7 @@ fun PlayerSheetScaffold(
                 onSeekToPrevious,
                 onSeekToNext,
                 onPlayPause,
+                onAddToPlaylist,
                 modifier
             )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
@@ -107,6 +110,7 @@ fun SheetContent(
     onSeekToPrevious: () -> Unit,
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
+    onAddToPlaylist: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -149,7 +153,8 @@ fun SheetContent(
             onSeek,
             onSeekToPrevious,
             onSeekToNext,
-            onPlayPause
+            onPlayPause,
+            onAddToPlaylist
         )
     }
 }

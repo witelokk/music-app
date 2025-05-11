@@ -1,10 +1,18 @@
 package com.witelokk.musicapp
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.witelokk.musicapp.api.apis.PlaylistsApi
+import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
 import com.witelokk.musicapp.api.models.Song
+import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
-open class BaseViewModel(private val musicPlayer: MusicPlayer): ViewModel() {
+open class BaseViewModel(
+    private val musicPlayer: MusicPlayer,
+    private val playlistsApi: PlaylistsApi
+): ViewModel() {
+
     protected val playerState = musicPlayer.state
 
     fun seekPlayer(to: Duration) {
@@ -23,7 +31,19 @@ open class BaseViewModel(private val musicPlayer: MusicPlayer): ViewModel() {
         musicPlayer.playPause()
     }
 
+    fun addSongToQueue(song: Song) {
+        musicPlayer.addToQueue(song)
+    }
+
     fun setPlayerQueueAndPlay(songs: List<Song>, index: Int) {
         musicPlayer.setQueueAndPlay(songs, index)
+    }
+
+    fun addSongToPlaylists(songId: String, playlistIds: List<String>) {
+        viewModelScope.launch {
+            for (playlistId in playlistIds) {
+                playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(songId))
+            }
+        }
     }
 }

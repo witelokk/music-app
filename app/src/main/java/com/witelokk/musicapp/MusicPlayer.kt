@@ -86,7 +86,7 @@ class MusicPlayer
             _state.update {
                 PlayerState(
                     song = song!!,
-                    playing = true,
+                    playing = false,
                     currentPosition = 0.seconds,
                     previousTrackAvailable = false,
                     nextTrackAvailable = false,
@@ -146,7 +146,7 @@ class MusicPlayer
     }
 
     fun seek(to: Duration) {
-        _state.update { it?.copy(currentPosition = to, playing = true) }
+        _state.update { it?.copy(currentPosition = to) }
 
         controller.seekTo(to.inWholeMilliseconds)
     }
@@ -175,5 +175,23 @@ class MusicPlayer
 
     fun seekToPrevious() {
         controller.seekToPrevious()
+    }
+
+    fun addToQueue(song: Song) {
+        if (queue.isEmpty()) {
+            queue.add(song)
+            controller.addMediaItem(createMediaItem(song))
+            controller.prepare()
+        }
+
+        val currentSongIndex = controller.currentMediaItemIndex
+        queue.add(currentSongIndex+1, song)
+        controller.addMediaItem(currentSongIndex+1, createMediaItem(song))
+    }
+
+    fun removeFromQueue(index: Int) {
+        controller.removeMediaItem(index)
+//        queue = queue.map { it }
+        queue.removeAt(index)
     }
 }

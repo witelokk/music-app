@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
+import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
+import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.SearchResult
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.data.PlayerState
@@ -20,7 +22,8 @@ data class HomeViewModelState(
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
     val searchResults: SearchResult? = null,
-    val searchHistory: List<SearchResultItem> = emptyList(),
+    val searchHistory: List<SearchResultItem> = listOf(),
+    val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState? = null,
 )
 
@@ -28,8 +31,9 @@ class HomeScreenViewModel(
     private val searchApi: SearchApi,
     private val sharedPreferences: SharedPreferences,
     private val json: Json,
+    private val playlistsApi: PlaylistsApi,
     musicPlayer: MusicPlayer,
-) : BaseViewModel(musicPlayer) {
+) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state = MutableStateFlow(HomeViewModelState(playerState=musicPlayer.state.value))
     val state = _state.asStateFlow()
 
@@ -54,7 +58,7 @@ class HomeScreenViewModel(
             }
         } else {
             _state.update {
-                it.copy(searchHistory = emptyList())
+                it.copy(searchHistory = listOf())
             }
         }
     }
@@ -112,7 +116,7 @@ class HomeScreenViewModel(
     fun clearSearchHistory() {
         sharedPreferences.edit().remove("searchHistory").apply()
         _state.update {
-            it.copy(searchHistory = emptyList())
+            it.copy(searchHistory = listOf())
         }
     }
 
@@ -123,6 +127,20 @@ class HomeScreenViewModel(
                 isFailure = false,
                 searchResults = null
             )
+        }
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            val response = playlistsApi.playlistsGet()
+
+            if (!response.success) {
+                return@launch
+            }
+
+            _state.update {
+                it.copy(playlists = response.body().playlists)
+            }
         }
     }
 }

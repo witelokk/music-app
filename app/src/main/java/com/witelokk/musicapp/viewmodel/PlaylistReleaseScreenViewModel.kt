@@ -7,6 +7,7 @@ import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
+import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
@@ -21,6 +22,7 @@ data class PlaylistReleaseScreenState(
     val songs: List<Song> = listOf(),
     val name: String = "",
     val coverUrl: String? = null,
+    val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState?,
 )
 
@@ -29,7 +31,7 @@ class PlaylistReleaseScreenViewModel(
     private val releasesApi: ReleasesApi,
     private val favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer
-) : BaseViewModel(musicPlayer) {
+) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state =
         MutableStateFlow(PlaylistReleaseScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
@@ -115,6 +117,20 @@ class PlaylistReleaseScreenViewModel(
                         } else song
                     }
                 )
+            }
+        }
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            val response = playlistsApi.playlistsGet()
+
+            if (!response.success) {
+                return@launch
+            }
+
+            _state.update {
+                it.copy(playlists = response.body().playlists)
             }
         }
     }

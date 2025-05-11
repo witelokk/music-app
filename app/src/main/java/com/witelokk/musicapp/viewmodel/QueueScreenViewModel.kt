@@ -22,8 +22,9 @@ data class QueueScreenState(
 
 class QueueScreenViewModel(
     private val favoritesApi: FavoritesApi,
-    private val musicPlayer: MusicPlayer
-) : BaseViewModel(musicPlayer) {
+    private val musicPlayer: MusicPlayer,
+    private val playlistsApi: PlaylistsApi,
+) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state =
         MutableStateFlow(
             FavoritesScreenState(
@@ -63,5 +64,25 @@ class QueueScreenViewModel(
 
     fun playSong(song: Song) {
         musicPlayer.state.value?.queue?.let { musicPlayer.playSongInQueue(it.indexOf(song)) }
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            val response = playlistsApi.playlistsGet()
+
+            if (!response.success) {
+                return@launch
+            }
+
+            _state.update {
+                it.copy(playlists = response.body().playlists)
+            }
+        }
+    }
+
+    fun removeSongFromQueue(index: Int) {
+        musicPlayer.state.value?.let { playerState ->
+            musicPlayer.removeFromQueue(index+playerState.queue.indexOf(playerState.song))
+        }
     }
 }

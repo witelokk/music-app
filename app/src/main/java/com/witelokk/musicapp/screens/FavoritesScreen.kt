@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,14 +17,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
@@ -36,6 +42,28 @@ fun FavoritesScreen(
     viewModel: FavoritesScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
+    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(showAddToPlaylistDialog) {
+        if (showAddToPlaylistDialog) {
+            viewModel.loadPlaylists()
+        }
+    }
+
+    if (showAddToPlaylistDialog) {
+        AddToPlaylistsDialog(
+            state.playlists,
+            onDismissRequest = { showAddToPlaylistDialog = false },
+            onAddRequest = { playlists ->
+                viewModel.addSongToPlaylists(
+                    songIdToAddToPlaylists!!,
+                    playlists
+                ); showAddToPlaylistDialog = false
+            },
+        )
+    }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -58,6 +86,10 @@ fun FavoritesScreen(
         onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
+        onAddToPlaylist = { song ->
+            songIdToAddToPlaylists = song.id
+            showAddToPlaylistDialog = true
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
@@ -68,7 +100,23 @@ fun FavoritesScreen(
                         onFavoriteClick = { viewModel.removeSongFromFavorites(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
-                            .padding(horizontal = 20.dp, vertical = 8.dp))
+                            .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
+                        DropdownMenuItem(
+                            text = { Text("Add to playlist") },
+                            onClick = {
+                                menuExpanded.value = false
+                                songIdToAddToPlaylists = song.id
+                                showAddToPlaylistDialog = true
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Add to queue") },
+                            onClick = {
+                                viewModel.addSongToQueue(song)
+                                menuExpanded.value = false
+                            }
+                        )
+                    }
                 }
             }
         }

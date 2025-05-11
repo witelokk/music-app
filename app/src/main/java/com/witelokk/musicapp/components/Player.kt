@@ -20,11 +20,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.Favorite
@@ -57,6 +59,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.screens.ArtistScreenRoute
 import kotlinx.coroutines.launch
@@ -88,6 +91,7 @@ fun Player(
     onSeekToPrevious: () -> Unit,
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
+    onAddToPlaylist: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -161,9 +165,9 @@ fun Player(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = {onAddToPlaylist(playerState.song)}) {
                 Icon(
-                    Icons.Default.AddCircleOutline,
+                    Icons.AutoMirrored.Filled.PlaylistAdd,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )

@@ -1,6 +1,5 @@
 package com.witelokk.musicapp.screens
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,9 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,34 +18,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
@@ -76,8 +70,29 @@ fun ArtistScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
     var albumsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(showAddToPlaylistDialog) {
+        if (showAddToPlaylistDialog) {
+            viewModel.loadPlaylists()
+        }
+    }
+
+    if (showAddToPlaylistDialog) {
+        AddToPlaylistsDialog(
+            state.playlists,
+            onDismissRequest = { showAddToPlaylistDialog = false },
+            onAddRequest = { playlists ->
+                viewModel.addSongToPlaylists(
+                    songIdToAddToPlaylists!!,
+                    playlists
+                ); showAddToPlaylistDialog = false
+            },
+        )
+    }
 
     PlayerSheetScaffold(
         navController,
@@ -86,6 +101,10 @@ fun ArtistScreen(
         onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
+        onAddToPlaylist = { song ->
+            songIdToAddToPlaylists = song.id
+            showAddToPlaylistDialog = true
+        },
         topBar = {
             TopAppBar({
                 Column {
@@ -99,7 +118,6 @@ fun ArtistScreen(
                 }
             }, actions = {
                 IconButton(onClick = {
-                    val songs = state.artist?.popularSongs?.songs ?: listOf()
                     viewModel.playAllSongs()
                 }) {
                     Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
@@ -144,13 +162,28 @@ fun ArtistScreen(
                         .clickable {
                             viewModel.playPopularSong(song)
                         }
-//                        .offset(x = (-8).dp)
                         .padding(horizontal = 4.dp, vertical = 8.dp),
                     onFavoriteClick = {
                         viewModel.toggleSongFavorite(song)
                     },
                     isPlaying = (song.id == state.playerState?.song?.id),
-                )
+                ) { menuExpanded ->
+                    DropdownMenuItem(
+                        text = { Text("Add to playlist") },
+                        onClick = {
+                            menuExpanded.value = false
+                            songIdToAddToPlaylists = song.id
+                            showAddToPlaylistDialog = true
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Add to queue") },
+                        onClick = {
+                            viewModel.addSongToQueue(song)
+                            menuExpanded.value = false
+                        }
+                    )
+                }
             }
 
             item(span = { GridItemSpan(2) }) {

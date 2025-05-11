@@ -18,7 +18,6 @@ package com.witelokk.musicapp.api.models
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Contextual
 
 /**
  * 

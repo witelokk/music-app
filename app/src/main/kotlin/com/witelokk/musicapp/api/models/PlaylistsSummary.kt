@@ -15,11 +15,8 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.PlaylistSummary
-
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Contextual
 
 /**
  * 
