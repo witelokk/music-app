@@ -52,4 +52,8 @@
     <string name="retry">Retry</string>
     <string name="i_already_have_a_code">I already have a code</string>
     <string name="playlist_is_empty">Playlist is empty</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="remove_from_queue">Remove from queue</string>
+    <string name="remove_from_favorite_songs">Remove from Favorite songs</string>
 </resources>

@@ -16,14 +16,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,14 +28,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 
 @Composable
-fun SmallPlayer(
+fun MiniPlayer(
     playerState: PlayerState,
     onPlayPause: () -> Unit,
+    onChangeFavorite: (Song, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -67,7 +65,12 @@ fun SmallPlayer(
                             modifier = Modifier.basicMarquee()
                         )
                     }
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        onChangeFavorite(
+                            playerState.song,
+                            !playerState.song.isFavorite
+                        )
+                    }) {
                         Icon(
                             if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = null,

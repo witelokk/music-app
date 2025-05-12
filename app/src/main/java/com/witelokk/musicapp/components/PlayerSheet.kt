@@ -26,8 +26,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -35,11 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import kotlin.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +49,7 @@ fun PlayerSheetScaffold(
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
+    onChangeFavorite: (Song, Boolean) -> Unit,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
@@ -85,6 +82,7 @@ fun PlayerSheetScaffold(
                 onSeekToNext,
                 onPlayPause,
                 onAddToPlaylist,
+                onChangeFavorite,
                 modifier
             )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
@@ -111,6 +109,7 @@ fun SheetContent(
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
+    onChangeFavorite: (Song, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -137,9 +136,10 @@ fun SheetContent(
             exit = slideOutVertically() + shrinkVertically() + fadeOut()) {
 
             Column {
-                SmallPlayer(
+                MiniPlayer(
                     playerState,
                     onPlayPause,
+                    onChangeFavorite,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(38.dp))
@@ -154,7 +154,8 @@ fun SheetContent(
             onSeekToPrevious,
             onSeekToNext,
             onPlayPause,
-            onAddToPlaylist
+            onAddToPlaylist,
+            onChangeFavorite
         )
     }
 }

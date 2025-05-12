@@ -83,6 +83,8 @@ class FavoritesScreenViewModel(
                     songs = currentState.songs.filter { it != song }
                 )
             }
+
+            musicPlayer.updateSong(song.copy(isFavorite = false))
         }
     }
 
@@ -97,6 +99,16 @@ class FavoritesScreenViewModel(
             _state.update {
                 it.copy(playlists = response.body().playlists)
             }
+        }
+    }
+
+    override fun changeSongFavorite(song: Song, favorite: Boolean) {
+        super.changeSongFavorite(song, favorite)
+        _state.update { currentState ->
+            currentState.copy(
+                songs = if (favorite) listOf(song.copy(isFavorite = true)).plus(currentState.songs)
+                else currentState.songs.filter { it != song }
+            )
         }
     }
 }

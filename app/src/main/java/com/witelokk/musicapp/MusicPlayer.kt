@@ -185,13 +185,26 @@ class MusicPlayer
         }
 
         val currentSongIndex = controller.currentMediaItemIndex
-        queue.add(currentSongIndex+1, song)
-        controller.addMediaItem(currentSongIndex+1, createMediaItem(song))
+        queue.add(currentSongIndex + 1, song)
+        controller.addMediaItem(currentSongIndex + 1, createMediaItem(song))
     }
 
     fun removeFromQueue(index: Int) {
         controller.removeMediaItem(index)
-//        queue = queue.map { it }
         queue.removeAt(index)
+    }
+
+    fun updateSong(song: Song) {
+        if (queue.isNotEmpty() && queue[controller.currentMediaItemIndex].id == song.id) {
+            _state.update {
+                it?.copy(song = song)
+            }
+        }
+
+        for (i in 0..<queue.size) {
+            if (queue[i].id == song.id) {
+                queue[i] = song
+            }
+        }
     }
 }

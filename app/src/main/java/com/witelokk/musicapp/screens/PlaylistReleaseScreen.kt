@@ -115,6 +115,9 @@ fun PlaylistReleaseScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
+        onChangeFavorite = {song, favorite ->
+            viewModel.changeSongFavorite(song, favorite)
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.songs.isEmpty()) {
@@ -127,12 +130,12 @@ fun PlaylistReleaseScreen(
                     SongListItem(
                         song = song,
                         isPlaying = state.playerState?.song?.id == song.id,
-                        onFavoriteClick = { viewModel.removeSongFromFavorites(song) },
+                        onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
                             .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
                         DropdownMenuItem(
-                            text = { Text("Add to playlist") },
+                            text = { Text(stringResource(R.string.add_to_playlist)) },
                             onClick = {
                                 menuExpanded.value = false
                                 songIdToAddToPlaylists = song.id
@@ -140,7 +143,7 @@ fun PlaylistReleaseScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Add to queue") },
+                            text = { Text(stringResource(R.string.add_to_playlist)) },
                             onClick = {
                                 viewModel.addSongToQueue(song)
                                 menuExpanded.value = false

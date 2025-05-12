@@ -10,6 +10,7 @@ import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.SearchResult
 import com.witelokk.musicapp.api.models.SearchResultItem
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

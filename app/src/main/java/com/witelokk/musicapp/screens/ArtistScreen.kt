@@ -105,6 +105,9 @@ fun ArtistScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
+        onChangeFavorite = {song, favorite ->
+            viewModel.changeSongFavorite(song, favorite)
+        },
         topBar = {
             TopAppBar({
                 Column {
@@ -169,7 +172,7 @@ fun ArtistScreen(
                     isPlaying = (song.id == state.playerState?.song?.id),
                 ) { menuExpanded ->
                     DropdownMenuItem(
-                        text = { Text("Add to playlist") },
+                        text = { Text(stringResource(R.string.add_to_playlist)) },
                         onClick = {
                             menuExpanded.value = false
                             songIdToAddToPlaylists = song.id
@@ -177,7 +180,7 @@ fun ArtistScreen(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Add to queue") },
+                        text = { Text(stringResource(R.string.add_to_playlist)) },
                         onClick = {
                             viewModel.addSongToQueue(song)
                             menuExpanded.value = false

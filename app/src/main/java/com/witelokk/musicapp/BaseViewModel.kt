@@ -8,7 +8,7 @@ import com.witelokk.musicapp.api.models.Song
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
-open class BaseViewModel(
+abstract class BaseViewModel(
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi
 ): ViewModel() {
@@ -45,5 +45,9 @@ open class BaseViewModel(
                 playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(songId))
             }
         }
+    }
+
+    open fun changeSongFavorite(song: Song, favorite: Boolean) {
+        musicPlayer.updateSong(song.copy(isFavorite = favorite))
     }
 }

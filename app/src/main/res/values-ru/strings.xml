@@ -51,4 +51,8 @@
     <string name="retry">Повторить</string>
     <string name="i_already_have_a_code">У меня уже есть код</string>
     <string name="playlist_is_empty">Плейлист пуст</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="add_to_queue">Добавить в очередь</string>
+    <string name="remove_from_queue">Удалить из очереди</string>
+    <string name="remove_from_favorite_songs">Удалить из понравившихся песен</string>
 </resources>

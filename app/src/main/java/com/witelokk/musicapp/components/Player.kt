@@ -92,6 +92,7 @@ fun Player(
     onSeekToNext: () -> Unit,
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
+    onChangeFavorite: (Song, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -165,14 +166,14 @@ fun Player(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = {onAddToPlaylist(playerState.song)}) {
+            IconButton(onClick = { onAddToPlaylist(playerState.song) }) {
                 Icon(
                     Icons.AutoMirrored.Filled.PlaylistAdd,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = { onChangeFavorite(playerState.song, !playerState.song.isFavorite) }) {
                 Icon(
                     if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,

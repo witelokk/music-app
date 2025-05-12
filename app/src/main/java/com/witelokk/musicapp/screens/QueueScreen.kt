@@ -80,6 +80,9 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
+        onChangeFavorite = {song, favorite ->
+            viewModel.changeSongFavorite(song, favorite)
+        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -94,12 +97,12 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
                     SongListItem(
                         song = song,
                         isPlaying = i == 0,
-                        onFavoriteClick = { viewModel.removeSongFromFavorites(song) },
+                        onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
                             .padding(horizontal = 16.dp, vertical = 8.dp))  { menuExpanded ->
                         DropdownMenuItem(
-                            text = { Text("Add to playlist") },
+                            text = { Text(stringResource(R.string.add_to_playlist)) },
                             onClick = {
                                 menuExpanded.value = false
                                 songIdToAddToPlaylists = song.id
@@ -107,7 +110,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Remove from queue") },
+                            text = { Text(stringResource(R.string.remove_from_queue)) },
                             onClick = {
                                 viewModel.removeSongFromQueue(i)
                                 menuExpanded.value = false

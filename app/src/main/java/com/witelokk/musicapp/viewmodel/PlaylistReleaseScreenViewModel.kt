@@ -101,7 +101,7 @@ class PlaylistReleaseScreenViewModel(
     }
 
 
-    fun removeSongFromFavorites(song: Song) {
+    fun toggleSongFavorite(song: Song) {
         viewModelScope.launch {
             if (song.isFavorite) {
                 favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
@@ -109,12 +109,13 @@ class PlaylistReleaseScreenViewModel(
                 favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
             }
 
+            musicPlayer.updateSong(song.copy(isFavorite = !song.isFavorite))
+
             _state.update { currentState ->
                 currentState.copy(
                     songs = currentState.songs.map {
-                        if (song.id == it.id) {
-                            song.copy(isFavorite = !song.isFavorite)
-                        } else song
+                        if (song.id == it.id) song.copy(isFavorite = !song.isFavorite)
+                        else it
                     }
                 )
             }
@@ -132,6 +133,18 @@ class PlaylistReleaseScreenViewModel(
             _state.update {
                 it.copy(playlists = response.body().playlists)
             }
+        }
+    }
+
+    override fun changeSongFavorite(song: Song, favorite: Boolean) {
+        super.changeSongFavorite(song, favorite)
+        _state.update { currentState ->
+            currentState.copy(
+                songs = currentState.songs.map {
+                    if (song.id == it.id) song.copy(isFavorite = favorite)
+                    else it
+                }
+            )
         }
     }
 }

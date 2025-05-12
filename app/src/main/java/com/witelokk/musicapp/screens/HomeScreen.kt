@@ -167,7 +167,10 @@ fun HomeScreen(
         onAddToPlaylist = { song ->
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
-        }
+        },
+        onChangeFavorite = {song, favorite ->
+            viewModel.changeSongFavorite(song, favorite)
+        },
     ) { innerPadding ->
         Column {
             Search(

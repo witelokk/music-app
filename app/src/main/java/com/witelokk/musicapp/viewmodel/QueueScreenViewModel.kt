@@ -6,7 +6,6 @@ import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
-import com.witelokk.musicapp.api.models.Playlist
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
@@ -37,29 +36,41 @@ class QueueScreenViewModel(
     init {
         viewModelScope.launch {
             musicPlayer.state.collect { playerState ->
-                _state.update {
-                    it.copy(
-                        playerState = playerState,
-                        songs = playerState?.queue?.subList(
-                            playerState.queue.indexOf(playerState.song),
-                            playerState.queue.size
-                        ) ?: listOf()
-                    )
+                val currentIndex = playerState?.queue?.indexOf(playerState.song) ?: -1
+                if (currentIndex > 0) {
+                    _state.update {
+                        it.copy(
+                            playerState = playerState,
+                            songs = playerState?.queue?.subList(
+                                currentIndex,
+                                playerState.queue.size
+                            ) ?: listOf()
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun removeSongFromFavorites(song: Song) {
-//        viewModelScope.launch {
-//            favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
-//
-//            _state.update { currentState ->
-//                currentState.copy(
-//                    songs = currentState.songs.filter { it != song }
-//                )
-//            }
-//        }
+    fun toggleSongFavorite(song: Song) {
+        viewModelScope.launch {
+            if (song.isFavorite) {
+                favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+            } else {
+                favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+            }
+
+            musicPlayer.updateSong(song.copy(isFavorite = !song.isFavorite))
+
+            _state.update { currentState ->
+                currentState.copy(
+                    songs = currentState.songs.map {
+                        if (song.id == it.id) song.copy(isFavorite = !song.isFavorite)
+                        else it
+                    }
+                )
+            }
+        }
     }
 
     fun playSong(song: Song) {
@@ -82,7 +93,19 @@ class QueueScreenViewModel(
 
     fun removeSongFromQueue(index: Int) {
         musicPlayer.state.value?.let { playerState ->
-            musicPlayer.removeFromQueue(index+playerState.queue.indexOf(playerState.song))
+            musicPlayer.removeFromQueue(index + playerState.queue.indexOf(playerState.song))
+        }
+    }
+
+    override fun changeSongFavorite(song: Song, favorite: Boolean) {
+        super.changeSongFavorite(song, favorite)
+        _state.update { currentState ->
+            currentState.copy(
+                songs = currentState.songs.map {
+                    if (song.id == it.id) song.copy(isFavorite = favorite)
+                    else it
+                }
+            )
         }
     }
 }

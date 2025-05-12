@@ -90,6 +90,9 @@ fun FavoritesScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
+        onChangeFavorite = {song, favorite ->
+            viewModel.changeSongFavorite(song, favorite)
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
@@ -97,12 +100,18 @@ fun FavoritesScreen(
                     SongListItem(
                         song = song,
                         isPlaying = state.playerState?.song?.id == song.id,
-                        onFavoriteClick = { viewModel.removeSongFromFavorites(song) },
+                        showFavorite = false,
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
                             .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
                         DropdownMenuItem(
-                            text = { Text("Add to playlist") },
+                            text = { Text(stringResource(R.string.remove_from_favorite_songs)) },
+                            onClick = {
+                                viewModel.removeSongFromFavorites(song)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.add_to_playlist)) },
                             onClick = {
                                 menuExpanded.value = false
                                 songIdToAddToPlaylists = song.id
@@ -110,7 +119,7 @@ fun FavoritesScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Add to queue") },
+                            text = { Text(stringResource(R.string.add_to_queue)) },
                             onClick = {
                                 viewModel.addSongToQueue(song)
                                 menuExpanded.value = false

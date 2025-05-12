@@ -103,7 +103,11 @@ class ArtistScreenViewModel(
 
                 _state.update {
                     val updatedSongs = artist.popularSongs.songs.map { updatedSong ->
-                        if (updatedSong.id == song.id) updatedSong.copy(isFavorite = !song.isFavorite) else updatedSong
+                        if (updatedSong.id == song.id) {
+                            val updatedSong = updatedSong.copy(isFavorite = !song.isFavorite)
+                            musicPlayer.updateSong(updatedSong)
+                            updatedSong
+                        } else updatedSong
                     }
                     val updatedPopularSongs = artist.popularSongs.copy(songs = updatedSongs)
                     val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
@@ -130,6 +134,22 @@ class ArtistScreenViewModel(
 
             _state.update {
                 it.copy(playlists = response.body().playlists)
+            }
+        }
+    }
+
+    override fun changeSongFavorite(song: Song, favorite: Boolean) {
+        super.changeSongFavorite(song, favorite)
+        _state.value.artist?.let { artist ->
+            _state.update {
+                val updatedSongs = artist.popularSongs.songs.map { updatedSong ->
+                    if (updatedSong.id == song.id) updatedSong.copy(isFavorite = favorite)
+                    else updatedSong
+                }
+                val updatedPopularSongs = artist.popularSongs.copy(songs = updatedSongs)
+                val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
+
+                it.copy(artist = updatedArtist)
             }
         }
     }
