@@ -12,13 +12,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -40,7 +45,6 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
-import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
@@ -64,8 +68,11 @@ fun PlaylistReleaseScreen(
     viewModel: PlaylistReleaseScreenViewModel = koinInject()
 ) {
     val state by viewModel.state.collectAsState()
+
     var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var showEditPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (route.type == PlaylistReleaseScreenType.PLAYLIST)
@@ -103,6 +110,43 @@ fun PlaylistReleaseScreen(
         )
     }
 
+    if (showDeletePlaylistDialog) {
+        AlertDialog(
+            title = { Text(stringResource(R.string.delete_playlists_dialog_title)) },
+            onDismissRequest = { showDeletePlaylistDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDeletePlaylistDialog = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = { viewModel.deletePlaylist() }) { Text(stringResource(R.string.yes)) }
+            },
+            text = { Text(stringResource(R.string.delete_playlists_dialog_text)) }
+        )
+    }
+
+    if (showEditPlaylistDialog) {
+        var newName by remember { mutableStateOf(state.name) }
+
+        AlertDialog(
+            title = { Text(stringResource(R.string.edit_playlist_name_dialog_title)) },
+            onDismissRequest = { showDeletePlaylistDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showEditPlaylistDialog = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    viewModel.editPlaylistName(newName)
+                    showEditPlaylistDialog = false
+                }) { Text(stringResource(R.string.yes)) }
+            },
+            text = {
+                OutlinedTextField(newName, onValueChange = { newName = it })
+            }
+        )
+    }
+
+    LaunchedEffect(state.deleted) {
+        if (state.deleted) {
+            navController.navigateUp()
+        }
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     PlayerSheetScaffold(
@@ -116,6 +160,12 @@ fun PlaylistReleaseScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showEditPlaylistDialog = true }) {
+                        Icon(Icons.Outlined.Edit, stringResource(R.string.edit))
+                    }
+                    IconButton(onClick = { showDeletePlaylistDialog = true }) {
+                        Icon(Icons.Outlined.Delete, stringResource(R.string.delete))
+                    }
                     IconButton(onClick = { viewModel.playAllSongs() }) {
                         Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
                     }

@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.PlaylistSummary
 
 @Composable
@@ -27,13 +29,13 @@ fun AddToPlaylistsDialog(
     val selectedPlaylists = rememberSaveable { mutableStateOf(setOf<String>()) }
 
     AlertDialog(
-        title = { Text("Add to playlists") },
+        title = { Text(stringResource(R.string.add_to_playlists_dialog_title)) },
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(
                 enabled = (playlists.isNotEmpty() && selectedPlaylists.value.isNotEmpty()),
                 onClick = { onAddRequest(selectedPlaylists.value.toList()) }
-            ) { Text("Add") }
+            ) { Text(stringResource(R.string.add)) }
         },
         text = {
             Column {

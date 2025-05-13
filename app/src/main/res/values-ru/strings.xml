@@ -59,4 +59,15 @@
     <string name="queue_is_empty">Очередь пуста</string>
     <string name="playlist">Плейлист</string>
     <string name="followed_artists">Отслеживаемые исполнители</string>
+    <string name="create_playlist">Создать плейлист</string>
+    <string name="create">Создать</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="add_to_playlists_dialog_title">Добавить в плейлист</string>
+    <string name="delete_playlists_dialog_title">Удалить плейлист</string>
+    <string name="delete_playlists_dialog_text">Вы точно хотите удалить этот плейлист?</string>
+    <string name="yes">Да</string>
+    <string name="edit_playlist_name_dialog_title">Изменить название плейлиста</string>
+    <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
 </resources>

@@ -10,6 +10,7 @@ import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.api.models.UpdatePlaylistRequest
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 data class PlaylistReleaseScreenState(
     val isLoading: Boolean = true,
     var isError: Boolean = false,
+    val deleted: Boolean = false,
     val songs: List<Song> = listOf(),
     val name: String = "",
     val coverUrl: String? = null,
@@ -35,6 +37,7 @@ class PlaylistReleaseScreenViewModel(
     private val _state =
         MutableStateFlow(PlaylistReleaseScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
+    private var playlistId: String? = null
 
     init {
         viewModelScope.launch {
@@ -47,6 +50,7 @@ class PlaylistReleaseScreenViewModel(
     }
 
     fun loadPlaylist(id: String) {
+        playlistId = id
         viewModelScope.launch {
             val response = playlistsApi.playlistsIdGet(id)
 
@@ -132,6 +136,27 @@ class PlaylistReleaseScreenViewModel(
 
             _state.update {
                 it.copy(playlists = response.body().playlists)
+            }
+        }
+    }
+
+    fun deletePlaylist() {
+        playlistId?.let { playlistId ->
+            viewModelScope.launch {
+                playlistsApi.playlistsIdDelete(playlistId)
+
+                _state.update { it.copy(deleted = true) }
+            }
+        }
+        _state.update { it.copy(deleted = true) }
+    }
+
+    fun editPlaylistName(name: String) {
+        playlistId?.let { playlistId ->
+            viewModelScope.launch {
+                playlistsApi.playlistsIdPut(playlistId, UpdatePlaylistRequest(name))
+
+                _state.update { it.copy(name = name) }
             }
         }
     }

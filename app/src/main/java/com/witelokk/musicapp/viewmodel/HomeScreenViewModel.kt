@@ -8,6 +8,7 @@ import com.witelokk.musicapp.api.apis.HomeScreenApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.models.ArtistsSummary
+import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.HomeScreenLayout
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.PlaylistsSummary
@@ -172,6 +173,20 @@ class HomeScreenViewModel(
 
             _state.update {
                 it.copy(playlists = response.body().playlists)
+            }
+        }
+    }
+
+    fun createPlaylist(name: String) {
+        viewModelScope.launch {
+            val response = playlistsApi.playlistsPost(CreatePlaylistRequest(name))
+
+            _state.update {
+                it.copy(playlists = it.playlists.plus(PlaylistSummary(
+                    id = response.body().id,
+                    name = name,
+                    songsCount = 0
+                )))
             }
         }
     }

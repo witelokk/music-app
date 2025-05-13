@@ -1,6 +1,5 @@
 package com.witelokk.musicapp.screens
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
@@ -17,11 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -69,6 +71,8 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    var showCreatePlaylistDialog by remember { mutableStateOf(false) }
 
     var showLoadingIndicator by remember { mutableStateOf(false) }
     LaunchedEffect(state.isLoading) {
@@ -118,6 +122,23 @@ fun HomeScreen(
                 ); showAddToPlaylistDialog = false
             },
         )
+    }
+
+    var playlistName by rememberSaveable { mutableStateOf("") }
+    if (showCreatePlaylistDialog) {
+        AlertDialog(onDismissRequest = {
+            showCreatePlaylistDialog = false
+        }, title = { Text(stringResource(R.string.create_playlist)) }, confirmButton = {
+            TextButton(onClick = {
+                viewModel.createPlaylist(playlistName)
+                playlistName = ""
+                showCreatePlaylistDialog = false
+            }, enabled = (playlistName.isNotEmpty())) { Text(stringResource(R.string.create)) }
+        }, text = {
+            Column {
+                OutlinedTextField(playlistName, { playlistName = it })
+            }
+        })
     }
 
     LaunchedEffect(searchExpanded.value) {
@@ -258,7 +279,7 @@ fun HomeScreen(
                                         })
                                 }
                                 item {
-                                    AddCard(modifier = Modifier.clickable { navController.navigate("playlist") })
+                                    AddCard(modifier = Modifier.clickable { showCreatePlaylistDialog = true })
                                 }
                             }
                         }
