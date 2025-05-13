@@ -1,10 +1,15 @@
 package com.witelokk.musicapp.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
@@ -26,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,10 +51,10 @@ import com.witelokk.musicapp.components.SearchFailedContent
 import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.data.Entity
-import com.witelokk.musicapp.data.HomeLayout
 import com.witelokk.musicapp.withoutBottom
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -62,6 +69,16 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    var showLoadingIndicator by remember { mutableStateOf(false) }
+    LaunchedEffect(state.isLoading) {
+        if (state.isLoading) {
+            delay(1000) // delay for 1 second
+            showLoadingIndicator = true
+        } else {
+            showLoadingIndicator = false
+        }
+    }
 
     val scaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
@@ -103,47 +120,6 @@ fun HomeScreen(
         )
     }
 
-    val layout = HomeLayout(
-        playlists = listOf(), sections = listOf(
-            Pair(
-                stringResource(R.string.recent), listOf(
-                    Entity(
-                        "Solid Reasons",
-                        stringResource(R.string.artist),
-                        "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
-                    ),
-                    Entity(
-                        "4locked",
-                        stringResource(R.string.artist),
-                        "https://avatars.yandex.net/get-music-content/12799091/a464f783.a.34980238-1/520x520"
-                    ),
-                    Entity(
-                        "Solid Reasons",
-                        stringResource(R.string.artist),
-                        "https://avatars.yandex.net/get-music-content/14728505/65f75b6e.p.23107413/400x400"
-                    ),
-                )
-            ),
-            Pair(
-                "Some songs", listOf(
-                    Entity(
-                        "Die in My Heart",
-                        "Solid Reasons",
-                        "https://avatars.yandex.net/get-music-content/14662984/ae9761c3.a.34843940-1/520x520"
-                    ), Entity(
-                        "Zloy",
-                        "Solid Reasons",
-                        "https://avatars.yandex.net/get-music-content/14715139/c1e5abf6.a.34140674-1/400x400"
-                    ), Entity(
-                        "Не могу найти",
-                        "4locked",
-                        "https://avatars.yandex.net/get-music-content/14369544/e0658469.a.34278387-2/400x400"
-                    )
-                )
-            ),
-        )
-    )
-
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
             viewModel.clearSearchState()
@@ -166,7 +142,7 @@ fun HomeScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
-        onChangeFavorite = {song, favorite ->
+        onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
     ) { innerPadding ->
@@ -179,9 +155,9 @@ fun HomeScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                if (state.isLoading) {
+                if (state.isSearchLoading) {
                     SearchLoadingContent()
-                } else if (state.isFailure) {
+                } else if (state.isSearchFailure) {
                     SearchFailedContent({
                         viewModel.search(searchQuery.value)
                     })
@@ -232,55 +208,96 @@ fun HomeScreen(
                     })
                 }
             }
-            LazyColumn {
-                item {
-                    Text(
-                        stringResource(R.string.playlists),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(24.dp)
-                    )
+            if (showLoadingIndicator) {
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !state.isLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    LazyColumn {
+                        item {
+                            Text(
+                                stringResource(R.string.playlists),
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(24.dp)
+                            )
 
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        item {
-                            FavoriteCard(modifier = Modifier.clickable { navController.navigate("favorites") })
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                item {
+                                    FavoriteCard(modifier = Modifier.clickable {
+                                        navController.navigate(
+                                            "favorites"
+                                        )
+                                    })
+                                }
+                                items(state.layout.playlists.playlists) { playlist ->
+                                    EntityCard(Entity(
+                                        playlist.name,
+                                        stringResource(R.string.playlist),
+                                        playlist.coverUrl
+                                    ),
+                                        modifier = Modifier.clickable {
+                                            navController.navigate(
+                                                PlaylistReleaseScreenRoute(
+                                                    PlaylistReleaseScreenType.PLAYLIST,
+                                                    playlist.id
+                                                )
+                                            )
+                                        })
+                                }
+                                item {
+                                    AddCard(modifier = Modifier.clickable { navController.navigate("playlist") })
+                                }
+                            }
                         }
-                        items(layout.playlists) { item ->
-                            Spacer(modifier = Modifier.width(16.dp))
-                            EntityCard(item,
-                                modifier = Modifier.clickable { navController.navigate("playlist") })
+                        items(state.layout.sections) { section ->
+                            Text(
+                                section.title,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(24.dp)
+                            )
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(section.releases.releases) { release ->
+                                    EntityCard(Entity(
+                                        release.name,
+                                        release.artists.names,
+                                        release.coverUrl
+                                    ),
+                                        modifier = Modifier
+                                            .width(155.dp)
+                                            .clickable {
+                                                navController.navigate(
+                                                    PlaylistReleaseScreenRoute(
+                                                        PlaylistReleaseScreenType.RELEASE,
+                                                        release.id
+                                                    )
+                                                )
+                                            })
+                                }
+                            }
                         }
                         item {
-                            AddCard(modifier = Modifier.clickable { navController.navigate("playlist") })
+                            Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 24.dp))
                         }
                     }
-                }
-                items(layout.sections) { (title, entities) ->
-                    Text(
-                        title,
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(24.dp)
-                    )
-
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(entities) { entity ->
-                            EntityCard(entity,
-                                modifier = Modifier
-                                    .width(155.dp)
-                                    .clickable { navController.navigate(ArtistScreenRoute("4784df13-073f-4d99-b346-a0c1146cb2be")) })
-                        }
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 24.dp))
                 }
             }
         }
     }
 }
-

@@ -4,6 +4,7 @@ src/main/kotlin/com/witelokk/musicapp/api/apis/ArtistsApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/AuthApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/FavoritesApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/FollowingsApi.kt
+src/main/kotlin/com/witelokk/musicapp/api/apis/HomeScreenApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/PlaylistsApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/ReleasesApi.kt
 src/main/kotlin/com/witelokk/musicapp/api/apis/SearchApi.kt
@@ -28,6 +29,8 @@ src/main/kotlin/com/witelokk/musicapp/api/models/CreatePlaylistRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/CreatePlaylistResponse.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/CreateUserRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/FailureResponse.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/HomeScreenLayout.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/HomeScreenLayoutCompanionSection.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/Playlist.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/PlaylistSummary.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/PlaylistsSummary.kt

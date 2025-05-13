@@ -1,16 +1,18 @@
 package com.witelokk.musicapp.viewmodel
 
 import android.content.SharedPreferences
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
+import com.witelokk.musicapp.api.apis.HomeScreenApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
+import com.witelokk.musicapp.api.models.ArtistsSummary
+import com.witelokk.musicapp.api.models.HomeScreenLayout
 import com.witelokk.musicapp.api.models.PlaylistSummary
+import com.witelokk.musicapp.api.models.PlaylistsSummary
 import com.witelokk.musicapp.api.models.SearchResult
 import com.witelokk.musicapp.api.models.SearchResultItem
-import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +22,12 @@ import kotlinx.serialization.json.Json
 import java.net.UnknownHostException
 
 data class HomeViewModelState(
-    val isLoading: Boolean = false,
+    val layout: HomeScreenLayout = HomeScreenLayout(PlaylistsSummary(0, listOf()), ArtistsSummary(0, listOf(), ""), listOf()),
+    val isLoading: Boolean = true,
     val isFailure: Boolean = false,
+    val isError: Boolean = false,
+    val isSearchLoading: Boolean = false,
+    val isSearchFailure: Boolean = false,
     val searchResults: SearchResult? = null,
     val searchHistory: List<SearchResultItem> = listOf(),
     val playlists: List<PlaylistSummary> = listOf(),
@@ -30,6 +36,7 @@ data class HomeViewModelState(
 
 class HomeScreenViewModel(
     private val searchApi: SearchApi,
+    private val homeScreenApi: HomeScreenApi,
     private val sharedPreferences: SharedPreferences,
     private val json: Json,
     private val playlistsApi: PlaylistsApi,
@@ -39,6 +46,7 @@ class HomeScreenViewModel(
     val state = _state.asStateFlow()
 
     init {
+        loadHomePageLayout()
         loadSearchHistory()
 
         viewModelScope.launch {
@@ -46,6 +54,27 @@ class HomeScreenViewModel(
                 _state.update { currentState ->
                     currentState.copy(playerState = newPlayerState)
                 }
+            }
+        }
+    }
+
+    fun loadHomePageLayout() {
+        viewModelScope.launch {
+            val response = homeScreenApi.homeScreenLayoutGet()
+
+            if (!response.success) {
+                _state.update { it.copy(isError = true, isLoading = false) }
+                return@launch
+            }
+
+            val layout = response.body()
+
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isError = false,
+                    layout = layout,
+                )
             }
         }
     }
@@ -81,7 +110,7 @@ class HomeScreenViewModel(
             return
         }
 
-        _state.update { it.copy(isLoading = true) }
+        _state.update { it.copy(isSearchLoading = true) }
 
         viewModelScope.launch {
             try {
@@ -89,16 +118,16 @@ class HomeScreenViewModel(
                     if (response.success) {
                         _state.update {
                             it.copy(
-                                isLoading = false,
-                                isFailure = false,
+                                isSearchLoading = false,
+                                isSearchFailure = false,
                                 searchResults = response.body()
                             )
                         }
                     } else {
                         _state.update {
                             it.copy(
-                                isLoading = false,
-                                isFailure = true,
+                                isSearchLoading = false,
+                                isSearchFailure = true,
                                 searchResults = null
                             )
                         }
@@ -107,8 +136,8 @@ class HomeScreenViewModel(
             } catch (_: UnknownHostException) {
                 _state.update {
                     it.copy(
-                        isLoading = false,
-                        isFailure = true,
+                        isSearchLoading = false,
+                        isSearchFailure = true,
                         searchResults = null
                     )
                 }
@@ -126,8 +155,8 @@ class HomeScreenViewModel(
     fun clearSearchState() {
         _state.update {
             it.copy(
-                isLoading = false,
-                isFailure = false,
+                isSearchLoading = false,
+                isSearchFailure = false,
                 searchResults = null
             )
         }
