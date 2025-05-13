@@ -66,6 +66,8 @@ class HomeScreenViewModel(
 
     fun addToSearchHistory(result: SearchResultItem) {
         val history = _state.value.searchHistory.toMutableList()
+        if (history.contains(result))
+            return
         history.add(result)
         if (history.size > 10) {
             history.removeAt(0)
