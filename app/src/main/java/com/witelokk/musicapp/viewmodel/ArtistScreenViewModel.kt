@@ -5,12 +5,15 @@ import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
+import com.witelokk.musicapp.api.apis.FollowingsApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Artist
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.api.models.StartFollowingRequest
+import com.witelokk.musicapp.api.models.StopFollowingRequest
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +44,7 @@ class ArtistScreenViewModel(
     private val artistsApi: ArtistsApi,
     private val favoritesApi: FavoritesApi,
     private val playlistsApi: PlaylistsApi,
+    private val followingsApi: FollowingsApi,
     private val musicPlayer: MusicPlayer,
 ) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state = MutableStateFlow(ArtistScreenState(playerState = musicPlayer.state.value))
@@ -113,6 +117,21 @@ class ArtistScreenViewModel(
                     val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
 
                     it.copy(artist = updatedArtist)
+                }
+            }
+        }
+    }
+
+    fun toggleFollowing() {
+        state.value.artist?.let { artist ->
+            viewModelScope.launch {
+                if (artist.following)
+                    followingsApi.followingsDelete(StopFollowingRequest(artist.id))
+                else
+                    followingsApi.followingsPost(StartFollowingRequest(artist.id))
+
+                _state.update {
+                    it.copy(artist=artist.copy(following = !artist.following))
                 }
             }
         }

@@ -14,6 +14,7 @@ import androidx.media3.session.SessionToken
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
+import com.witelokk.musicapp.api.apis.FollowingsApi
 import com.witelokk.musicapp.api.apis.HomeScreenApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
@@ -196,6 +197,14 @@ val appModule = module {
 
     factory {
         val api = HomeScreenApi(baseUrl, httpClientConfig = {
+            it.default()
+        })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
+    }
+
+    factory {
+        val api = FollowingsApi(baseUrl, httpClientConfig = {
             it.default()
         })
         api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")

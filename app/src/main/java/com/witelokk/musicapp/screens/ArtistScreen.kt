@@ -23,6 +23,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Factory
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -148,6 +152,13 @@ fun ArtistScreen(
                     )
                 }
             }, actions = {
+                IconButton(onClick = { viewModel.toggleFollowing() }) {
+                    Icon(
+                        if (state.artist?.following == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = null,
+                        tint = if (state.artist?.following == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 IconButton(onClick = {
                     viewModel.playAllSongs()
                 }) {

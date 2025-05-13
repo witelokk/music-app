@@ -59,4 +59,5 @@
     <string name="no_favorite_songs">No favorite songs</string>
     <string name="queue_is_empty">Queue is empty</string>
     <string name="playlist">Playlist</string>
+    <string name="followed_artists">Followed Artists</string>
 </resources>

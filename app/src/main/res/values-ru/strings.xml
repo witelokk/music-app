@@ -58,4 +58,5 @@
     <string name="no_favorite_songs">У вас нет понравившихся песен</string>
     <string name="queue_is_empty">Очередь пуста</string>
     <string name="playlist">Плейлист</string>
+    <string name="followed_artists">Отслеживаемые исполнители</string>
 </resources>

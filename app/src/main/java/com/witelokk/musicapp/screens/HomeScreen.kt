@@ -262,6 +262,33 @@ fun HomeScreen(
                                 }
                             }
                         }
+                        if (state.layout.followedArtists.count != 0) {
+                            item {
+                                Text(
+                                    stringResource(R.string.followed_artists),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    modifier = Modifier.padding(24.dp)
+                                )
+
+                                LazyRow(
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(state.layout.followedArtists.artists) { artist ->
+                                        EntityCard(Entity(
+                                            artist.name,
+                                            stringResource(R.string.artist),
+                                            artist.avatarUrl
+                                        ),
+                                            modifier = Modifier.clickable {
+                                                navController.navigate(
+                                                    ArtistScreenRoute(artist.id)
+                                                )
+                                            })
+                                    }
+                                }
+                            }
+                        }
                         items(state.layout.sections) { section ->
                             Text(
                                 section.title,
