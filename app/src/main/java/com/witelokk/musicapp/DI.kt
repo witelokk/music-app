@@ -131,19 +131,19 @@ val appModule = module {
         Auth(get(), get(), get())
     }
 
-    single {
+    factory {
         AuthApi(baseUrl, httpClientConfig = {
             it.default()
         })
     }
 
-    single {
+    factory {
         UsersApi(baseUrl, httpClientConfig = {
             it.default()
         })
     }
 
-    single {
+    factory {
         val searchApi = SearchApi(baseUrl, httpClientConfig = {
             it.default()
         })
@@ -151,7 +151,7 @@ val appModule = module {
         searchApi
     }
 
-    single {
+    factory {
         val api = ArtistsApi(baseUrl, httpClientConfig = {
             it.default()
         })
@@ -159,7 +159,7 @@ val appModule = module {
         api
     }
 
-    single {
+    factory {
         val api = FavoritesApi(baseUrl, httpClientConfig = {
             it.default()
         })
@@ -167,8 +167,7 @@ val appModule = module {
         api
     }
 
-
-    single {
+    factory {
         val api = PlaylistsApi(baseUrl, httpClientConfig = {
             it.default()
         })
@@ -176,7 +175,7 @@ val appModule = module {
         api
     }
 
-    single {
+    factory {
         val api = FavoritesApi(baseUrl, httpClientConfig = {
             it.default()
         })
@@ -184,7 +183,7 @@ val appModule = module {
         api
     }
 
-    single {
+    factory {
         val api = ReleasesApi(baseUrl, httpClientConfig = {
             it.default()
         })
