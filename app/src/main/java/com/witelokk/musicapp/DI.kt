@@ -138,9 +138,11 @@ val appModule = module {
     }
 
     factory {
-        UsersApi(baseUrl, httpClientConfig = {
+        val api = UsersApi(baseUrl, httpClientConfig = {
             it.default()
         })
+        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
+        api
     }
 
     factory {

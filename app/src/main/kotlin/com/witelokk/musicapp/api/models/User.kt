@@ -23,22 +23,18 @@ import kotlinx.serialization.Contextual
 /**
  * 
  *
- * @param id 
  * @param name 
- * @param avatarUrl 
+ * @param email 
  */
 @Serializable
 
-data class ArtistSummary (
-
-    @SerialName(value = "id")
-    val id: kotlin.String,
+data class User (
 
     @SerialName(value = "name")
     val name: kotlin.String,
 
-    @SerialName(value = "avatar_url")
-    val avatarUrl: kotlin.String? = null
+    @SerialName(value = "email")
+    val email: kotlin.String
 
 ) {
 

@@ -49,6 +49,7 @@ class Auth(
 
         sharedPreferences.edit()
             .putString("access_token", response.body().accessToken)
+            .putString("accountEmail", email)
             .apply()
     }
 

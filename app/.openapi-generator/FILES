@@ -21,8 +21,8 @@ src/main/kotlin/com/witelokk/musicapp/api/infrastructure/RequestConfig.kt
 src/main/kotlin/com/witelokk/musicapp/api/infrastructure/RequestMethod.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/AddFavoriteSongRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/AddSongToPlaylistRequest.kt
-src/main/kotlin/com/witelokk/musicapp/api/models/AristSummary.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/Artist.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/ArtistSummary.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/ArtistsSummary.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/CreatePlaylistRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/CreatePlaylistResponse.kt
@@ -45,4 +45,5 @@ src/main/kotlin/com/witelokk/musicapp/api/models/StopFollowingRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/TokensRequest.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/TokensResponse.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/UpdatePlaylistRequest.kt
+src/main/kotlin/com/witelokk/musicapp/api/models/User.kt
 src/main/kotlin/com/witelokk/musicapp/api/models/VerificationCodeRequest.kt

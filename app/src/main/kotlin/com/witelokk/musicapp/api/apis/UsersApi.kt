@@ -17,6 +17,7 @@ package com.witelokk.musicapp.api.apis
 
 import com.witelokk.musicapp.api.models.CreateUserRequest
 import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.User
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClientConfig
@@ -33,6 +34,38 @@ import io.ktor.http.ParametersBuilder
         httpClientEngine,
         httpClientConfig,
     ) {
+
+        /**
+        * 
+        * Get info about current user
+         * @return User
+        */
+            @Suppress("UNCHECKED_CAST")
+        open suspend fun usersMeGet(): HttpResponse<User> {
+
+            val localVariableAuthNames = listOf<String>("Authorization")
+
+            val localVariableBody = 
+                    io.ktor.client.utils.EmptyContent
+
+            val localVariableQuery = mutableMapOf<String, List<String>>()
+
+            val localVariableHeaders = mutableMapOf<String, String>()
+
+            val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.GET,
+            "/users/me",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+            )
+
+            return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+            ).wrap()
+            }
 
         /**
         * 
