@@ -266,7 +266,8 @@ fun HomeScreen(
                                 items(state.layout.playlists.playlists) { playlist ->
                                     EntityCard(Entity(
                                         playlist.name,
-                                        stringResource(R.string.playlist),
+//                                        stringResource(R.string.playlist),
+                                        null,
                                         playlist.coverUrl
                                     ),
                                         modifier = Modifier.clickable {

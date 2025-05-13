@@ -22,7 +22,7 @@ fun AddCard(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .width(155.dp)
-                    .height(212.dp),
+                    .height(211.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

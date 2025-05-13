@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
@@ -46,11 +47,22 @@ fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
                 onError = { isImageLoading = false },
                 contentDescription = null,
                 error = painterResource(R.drawable.artist_placeholder),
-                // TODO: FIX NOT SHOWING IMAGE AND ADD THE SAME STUFF TO PLAYER
             )
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(entity.name, style = MaterialTheme.typography.titleMedium)
-                Text(entity.type, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    entity.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (!entity.type.isNullOrBlank()) {
+                    Text(
+                        entity.type,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
