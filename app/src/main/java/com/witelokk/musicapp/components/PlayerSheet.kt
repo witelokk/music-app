@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
@@ -86,7 +87,7 @@ fun PlayerSheetScaffold(
                 modifier
             )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
-        content(innerPadding)
+        content(if (playerState == null) innerPadding.withoutBottom() else innerPadding)
     }
 
     BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {

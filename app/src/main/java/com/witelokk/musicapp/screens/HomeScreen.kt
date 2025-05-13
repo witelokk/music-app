@@ -45,6 +45,7 @@ import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.data.HomeLayout
+import com.witelokk.musicapp.withoutBottom
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -172,7 +173,7 @@ fun HomeScreen(
             viewModel.changeSongFavorite(song, favorite)
         },
     ) { innerPadding ->
-        Column {
+        Column(modifier = Modifier.padding(innerPadding.withoutBottom())) {
             Search(
                 navController,
                 expanded = searchExpanded,
@@ -234,7 +235,7 @@ fun HomeScreen(
                     })
                 }
             }
-            LazyColumn(contentPadding = innerPadding) {
+            LazyColumn {
                 item {
                     Text(
                         stringResource(R.string.playlists),
@@ -279,7 +280,7 @@ fun HomeScreen(
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 24.dp))
                 }
             }
         }

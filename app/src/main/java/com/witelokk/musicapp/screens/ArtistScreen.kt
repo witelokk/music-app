@@ -42,12 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.add
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
+import com.witelokk.musicapp.withoutBottom
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -105,7 +107,7 @@ fun ArtistScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
-        onChangeFavorite = {song, favorite ->
+        onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
         topBar = {
@@ -126,12 +128,13 @@ fun ArtistScreen(
                     Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
                 }
             }, scrollBehavior = scrollBehavior)
-        }) {
+        }) { innerPaddings ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp).add(bottom = 8.dp + innerPaddings.calculateBottomPadding()),
             modifier = Modifier
+                .padding(innerPaddings.withoutBottom())
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             item(span = { GridItemSpan(2) }) {

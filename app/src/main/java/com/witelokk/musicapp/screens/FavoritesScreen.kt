@@ -2,6 +2,8 @@ package com.witelokk.musicapp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,6 +35,7 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
+import com.witelokk.musicapp.withoutBottom
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,8 +97,8 @@ fun FavoritesScreen(
             viewModel.changeSongFavorite(song, favorite)
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn {
+        Box(modifier = Modifier.padding(innerPadding.withoutBottom()).fillMaxSize()) {
+            LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding()+24.dp)) {
                 items(state.songs) { song ->
                     SongListItem(
                         song = song,

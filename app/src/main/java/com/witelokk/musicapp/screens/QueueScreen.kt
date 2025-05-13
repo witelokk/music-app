@@ -2,6 +2,7 @@ package com.witelokk.musicapp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,6 +33,7 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
+import com.witelokk.musicapp.withoutBottom
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,13 +87,13 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.padding(innerPadding.withoutBottom()).fillMaxSize()) {
             if (state.songs.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text("Queue is empty")
                 }
             }
-            LazyColumn {
+            LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                 items(state.songs.size) { i ->
                     val song = state.songs[i]
                     SongListItem(

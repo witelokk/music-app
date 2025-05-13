@@ -2,6 +2,7 @@ package com.witelokk.musicapp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,7 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
+import com.witelokk.musicapp.withoutBottom
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -115,17 +117,19 @@ fun PlaylistReleaseScreen(
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
-        onChangeFavorite = {song, favorite ->
+        onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(innerPadding.withoutBottom())
+            .fillMaxSize()) {
             if (state.songs.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(stringResource(R.string.playlist_is_empty))
                 }
             }
-            LazyColumn {
+            LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                 items(state.songs) { song ->
                     SongListItem(
                         song = song,
