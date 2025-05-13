@@ -55,4 +55,6 @@
     <string name="add_to_queue">Добавить в очередь</string>
     <string name="remove_from_queue">Удалить из очереди</string>
     <string name="remove_from_favorite_songs">Удалить из понравившихся песен</string>
+    <string name="no_favorite_songs">У вас нет понравившихся песен</string>
+    <string name="queue_is_empty">Очередь пуста</string>
 </resources>

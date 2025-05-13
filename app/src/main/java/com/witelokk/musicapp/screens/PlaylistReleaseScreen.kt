@@ -1,5 +1,8 @@
 package com.witelokk.musicapp.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +41,7 @@ import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import com.witelokk.musicapp.withoutBottom
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -71,6 +77,16 @@ fun PlaylistReleaseScreen(
     LaunchedEffect(showAddToPlaylistDialog) {
         if (showAddToPlaylistDialog) {
             viewModel.loadPlaylists()
+        }
+    }
+
+    var showLoadingIndicator by remember { mutableStateOf(false) }
+    LaunchedEffect(state.isLoading) {
+        if (state.isLoading) {
+            delay(1000) // delay for 1 second
+            showLoadingIndicator = true
+        } else {
+            showLoadingIndicator = false
         }
     }
 
@@ -121,38 +137,54 @@ fun PlaylistReleaseScreen(
             viewModel.changeSongFavorite(song, favorite)
         },
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .padding(innerPadding.withoutBottom())
-            .fillMaxSize()) {
-            if (state.songs.isEmpty()) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(stringResource(R.string.playlist_is_empty))
-                }
+        if (showLoadingIndicator) {
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-            LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                items(state.songs) { song ->
-                    SongListItem(
-                        song = song,
-                        isPlaying = state.playerState?.song?.id == song.id,
-                        onFavoriteClick = { viewModel.toggleSongFavorite(song) },
-                        modifier = Modifier
-                            .clickable { viewModel.playSong(song) }
-                            .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.add_to_playlist)) },
-                            onClick = {
-                                menuExpanded.value = false
-                                songIdToAddToPlaylists = song.id
-                                showAddToPlaylistDialog = true
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.add_to_playlist)) },
-                            onClick = {
-                                viewModel.addSongToQueue(song)
-                                menuExpanded.value = false
-                            }
-                        )
+        } else {
+            AnimatedVisibility(
+                visible = !state.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                if (state.songs.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(stringResource(R.string.playlist_is_empty))
+                    }
+                }
+                LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
+                    items(state.songs) { song ->
+                        SongListItem(
+                            song = song,
+                            isPlaying = state.playerState?.song?.id == song.id,
+                            onFavoriteClick = { viewModel.toggleSongFavorite(song) },
+                            modifier = Modifier
+                                .clickable { viewModel.playSong(song) }
+                                .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.add_to_playlist)) },
+                                onClick = {
+                                    menuExpanded.value = false
+                                    songIdToAddToPlaylists = song.id
+                                    showAddToPlaylistDialog = true
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.add_to_playlist)) },
+                                onClick = {
+                                    viewModel.addSongToQueue(song)
+                                    menuExpanded.value = false
+                                }
+                            )
+                        }
                     }
                 }
             }

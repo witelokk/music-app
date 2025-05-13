@@ -87,10 +87,12 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding.withoutBottom()).fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(innerPadding.withoutBottom())
+            .fillMaxSize()) {
             if (state.songs.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text("Queue is empty")
+                    Text(stringResource(R.string.queue_is_empty))
                 }
             }
             LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {

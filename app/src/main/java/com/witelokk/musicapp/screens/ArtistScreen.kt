@@ -1,12 +1,18 @@
 package com.witelokk.musicapp.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -32,8 +39,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -50,6 +59,7 @@ import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.withoutBottom
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -66,6 +76,16 @@ fun ArtistScreen(
     viewModel: ArtistScreenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+
+    var showLoadingIndicator by remember { mutableStateOf(false) }
+    LaunchedEffect(state.isLoading) {
+        if (state.isLoading) {
+            delay(1000) // delay for 1 second
+            showLoadingIndicator = true
+        } else {
+            showLoadingIndicator = false
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadArtist(artist.id)
@@ -112,8 +132,14 @@ fun ArtistScreen(
         },
         topBar = {
             TopAppBar({
-                Column {
-                    Text(state.artist?.name ?: "name")
+                AnimatedVisibility(
+                    visible = !state.isLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Column {
+                        Text(state.artist?.name ?: "")
+                    }
                 }
             }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
@@ -128,121 +154,138 @@ fun ArtistScreen(
                     Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
                 }
             }, scrollBehavior = scrollBehavior)
-        }) { innerPaddings ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp).add(bottom = 8.dp + innerPaddings.calculateBottomPadding()),
-            modifier = Modifier
-                .padding(innerPaddings.withoutBottom())
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-        ) {
-            item(span = { GridItemSpan(2) }) {
-                Column {
-                    AsyncImage(
-                        state.artist?.coverUrl ?: "", null, modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(
-                                RoundedCornerShape(16.dp)
-                            )
-                            .aspectRatio(21f / 9)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        stringResource(R.string.popular),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
-                    )
-                }
+        }) { innerPadding ->
+        if (showLoadingIndicator) {
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-
-            items(
-                state.artist?.popularSongs?.songs ?: listOf(),
-                span = { GridItemSpan(2) }) { song ->
-                SongListItem(
-                    song = song,
-                    showDuration = true,
+        } else {
+            AnimatedVisibility(
+                visible = !state.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp).add(bottom = 8.dp + innerPadding.calculateBottomPadding()),
                     modifier = Modifier
-                        .clickable {
-                            viewModel.playPopularSong(song)
-                        }
-                        .padding(horizontal = 4.dp, vertical = 8.dp),
-                    onFavoriteClick = {
-                        viewModel.toggleSongFavorite(song)
-                    },
-                    isPlaying = (song.id == state.playerState?.song?.id),
-                ) { menuExpanded ->
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.add_to_playlist)) },
-                        onClick = {
-                            menuExpanded.value = false
-                            songIdToAddToPlaylists = song.id
-                            showAddToPlaylistDialog = true
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.add_to_playlist)) },
-                        onClick = {
-                            viewModel.addSongToQueue(song)
-                            menuExpanded.value = false
-                        }
-                    )
-                }
-            }
+                        .padding(innerPadding.withoutBottom())
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                ) {
+                    item(span = { GridItemSpan(2) }) {
+                        Column {
+                            AsyncImage(
+                                state.artist?.coverUrl ?: "", null, modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(
+                                        RoundedCornerShape(16.dp)
+                                    )
+                                    .aspectRatio(21f / 9)
+                            )
 
-            item(span = { GridItemSpan(2) }) {
-                Column {
-                    Text(
-                        stringResource(R.string.releases),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
-                    )
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(albumsFilter,
-                            onClick = {
-                                albumsFilter = !albumsFilter;
-                                singlesEPFilter = false;
-                                if (albumsFilter) {
-                                    viewModel.filterReleases("album")
-                                }
-                            },
-                            { Text(stringResource(R.string.albums)) })
-                        FilterChip(singlesEPFilter,
-                            onClick = {
-                                singlesEPFilter = !singlesEPFilter; albumsFilter = false;
-                                if (singlesEPFilter) {
-                                    viewModel.filterReleases("single")
-                                }
-                            },
-                            { Text(stringResource(R.string.singles_and_eps)) })
+                            Text(
+                                stringResource(R.string.popular),
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-            }
-
-            items(state.filteredArtist?.releases?.releases ?: listOf()) { release ->
-                EntityCard(Entity(
-                    name = release.name,
-                    type = when (release.type) {
-                        "single" -> stringResource(R.string.single)
-                        "album" -> stringResource(R.string.album)
-                        else -> release.type
-                    } + ", " + release.releasedAt.substring(0, 4),
-                    pictureUrl = release.coverUrl
-                ), modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .clickable {
-                        navController.navigate(
-                            PlaylistReleaseScreenRoute(
-                                PlaylistReleaseScreenType.RELEASE,
-                                release.id
+                    items(
+                        state.artist?.popularSongs?.songs ?: listOf(),
+                        span = { GridItemSpan(2) }) { song ->
+                        SongListItem(
+                            song = song,
+                            showDuration = true,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.playPopularSong(song)
+                                }
+                                .padding(horizontal = 4.dp, vertical = 8.dp),
+                            onFavoriteClick = {
+                                viewModel.toggleSongFavorite(song)
+                            },
+                            isPlaying = (song.id == state.playerState?.song?.id),
+                        ) { menuExpanded ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.add_to_playlist)) },
+                                onClick = {
+                                    menuExpanded.value = false
+                                    songIdToAddToPlaylists = song.id
+                                    showAddToPlaylistDialog = true
+                                }
                             )
-                        )
-                    })
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.add_to_playlist)) },
+                                onClick = {
+                                    viewModel.addSongToQueue(song)
+                                    menuExpanded.value = false
+                                }
+                            )
+                        }
+                    }
+
+                    item(span = { GridItemSpan(2) }) {
+                        Column {
+                            Text(
+                                stringResource(R.string.releases),
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                            )
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FilterChip(albumsFilter,
+                                    onClick = {
+                                        albumsFilter = !albumsFilter;
+                                        singlesEPFilter = false;
+                                        if (albumsFilter) {
+                                            viewModel.filterReleases("album")
+                                        }
+                                    },
+                                    { Text(stringResource(R.string.albums)) })
+                                FilterChip(singlesEPFilter,
+                                    onClick = {
+                                        singlesEPFilter = !singlesEPFilter; albumsFilter = false;
+                                        if (singlesEPFilter) {
+                                            viewModel.filterReleases("single")
+                                        }
+                                    },
+                                    { Text(stringResource(R.string.singles_and_eps)) })
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                    }
+
+                    items(state.filteredArtist?.releases?.releases ?: listOf()) { release ->
+                        EntityCard(Entity(
+                            name = release.name,
+                            type = when (release.type) {
+                                "single" -> stringResource(R.string.single)
+                                "album" -> stringResource(R.string.album)
+                                else -> release.type
+                            } + ", " + release.releasedAt.substring(0, 4),
+                            pictureUrl = release.coverUrl
+                        ), modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .clickable {
+                                navController.navigate(
+                                    PlaylistReleaseScreenRoute(
+                                        PlaylistReleaseScreenType.RELEASE,
+                                        release.id
+                                    )
+                                )
+                            })
+                    }
+                }
             }
         }
     }

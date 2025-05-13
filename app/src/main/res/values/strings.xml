@@ -56,4 +56,6 @@
     <string name="add_to_queue">Add to queue</string>
     <string name="remove_from_queue">Remove from queue</string>
     <string name="remove_from_favorite_songs">Remove from Favorite songs</string>
+    <string name="no_favorite_songs">No favorite songs</string>
+    <string name="queue_is_empty">Queue is empty</string>
 </resources>

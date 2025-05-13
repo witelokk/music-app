@@ -154,9 +154,6 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(searchQuery) {
-    }
-
     PlayerSheetScaffold(
         navController,
         playerState = state.playerState,
