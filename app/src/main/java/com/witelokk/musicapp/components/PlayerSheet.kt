@@ -68,7 +68,7 @@ fun PlayerSheetScaffold(
     LaunchedEffect(playerState) {
         if (playerState == null) {
             scaffoldState.bottomSheetState.hide()
-        } else if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded) {
+        } else if (scaffoldState.bottomSheetState.targetValue != SheetValue.Expanded) {
             scaffoldState.bottomSheetState.show()
         }
     }

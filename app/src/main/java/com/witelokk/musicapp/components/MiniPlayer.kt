@@ -59,8 +59,7 @@ fun MiniPlayer(
                             modifier = Modifier.basicMarquee()
                         )
                         Text(
-                            playerState.song.artists.joinToString(", ") { it.name }
-                                ?: "",
+                            playerState.song.artists.joinToString(", ") { it.name },
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.basicMarquee()
                         )
