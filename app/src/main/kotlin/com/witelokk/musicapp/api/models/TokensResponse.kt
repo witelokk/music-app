@@ -24,13 +24,17 @@ import kotlinx.serialization.Contextual
  * 
  *
  * @param accessToken 
+ * @param refreshToken 
  */
 @Serializable
 
 data class TokensResponse (
 
     @SerialName(value = "accessToken")
-    val accessToken: kotlin.String
+    val accessToken: kotlin.String,
+
+    @SerialName(value = "refreshToken")
+    val refreshToken: kotlin.String
 
 ) {
 

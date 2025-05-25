@@ -27,6 +27,7 @@ import kotlinx.serialization.Contextual
  * @param email 
  * @param code 
  * @param googleToken 
+ * @param refreshToken 
  */
 @Serializable
 
@@ -42,7 +43,10 @@ data class TokensRequest (
     val code: kotlin.String? = null,
 
     @SerialName(value = "google_token")
-    val googleToken: kotlin.String? = null
+    val googleToken: kotlin.String? = null,
+
+    @SerialName(value = "refresh_token")
+    val refreshToken: kotlin.String? = null
 
 ) {
 
