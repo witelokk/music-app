@@ -145,7 +145,9 @@ fun SheetContent(
 
             Column {
                 MiniPlayer(
-                    playerState,
+                    playerState.currentSong,
+                    (1f * (playerState.currentPosition.inWholeSeconds)) / (playerState.currentSong.durationSeconds),
+                    playerState.playing,
                     onPlayPause,
                     onChangeFavorite,
                     modifier = Modifier.padding(horizontal = 16.dp)

@@ -121,7 +121,7 @@ fun HomeScreen(
         }
     }
 
-    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
+    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showAddToPlaylistDialog) {

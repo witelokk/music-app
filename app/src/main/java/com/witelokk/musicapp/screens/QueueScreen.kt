@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,7 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsState()
 
-    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
+    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showAddToPlaylistDialog) {

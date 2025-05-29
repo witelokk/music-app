@@ -94,7 +94,7 @@ fun ArtistScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
-    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
+    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var albumsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
 

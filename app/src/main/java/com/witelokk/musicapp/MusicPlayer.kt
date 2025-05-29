@@ -51,7 +51,7 @@ class MusicPlayer
             override fun run() {
                 val position = controller.currentPosition
                 onCurrentPositionChanged(position)
-                handler.postDelayed(this, 500)
+                handler.postDelayed(this, 1000)
             }
         }
         handler.post(runnable)

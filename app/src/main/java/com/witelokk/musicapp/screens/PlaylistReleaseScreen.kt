@@ -70,7 +70,7 @@ fun PlaylistReleaseScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
+    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlaylistDialog by rememberSaveable { mutableStateOf(false) }
