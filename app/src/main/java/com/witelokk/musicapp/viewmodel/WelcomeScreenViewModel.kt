@@ -23,6 +23,7 @@ import java.security.MessageDigest
 import java.util.UUID
 
 data class WelcomeScreenState(
+    var isCheckingAuthorization: Boolean = true,
     var isAuthorized: Boolean = false,
     var signInFailed: Boolean = false,
 )
@@ -46,6 +47,9 @@ class WelcomeScreenViewModel(
             _state.update {
                 it.copy(isAuthorized = true)
             }
+        }
+        _state.update {
+            it.copy(isCheckingAuthorization = false)
         }
     }
 

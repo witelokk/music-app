@@ -59,7 +59,6 @@ fun SettingsScreen(
             }
         }
     }
-
     Scaffold(topBar = {
         TopAppBar(title = { Text(stringResource(R.string.settings)) }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {

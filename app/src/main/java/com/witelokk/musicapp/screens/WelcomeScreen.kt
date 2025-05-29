@@ -1,5 +1,6 @@
 package com.witelokk.musicapp.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,59 +61,61 @@ fun WelcomeScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                painterResource(R.drawable.music),
-                "",
-                modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                stringResource(R.string.welcome_message),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { navController.navigate("login") },
-                modifier = Modifier.requiredWidth(284.dp)
+        AnimatedVisibility(!state.isCheckingAuthorization && !state.isAuthorized) {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(R.string.sign_in))
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            OutlinedButton(
-                onClick = { navController.navigate(Registration()) },
-                modifier = Modifier.requiredWidth(284.dp)
-            ) {
-                Text(stringResource(R.string.sign_up))
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(stringResource(R.string.sign_in_with))
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            IconButton(onClick = {
-                viewModel.signInWithGoogle()
-            }) {
-                Image(
-                    painterResource(R.drawable.google),
-                    contentScale = ContentScale.FillWidth,
-                    contentDescription = stringResource(R.string.sign_in_with_google)
+                Icon(
+                    painterResource(R.drawable.music),
+                    "",
+                    modifier = Modifier.size(96.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    stringResource(R.string.welcome_message),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { navController.navigate("login") },
+                    modifier = Modifier.requiredWidth(284.dp)
+                ) {
+                    Text(stringResource(R.string.sign_in))
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                OutlinedButton(
+                    onClick = { navController.navigate(Registration()) },
+                    modifier = Modifier.requiredWidth(284.dp)
+                ) {
+                    Text(stringResource(R.string.sign_up))
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(stringResource(R.string.sign_in_with))
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                IconButton(onClick = {
+                    viewModel.signInWithGoogle()
+                }) {
+                    Image(
+                        painterResource(R.drawable.google),
+                        contentScale = ContentScale.FillWidth,
+                        contentDescription = stringResource(R.string.sign_in_with_google)
+                    )
+                }
             }
         }
     }
