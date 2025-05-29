@@ -48,6 +48,7 @@ class Auth(
 
         sharedPreferences.edit()
             .putString("access_token", response.body().accessToken)
+            .putString("refresh_token", response.body().refreshToken)
             .putString("accountEmail", email)
             .apply()
     }

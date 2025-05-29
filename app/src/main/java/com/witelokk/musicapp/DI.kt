@@ -32,7 +32,9 @@ import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
+import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -139,16 +141,27 @@ val appModule = module {
         })
     }
 
+    single {
+        val authInterceptor = AuthInterceptor(get(), get())
+
+        val client = HttpClient(OkHttp) {
+            engine {
+                addInterceptor(authInterceptor)
+            }
+        }
+    
+        client.engine
+    }
+
     factory {
-        val api = UsersApi(baseUrl, httpClientConfig = {
+        val api = UsersApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val searchApi = SearchApi(baseUrl, httpClientConfig = {
+        val searchApi = SearchApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
         searchApi.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
@@ -156,58 +169,51 @@ val appModule = module {
     }
 
     factory {
-        val api = ArtistsApi(baseUrl, httpClientConfig = {
+        val api = ArtistsApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = FavoritesApi(baseUrl, httpClientConfig = {
+        val api = FavoritesApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = PlaylistsApi(baseUrl, httpClientConfig = {
+        val api = PlaylistsApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = FavoritesApi(baseUrl, httpClientConfig = {
+        val api = FavoritesApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = ReleasesApi(baseUrl, httpClientConfig = {
+        val api = ReleasesApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = HomeScreenApi(baseUrl, httpClientConfig = {
+        val api = HomeScreenApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
     factory {
-        val api = FollowingsApi(baseUrl, httpClientConfig = {
+        val api = FollowingsApi(baseUrl, get(), httpClientConfig = {
             it.default()
         })
-        api.setBearerToken(get<SharedPreferences>().getString("access_token", "") ?: "")
         api
     }
 
