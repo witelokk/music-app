@@ -113,7 +113,9 @@ fun Player(
     }
 
     LaunchedEffect(pagerState.targetPage) {
-        onPlaySongInQueue(pagerState.targetPage)
+        if (playerState.currentSongIndex != pagerState.targetPage) {
+            onPlaySongInQueue(pagerState.targetPage)
+        }
     }
 
     Column(
