@@ -83,29 +83,33 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
             songIdToAddToPlaylists = song.id
             showAddToPlaylistDialog = true
         },
-        onChangeFavorite = {song, favorite ->
+        onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
         onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .padding(innerPadding.withoutBottom())
-            .fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(innerPadding.withoutBottom())
+                .fillMaxSize()
+        ) {
             if (state.songs.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(stringResource(R.string.queue_is_empty))
                 }
             }
             LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                itemsIndexed(state.songs) { i, song ->
+                itemsIndexed(state.songs, key = { _, song -> song.id }) { i, song ->
                     SongListItem(
                         song = song,
                         isPlaying = i == 0,
                         onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp))  { menuExpanded ->
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .animateItem()
+                    ) { menuExpanded ->
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.add_to_playlist)) },
                             onClick = {

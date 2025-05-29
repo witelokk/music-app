@@ -129,19 +129,26 @@ fun FavoritesScreen(
                 exit = fadeOut()
             ) {
                 if (state.songs.isEmpty()) {
-                    Box(modifier = Modifier.padding(innerPadding).fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(stringResource(R.string.no_favorite_songs))
                     }
                 }
                 LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                    items(state.songs) { song ->
+                    items(state.songs, key = { it.id }) { song ->
                         SongListItem(
                             song = song,
                             isPlaying = state.playerState?.currentSong?.id == song.id,
                             showFavorite = false,
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }
-                                .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
+                                .padding(horizontal = 20.dp, vertical = 8.dp)
+                                .animateItem()
+                        ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.remove_from_favorite_songs)) },
                                 onClick = {
