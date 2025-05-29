@@ -32,7 +32,7 @@ fun Card(
     subtitle: String? = null,
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
-    OutlinedCard(modifier = modifier.width(155.dp)) {
+    OutlinedCard(modifier = modifier.width(165.dp)) {
         Column {
             if (isImageLoading) {
                 Box(

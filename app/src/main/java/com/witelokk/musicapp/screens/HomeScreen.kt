@@ -36,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -319,7 +320,7 @@ fun HomeScreen(
                         }
                         items(state.layout.sections) { section ->
                             Text(
-                                section.title,
+                                if (LocalConfiguration.current.locales[0].language == "ru") section.titleRu else section.title,
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(24.dp)
                             )

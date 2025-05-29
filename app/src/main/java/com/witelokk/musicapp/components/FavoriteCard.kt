@@ -21,11 +21,11 @@ import com.witelokk.musicapp.R
 
 @Composable
 fun FavoriteCard(modifier: Modifier = Modifier) {
-    OutlinedCard(modifier = modifier.width(155.dp)) {
+    OutlinedCard(modifier = modifier.width(165.dp)) {
         Column {
             Box(
                 modifier = Modifier
-                    .size(155.dp)
+                    .size(165.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
