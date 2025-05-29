@@ -100,7 +100,8 @@ class MusicPlayer
     private fun onCurrentPositionChanged(currentPosition: Long) {
         _state.update {
             it?.copy(
-                currentPosition = currentPosition.milliseconds
+                currentPosition = currentPosition.milliseconds,
+                playing = controller.isPlaying,
             )
         }
     }
