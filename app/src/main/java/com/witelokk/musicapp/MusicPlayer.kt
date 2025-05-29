@@ -82,10 +82,10 @@ class MusicPlayer
     }
 
     private fun onMediaItemChanged(mediaItem: MediaItem?) {
-        queue.find { it.streamUrl == mediaItem?.mediaId }.let { song ->
+        queue.find { it.streamUrl == mediaItem?.mediaId }?.let { song ->
             _state.update {
                 PlayerState(
-                    currentSong = song!!,
+                    currentSong = song,
                     currentSongIndex = queue.indexOf(song),
                     playing = false,
                     currentPosition = 0.seconds,
@@ -186,12 +186,29 @@ class MusicPlayer
             controller.prepare()
         }
 
+        if (song in queue) {
+            removeFromQueue(queue.indexOf(song))
+        }
+
         val currentSongIndex = controller.currentMediaItemIndex
-        queue.add(currentSongIndex + 1, song)
+        if (queue.isEmpty()) {
+            setQueueAndPlay(listOf(song), 0)
+            controller.pause()
+        } else {
+            queue.add(currentSongIndex + 1, song)
+        }
         controller.addMediaItem(currentSongIndex + 1, createMediaItem(song))
     }
 
     fun removeFromQueue(index: Int) {
+        if (index == 0 && queue.size == 1) {
+            controller.stop()
+            queue.clear()
+            controller.clearMediaItems()
+            _state.update { null }
+            return
+        }
+
         controller.removeMediaItem(index)
         val newQueue = arrayListOf<Song>()
         queue.forEachIndexed { i, song ->
