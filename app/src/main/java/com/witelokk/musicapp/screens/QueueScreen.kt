@@ -86,6 +86,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         onChangeFavorite = {song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
+        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Box(modifier = Modifier

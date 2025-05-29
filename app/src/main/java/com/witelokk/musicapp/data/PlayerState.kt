@@ -4,7 +4,8 @@ import com.witelokk.musicapp.api.models.Song
 import kotlin.time.Duration
 
 data class PlayerState(
-    val song: Song,
+    val currentSong: Song,
+    val currentSongIndex: Int,
     val playing: Boolean,
     val currentPosition: Duration,
     val previousTrackAvailable: Boolean,

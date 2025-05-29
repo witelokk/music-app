@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
@@ -42,7 +40,6 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
-import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
@@ -114,6 +111,7 @@ fun FavoritesScreen(
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
+        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
     ) { innerPadding ->
         if (showLoadingIndicator) {
             Box(
@@ -139,7 +137,7 @@ fun FavoritesScreen(
                     items(state.songs) { song ->
                         SongListItem(
                             song = song,
-                            isPlaying = state.playerState?.song?.id == song.id,
+                            isPlaying = state.playerState?.currentSong?.id == song.id,
                             showFavorite = false,
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

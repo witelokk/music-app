@@ -42,7 +42,7 @@ fun MiniPlayer(
     Box(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                playerState.song.coverUrl ?: "",
+                playerState.currentSong.coverUrl ?: "",
                 modifier = Modifier
                     .height(70.dp)
                     .clip(RoundedCornerShape(12)),
@@ -54,26 +54,26 @@ fun MiniPlayer(
                 Row {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            playerState.song.name,
+                            playerState.currentSong.name,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.basicMarquee()
                         )
                         Text(
-                            playerState.song.artists.joinToString(", ") { it.name },
+                            playerState.currentSong.artists.joinToString(", ") { it.name },
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.basicMarquee()
                         )
                     }
                     IconButton(onClick = {
                         onChangeFavorite(
-                            playerState.song,
-                            !playerState.song.isFavorite
+                            playerState.currentSong,
+                            !playerState.currentSong.isFavorite
                         )
                     }) {
                         Icon(
-                            if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            if (playerState.currentSong.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = null,
-                            tint = if (playerState.song.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            tint = if (playerState.currentSong.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = { onPlayPause() }) {
@@ -89,7 +89,7 @@ fun MiniPlayer(
 
                 LinearProgressIndicator(
                     progress = {
-                        (1f * (playerState.currentPosition.inWholeSeconds)) / (playerState.song.durationSeconds)
+                        (1f * (playerState.currentPosition.inWholeSeconds)) / (playerState.currentSong.durationSeconds)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

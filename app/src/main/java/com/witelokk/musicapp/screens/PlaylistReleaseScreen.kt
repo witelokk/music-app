@@ -186,6 +186,7 @@ fun PlaylistReleaseScreen(
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
+        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
     ) { innerPadding ->
         if (showLoadingIndicator) {
             Box(
@@ -214,7 +215,7 @@ fun PlaylistReleaseScreen(
                     items(state.songs) { song ->
                         SongListItem(
                             song = song,
-                            isPlaying = state.playerState?.song?.id == song.id,
+                            isPlaying = state.playerState?.currentSong?.id == song.id,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

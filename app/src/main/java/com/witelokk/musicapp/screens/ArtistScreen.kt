@@ -3,7 +3,6 @@ package com.witelokk.musicapp.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Factory
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
@@ -134,6 +131,7 @@ fun ArtistScreen(
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
+        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
         topBar = {
             TopAppBar({
                 AnimatedVisibility(
@@ -224,7 +222,7 @@ fun ArtistScreen(
                             onFavoriteClick = {
                                 viewModel.toggleSongFavorite(song)
                             },
-                            isPlaying = (song.id == state.playerState?.song?.id),
+                            isPlaying = (song.id == state.playerState?.currentSong?.id),
                         ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_to_playlist)) },

@@ -38,7 +38,7 @@ class QueueScreenViewModel(
     init {
         viewModelScope.launch {
             musicPlayer.state.collect { playerState ->
-                val currentIndex = playerState?.queue?.indexOf(playerState.song) ?: -1
+                val currentIndex = playerState?.queue?.indexOf(playerState.currentSong) ?: -1
                 if (currentIndex > 0) {
                     _state.update {
                         it.copy(
@@ -95,7 +95,7 @@ class QueueScreenViewModel(
 
     fun removeSongFromQueue(index: Int) {
         musicPlayer.state.value?.let { playerState ->
-            musicPlayer.removeFromQueue(index + playerState.queue.indexOf(playerState.song))
+            musicPlayer.removeFromQueue(index + playerState.queue.indexOf(playerState.currentSong))
         }
     }
 

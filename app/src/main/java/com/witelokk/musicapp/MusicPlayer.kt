@@ -85,7 +85,8 @@ class MusicPlayer
         queue.find { it.streamUrl == mediaItem?.mediaId }.let { song ->
             _state.update {
                 PlayerState(
-                    song = song!!,
+                    currentSong = song!!,
+                    currentSongIndex = queue.indexOf(song),
                     playing = false,
                     currentPosition = 0.seconds,
                     previousTrackAvailable = false,
@@ -204,7 +205,7 @@ class MusicPlayer
     fun updateSong(song: Song) {
         if (queue.isNotEmpty() && queue[controller.currentMediaItemIndex].id == song.id) {
             _state.update {
-                it?.copy(song = song)
+                it?.copy(currentSong = song, currentSongIndex = queue.indexOf(song))
             }
         }
 

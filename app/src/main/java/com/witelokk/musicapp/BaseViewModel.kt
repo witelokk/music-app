@@ -50,4 +50,8 @@ abstract class BaseViewModel(
     open fun changeSongFavorite(song: Song, favorite: Boolean) {
         musicPlayer.updateSong(song.copy(isFavorite = favorite))
     }
+
+    fun playSongInQueue(index: Int) {
+        musicPlayer.playSongInQueue(index)
+    }
 }

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,14 +24,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -41,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +55,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
@@ -78,7 +75,7 @@ fun calculateSliderPosition(playerState: PlayerState?): Float {
         return 0f
     }
 
-    return (1f * (playerState.currentPosition.inWholeSeconds) / (playerState.song.durationSeconds))
+    return (1f * (playerState.currentPosition.inWholeSeconds) / (playerState.currentSong.durationSeconds))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,9 +90,9 @@ fun Player(
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
     onChangeFavorite: (Song, Boolean) -> Unit,
+    onPlaySongInQueue: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     var sliderPosition by remember {
         mutableFloatStateOf(
             calculateSliderPosition(playerState)
@@ -104,9 +101,19 @@ fun Player(
     var openArtistsDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState (pageCount = {playerState.queue.size } )
+    var previousPage by remember { mutableStateOf(0) }
 
     LaunchedEffect(playerState.currentPosition) {
         sliderPosition = calculateSliderPosition(playerState)
+    }
+
+    LaunchedEffect(playerState.currentSong) {
+        pagerState.animateScrollToPage(playerState.currentSongIndex)
+    }
+
+    LaunchedEffect(pagerState.targetPage) {
+        onPlaySongInQueue(pagerState.targetPage)
     }
 
     Column(
@@ -116,35 +123,37 @@ fun Player(
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        AsyncImage(
-            playerState.song.coverUrl ?: "",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(6)),
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null,
-            error = painterResource(R.drawable.artist_placeholder)
-        )
+        HorizontalPager(pagerState, pageSpacing = 16.dp) { i ->
+            AsyncImage(
+                playerState.queue[i].coverUrl ?: "",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(6)),
+                contentScale = ContentScale.FillWidth,
+                contentDescription = null,
+                error = painterResource(R.drawable.artist_placeholder)
+            )
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(playerState.song.name,
+                Text(playerState.currentSong.name,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
                             navController.navigate("playlist")
                         }
                         .basicMarquee())
-                Text(playerState.song.artists.joinToString(", ") { it.name },
+                Text(playerState.currentSong.artists.joinToString(", ") { it.name },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .clickable {
-                            if (playerState.song.artists.size == 1) {
+                            if (playerState.currentSong.artists.size == 1) {
                                 scope.launch {
                                     sheetState.partialExpand()
-                                    navController.navigate(ArtistScreenRoute(playerState.song.artists[0].id))
+                                    navController.navigate(ArtistScreenRoute(playerState.currentSong.artists[0].id))
                                 }
                             } else {
                                 openArtistsDialog = true
@@ -166,18 +175,18 @@ fun Player(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = { onAddToPlaylist(playerState.song) }) {
+            IconButton(onClick = { onAddToPlaylist(playerState.currentSong) }) {
                 Icon(
                     Icons.AutoMirrored.Filled.PlaylistAdd,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = { onChangeFavorite(playerState.song, !playerState.song.isFavorite) }) {
+            IconButton(onClick = { onChangeFavorite(playerState.currentSong, !playerState.currentSong.isFavorite) }) {
                 Icon(
-                    if (playerState.song.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    if (playerState.currentSong.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
-                    tint = if (playerState.song.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    tint = if (playerState.currentSong.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -191,13 +200,13 @@ fun Player(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(formatDuration(playerState.currentPosition))
-            Text(formatDuration(playerState.song.durationSeconds.seconds))
+            Text(formatDuration(playerState.currentSong.durationSeconds.seconds))
         }
 
         Slider(modifier = Modifier.padding(horizontal = 16.dp),
             value = sliderPosition,
             onValueChange = {
-                onSeek((playerState.song.durationSeconds * it).toInt().seconds)
+                onSeek((playerState.currentSong.durationSeconds * it).toInt().seconds)
                 sliderPosition = it
             })
 
@@ -251,13 +260,13 @@ fun Player(
             }) { Text("Close") }
         }, text = {
             LazyColumn {
-                items(playerState.song.artists) { artist ->
+                items(playerState.currentSong.artists) { artist ->
                     Row(verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable {
                                 scope.launch {
                                     sheetState.partialExpand()
-                                    navController.navigate(ArtistScreenRoute(playerState.song.artists[0].id))
+                                    navController.navigate(ArtistScreenRoute(playerState.currentSong.artists[0].id))
                                 }
                             }
                             .fillParentMaxWidth()

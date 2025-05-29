@@ -166,6 +166,7 @@ fun HomeScreen(
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
+        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding.withoutBottom())) {
             Search(

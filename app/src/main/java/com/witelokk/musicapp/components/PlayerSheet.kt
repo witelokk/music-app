@@ -53,6 +53,7 @@ fun PlayerSheetScaffold(
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
     onChangeFavorite: (Song, Boolean) -> Unit,
+    onPlaySongInQueue: (Int) -> Unit,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
             skipHiddenState = false,
@@ -86,6 +87,7 @@ fun PlayerSheetScaffold(
                 onPlayPause,
                 onAddToPlaylist,
                 onChangeFavorite,
+                onPlaySongInQueue,
                 modifier
             )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
@@ -115,6 +117,7 @@ fun SheetContent(
     onPlayPause: () -> Unit,
     onAddToPlaylist: (Song) -> Unit,
     onChangeFavorite: (Song, Boolean) -> Unit,
+    onPlaySongInQueue: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -160,7 +163,8 @@ fun SheetContent(
             onSeekToNext,
             onPlayPause,
             onAddToPlaylist,
-            onChangeFavorite
+            onChangeFavorite,
+            onPlaySongInQueue
         )
     }
 }
