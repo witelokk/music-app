@@ -39,10 +39,10 @@ abstract class BaseViewModel(
         musicPlayer.setQueueAndPlay(songs, index)
     }
 
-    fun addSongToPlaylists(songId: String, playlistIds: List<String>) {
+    open fun addSongToPlaylists(song: Song, playlistIds: List<String>) {
         viewModelScope.launch {
             for (playlistId in playlistIds) {
-                playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(songId))
+                playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(song.id))
             }
         }
     }

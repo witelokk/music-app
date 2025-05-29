@@ -104,7 +104,6 @@ class PlaylistReleaseScreenViewModel(
         musicPlayer.setQueueAndPlay(state.value.songs, 0)
     }
 
-
     fun toggleSongFavorite(song: Song) {
         viewModelScope.launch {
             if (song.isFavorite) {
@@ -170,6 +169,14 @@ class PlaylistReleaseScreenViewModel(
                     else it
                 }
             )
+        }
+    }
+
+    override fun addSongToPlaylists(song: Song, playlistIds: List<String>) {
+        super.addSongToPlaylists(song, playlistIds)
+
+        if (playlistId in playlistIds) {
+            _state.update { it.copy(songs = listOf(song) + it.songs) }
         }
     }
 }

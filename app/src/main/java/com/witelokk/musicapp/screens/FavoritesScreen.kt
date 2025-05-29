@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
@@ -51,7 +52,7 @@ fun FavoritesScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
+    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showAddToPlaylistDialog) {
@@ -76,7 +77,7 @@ fun FavoritesScreen(
             onDismissRequest = { showAddToPlaylistDialog = false },
             onAddRequest = { playlists ->
                 viewModel.addSongToPlaylists(
-                    songIdToAddToPlaylists!!,
+                    songToAddToPlaylists!!,
                     playlists
                 ); showAddToPlaylistDialog = false
             },
@@ -105,7 +106,7 @@ fun FavoritesScreen(
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
         onAddToPlaylist = { song ->
-            songIdToAddToPlaylists = song.id
+            songToAddToPlaylists = song
             showAddToPlaylistDialog = true
         },
         onChangeFavorite = { song, favorite ->
@@ -159,7 +160,7 @@ fun FavoritesScreen(
                                 text = { Text(stringResource(R.string.add_to_playlist)) },
                                 onClick = {
                                     menuExpanded.value = false
-                                    songIdToAddToPlaylists = song.id
+                                    songToAddToPlaylists = song
                                     showAddToPlaylistDialog = true
                                 }
                             )

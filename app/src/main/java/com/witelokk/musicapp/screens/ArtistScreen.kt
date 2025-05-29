@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.add
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
@@ -93,7 +94,7 @@ fun ArtistScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
-    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
+    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
     var albumsFilter by rememberSaveable { mutableStateOf(false) }
     var singlesEPFilter by rememberSaveable { mutableStateOf(false) }
 
@@ -109,7 +110,7 @@ fun ArtistScreen(
             onDismissRequest = { showAddToPlaylistDialog = false },
             onAddRequest = { playlists ->
                 viewModel.addSongToPlaylists(
-                    songIdToAddToPlaylists!!,
+                    songToAddToPlaylists!!,
                     playlists
                 ); showAddToPlaylistDialog = false
             },
@@ -124,7 +125,7 @@ fun ArtistScreen(
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
         onAddToPlaylist = { song ->
-            songIdToAddToPlaylists = song.id
+            songToAddToPlaylists = song
             showAddToPlaylistDialog = true
         },
         onChangeFavorite = { song, favorite ->
@@ -227,7 +228,7 @@ fun ArtistScreen(
                                 text = { Text(stringResource(R.string.add_to_playlist)) },
                                 onClick = {
                                     menuExpanded.value = false
-                                    songIdToAddToPlaylists = song.id
+                                    songToAddToPlaylists = song
                                     showAddToPlaylistDialog = true
                                 }
                             )

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.witelokk.musicapp.R
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Avatar
@@ -103,7 +104,7 @@ fun HomeScreen(
         }
     }
 
-    var songIdToAddToPlaylists by rememberSaveable { mutableStateOf<String?>(null) }
+    var songToAddToPlaylists by rememberSaveable { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showAddToPlaylistDialog) {
@@ -118,7 +119,7 @@ fun HomeScreen(
             onDismissRequest = { showAddToPlaylistDialog = false },
             onAddRequest = { playlists ->
                 viewModel.addSongToPlaylists(
-                    songIdToAddToPlaylists!!,
+                    songToAddToPlaylists!!,
                     playlists
                 ); showAddToPlaylistDialog = false
             },
@@ -161,7 +162,7 @@ fun HomeScreen(
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
         onAddToPlaylist = { song ->
-            songIdToAddToPlaylists = song.id
+            songToAddToPlaylists = song
             showAddToPlaylistDialog = true
         },
         onChangeFavorite = { song, favorite ->
