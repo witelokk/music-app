@@ -143,11 +143,7 @@ fun Player(
             Column(modifier = Modifier.weight(1f)) {
                 Text(playerState.currentSong.name,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate("playlist")
-                        }
-                        .basicMarquee())
+                    modifier = Modifier.basicMarquee())
                 Text(playerState.currentSong.artists.joinToString(", ") { it.name },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
