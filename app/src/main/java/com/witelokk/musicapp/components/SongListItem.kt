@@ -1,5 +1,9 @@
 package com.witelokk.musicapp.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +37,81 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.Song
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.delay
+
+@Composable
+fun EqualizerBars(
+    modifier: Modifier = Modifier,
+    width: Dp,
+    height: Dp,
+    barCount: Int = 5,
+    color: Color = Color(0xFF00FFAA),
+    spacingRatio: Float = 0.2f, // relative spacing between bars
+    animationDuration: Int = 150, // faster animation duration (ms)
+    animationDelay: Long = 100L,   // faster delay between animations (ms)
+    cornerRadiusDp: Dp = 6.dp      // rounded corner radius
+) {
+    val density = LocalDensity.current
+
+    val widthPx = with(density) { width.toPx() }
+    val heightPx = with(density) { height.toPx() }
+    val cornerRadiusPx = with(density) { cornerRadiusDp.toPx() }
+
+    val spacingPx = widthPx / (barCount / spacingRatio + barCount - 1)
+    val barWidthPx = (widthPx - spacingPx * (barCount - 1)) / barCount
+
+    val heights = remember {
+        List(barCount) { Animatable(0f) }
+    }
+
+    LaunchedEffect(barCount) {
+        while (true) {
+            heights.forEach { anim ->
+                val target = Random.nextFloat() * heightPx
+                anim.animateTo(
+                    target,
+                    animationSpec = tween(
+                        durationMillis = animationDuration,
+                        easing = LinearOutSlowInEasing
+                    )
+                )
+            }
+            delay(animationDelay)
+        }
+    }
+
+    Row(
+        modifier = modifier.size(width, height),
+        horizontalArrangement = Arrangement.spacedBy(with(density) { spacingPx.toDp() })
+    ) {
+        heights.forEach { heightAnim ->
+            Canvas(
+                modifier = Modifier
+                    .width(with(density) { barWidthPx.toDp() })
+                    .fillMaxHeight()
+            ) {
+                val barHeight = heightAnim.value
+                drawRoundRect(
+                    color = color,
+                    topLeft = androidx.compose.ui.geometry.Offset(0f, size.height - barHeight),
+                    size = androidx.compose.ui.geometry.Size(size.width, barHeight),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                        cornerRadiusPx,
+                        cornerRadiusPx
+                    )
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun SongListItem(
@@ -48,14 +127,21 @@ fun SongListItem(
     var menuExpanded by _menuExpanded
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            song.coverUrl,
-            "Cover",
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(6.dp)),
-            error = painterResource(R.drawable.artist_placeholder)
-        )
+        Box(contentAlignment = Alignment.Center) {
+            AsyncImage(
+                song.coverUrl,
+                "Cover",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .alpha(if (isPlaying) 0.5f else 1f),
+                error = painterResource(R.drawable.artist_placeholder)
+            )
+
+            if (isPlaying) {
+                EqualizerBars(width = 30.dp, height = 30.dp, color = MaterialTheme.colorScheme.primary)
+            }
+        }
 
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -89,9 +175,9 @@ fun SongListItem(
             }
         }
 
-        IconButton(onClick = {menuExpanded = true}, modifier = Modifier.offset(x = 16.dp)) {
+        IconButton(onClick = { menuExpanded = true }, modifier = Modifier.offset(x = 16.dp)) {
             Icon(Icons.Default.MoreVert, "More")
-            DropdownMenu(menuExpanded, onDismissRequest = {menuExpanded = false}) {
+            DropdownMenu(menuExpanded, onDismissRequest = { menuExpanded = false }) {
                 dropdownMenuItems(_menuExpanded)
             }
         }
