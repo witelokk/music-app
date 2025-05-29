@@ -54,10 +54,9 @@ import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.add
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
-import com.witelokk.musicapp.components.EntityCard
+import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
-import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.delay
@@ -275,15 +274,15 @@ fun ArtistScreen(
                     }
 
                     items(state.filteredArtist?.releases?.releases ?: listOf()) { release ->
-                        EntityCard(Entity(
-                            name = release.name,
-                            type = when (release.type) {
+                        Card(
+                            title = release.name,
+                            subtitle = when (release.type) {
                                 "single" -> stringResource(R.string.single)
                                 "album" -> stringResource(R.string.album)
                                 else -> release.type
                             } + ", " + release.releasedAt.substring(0, 4),
-                            pictureUrl = release.coverUrl
-                        ), modifier = Modifier
+                            pictureUrl = release.coverUrl,
+                            modifier = Modifier
                             .padding(bottom = 16.dp)
                             .clickable {
                                 navController.navigate(

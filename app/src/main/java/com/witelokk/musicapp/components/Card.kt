@@ -1,6 +1,5 @@
 package com.witelokk.musicapp.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,10 +23,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.R
-import com.witelokk.musicapp.data.Entity
 
 @Composable
-fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
+fun Card(
+    title: String,
+    pictureUrl: String?,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+) {
     var isImageLoading by remember { mutableStateOf(true) }
     OutlinedCard(modifier = modifier.width(155.dp)) {
         Column {
@@ -40,7 +43,7 @@ fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
                 }
             }
             AsyncImage(
-                entity.pictureUrl,
+                pictureUrl,
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.FillWidth,
                 onSuccess = { isImageLoading = false },
@@ -50,14 +53,14 @@ fun EntityCard(entity: Entity, modifier: Modifier = Modifier) {
             )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    entity.name,
+                    title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (!entity.type.isNullOrBlank()) {
+                if (!subtitle.isNullOrBlank()) {
                     Text(
-                        entity.type,
+                        subtitle,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

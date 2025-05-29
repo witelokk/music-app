@@ -45,7 +45,7 @@ import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.components.FavoriteCard
-import com.witelokk.musicapp.components.EntityCard
+import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.Search
 import com.witelokk.musicapp.components.SearchContent
@@ -53,7 +53,6 @@ import com.witelokk.musicapp.components.SearchEmptyContent
 import com.witelokk.musicapp.components.SearchFailedContent
 import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
-import com.witelokk.musicapp.data.Entity
 import com.witelokk.musicapp.withoutBottom
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import kotlinx.coroutines.FlowPreview
@@ -177,7 +176,10 @@ fun HomeScreen(
                     searchQuery.value = it
                 },
                 avatar = {
-                    Avatar(if (state.accountName.isEmpty()) "" else state.accountName.substring(0, 1),
+                    Avatar(if (state.accountName.isEmpty()) "" else state.accountName.substring(
+                        0,
+                        1
+                    ),
                         modifier = Modifier.clickable { navController.navigate("settings") })
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -270,12 +272,9 @@ fun HomeScreen(
                                     })
                                 }
                                 items(state.layout.playlists.playlists) { playlist ->
-                                    EntityCard(Entity(
-                                        playlist.name,
-//                                        stringResource(R.string.playlist),
-                                        null,
-                                        playlist.coverUrl
-                                    ),
+                                    Card(
+                                        title = playlist.name,
+                                        pictureUrl = playlist.coverUrl,
                                         modifier = Modifier.clickable {
                                             navController.navigate(
                                                 PlaylistReleaseScreenRoute(
@@ -305,11 +304,10 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     items(state.layout.followedArtists.artists) { artist ->
-                                        EntityCard(Entity(
-                                            artist.name,
-                                            stringResource(R.string.artist),
-                                            artist.avatarUrl
-                                        ),
+                                        Card(
+                                            title = artist.name,
+                                            subtitle = stringResource(R.string.artist),
+                                            pictureUrl = artist.avatarUrl,
                                             modifier = Modifier.clickable {
                                                 navController.navigate(
                                                     ArtistScreenRoute(artist.id)
@@ -331,11 +329,10 @@ fun HomeScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 items(section.releases.releases) { release ->
-                                    EntityCard(Entity(
-                                        release.name,
-                                        release.artists.names,
-                                        release.coverUrl
-                                    ),
+                                    Card(
+                                        title = release.name,
+                                        subtitle = release.artists.names,
+                                        pictureUrl = release.coverUrl,
                                         modifier = Modifier
                                             .width(155.dp)
                                             .clickable {
