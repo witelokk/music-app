@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -101,7 +102,7 @@ fun LoginVerificationScreen(
                     Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
                 }
             })
-        }) { innerPadding ->
+        }, modifier = Modifier.imePadding()) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
