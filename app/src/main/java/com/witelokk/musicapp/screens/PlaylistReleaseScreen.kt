@@ -160,11 +160,13 @@ fun PlaylistReleaseScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showEditPlaylistDialog = true }) {
-                        Icon(Icons.Outlined.Edit, stringResource(R.string.edit))
-                    }
-                    IconButton(onClick = { showDeletePlaylistDialog = true }) {
-                        Icon(Icons.Outlined.Delete, stringResource(R.string.delete))
+                    if (route.type == PlaylistReleaseScreenType.PLAYLIST) {
+                        IconButton(onClick = { showEditPlaylistDialog = true }) {
+                            Icon(Icons.Outlined.Edit, stringResource(R.string.edit))
+                        }
+                        IconButton(onClick = { showDeletePlaylistDialog = true }) {
+                            Icon(Icons.Outlined.Delete, stringResource(R.string.delete))
+                        }
                     }
                     IconButton(onClick = { viewModel.playAllSongs() }) {
                         Icon(Icons.Outlined.PlayArrow, stringResource(R.string.play))
