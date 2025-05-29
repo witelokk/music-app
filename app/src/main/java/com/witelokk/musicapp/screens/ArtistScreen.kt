@@ -234,7 +234,7 @@ fun ArtistScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.add_to_playlist)) },
+                                text = { Text(stringResource(R.string.add_to_queue)) },
                                 onClick = {
                                     viewModel.addSongToQueue(song)
                                     menuExpanded.value = false
