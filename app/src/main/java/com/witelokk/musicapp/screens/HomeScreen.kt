@@ -27,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,8 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddCard
@@ -73,6 +77,19 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val lifecycleOwner = navBackStackEntry?.lifecycle
+    DisposableEffect (lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadHomePageLayout()
+                viewModel.loadPlaylists()
+            }
+        }
+        lifecycleOwner?.addObserver(observer)
+        onDispose { lifecycleOwner?.removeObserver(observer) }
+    }
 
     var showCreatePlaylistDialog by remember { mutableStateOf(false) }
 

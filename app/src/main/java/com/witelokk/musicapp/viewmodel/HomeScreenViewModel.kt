@@ -24,7 +24,11 @@ import kotlinx.serialization.json.Json
 import java.net.UnknownHostException
 
 data class HomeViewModelState(
-    val layout: HomeScreenLayout = HomeScreenLayout(PlaylistsSummary(0, listOf()), ArtistsSummary(0, listOf(), ""), listOf()),
+    val layout: HomeScreenLayout = HomeScreenLayout(
+        PlaylistsSummary(0, listOf()),
+        ArtistsSummary(0, listOf(), ""),
+        listOf()
+    ),
     val isLoading: Boolean = true,
     val isFailure: Boolean = false,
     val isError: Boolean = false,
@@ -46,7 +50,7 @@ class HomeScreenViewModel(
     private val usersApi: UsersApi,
     musicPlayer: MusicPlayer,
 ) : BaseViewModel(musicPlayer, playlistsApi) {
-    private val _state = MutableStateFlow(HomeViewModelState(playerState=musicPlayer.state.value))
+    private val _state = MutableStateFlow(HomeViewModelState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
 
     init {
@@ -211,12 +215,22 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val response = playlistsApi.playlistsPost(CreatePlaylistRequest(name))
 
+            val newPlaylist = PlaylistSummary(
+                id = response.body().id,
+                name = name,
+                songsCount = 0
+            )
+
             _state.update {
-                it.copy(playlists = it.playlists.plus(PlaylistSummary(
-                    id = response.body().id,
-                    name = name,
-                    songsCount = 0
-                )))
+                it.copy(
+                    playlists = listOf(newPlaylist) + it.playlists,
+                    layout = it.layout.copy(
+                        playlists = it.layout.playlists.copy(
+                            count = it.layout.playlists.count + 1,
+                            listOf(newPlaylist) + it.layout.playlists.playlists
+                        )
+                    )
+                )
             }
         }
     }
