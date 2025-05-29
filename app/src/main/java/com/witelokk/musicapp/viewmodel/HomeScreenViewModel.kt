@@ -7,6 +7,7 @@ import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.HomeScreenApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
+import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.api.models.ArtistsSummary
 import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.HomeScreenLayout
@@ -33,6 +34,7 @@ data class HomeViewModelState(
     val searchHistory: List<SearchResultItem> = listOf(),
     val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState? = null,
+    val accountName: String = "",
 )
 
 class HomeScreenViewModel(
@@ -41,6 +43,7 @@ class HomeScreenViewModel(
     private val sharedPreferences: SharedPreferences,
     private val json: Json,
     private val playlistsApi: PlaylistsApi,
+    private val usersApi: UsersApi,
     musicPlayer: MusicPlayer,
 ) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state = MutableStateFlow(HomeViewModelState(playerState=musicPlayer.state.value))
@@ -49,6 +52,7 @@ class HomeScreenViewModel(
     init {
         loadHomePageLayout()
         loadSearchHistory()
+        loadProfile()
 
         viewModelScope.launch {
             musicPlayer.state.collect { newPlayerState ->
@@ -57,6 +61,9 @@ class HomeScreenViewModel(
                 }
             }
         }
+
+        val accountName = sharedPreferences.getString("accountName", "")!!
+        _state.update { it.copy(accountName = sharedPreferences.getString("accountName", "")!!) }
     }
 
     fun loadHomePageLayout() {
@@ -90,6 +97,29 @@ class HomeScreenViewModel(
         } else {
             _state.update {
                 it.copy(searchHistory = listOf())
+            }
+        }
+    }
+
+    fun loadProfile() {
+        viewModelScope.launch {
+            val response = usersApi.usersMeGet()
+
+            if (!response.success) {
+                return@launch
+            }
+
+            val me = response.body()
+
+            sharedPreferences.edit()
+                .putString("accountName", me.name)
+                .putString("accountEmail", me.email)
+                .apply()
+
+            _state.update {
+                it.copy(
+                    accountName = me.name,
+                )
             }
         }
     }

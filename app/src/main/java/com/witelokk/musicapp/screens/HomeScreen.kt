@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
+import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.EntityCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
@@ -175,6 +176,10 @@ fun HomeScreen(
                 onQueryChanged = {
                     searchQuery.value = it
                 },
+                avatar = {
+                    Avatar(if (state.accountName.isEmpty()) "" else state.accountName.substring(0, 1),
+                        modifier = Modifier.clickable { navController.navigate("settings") })
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 if (state.isSearchLoading) {
@@ -281,7 +286,9 @@ fun HomeScreen(
                                         })
                                 }
                                 item {
-                                    AddCard(modifier = Modifier.clickable { showCreatePlaylistDialog = true })
+                                    AddCard(modifier = Modifier.clickable {
+                                        showCreatePlaylistDialog = true
+                                    })
                                 }
                             }
                         }

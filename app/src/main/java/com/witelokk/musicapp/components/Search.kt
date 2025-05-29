@@ -49,7 +49,6 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.R
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.data.Playlist
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +57,7 @@ fun Search(
     modifier: Modifier = Modifier,
     expanded: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) },
     onQueryChanged: (String) -> Unit = {},
+    avatar: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
@@ -120,10 +120,7 @@ fun Search(
                         }
                     }
                 } else {
-                    IconButton(onClick = {}) {
-                        Avatar("R",
-                            modifier = Modifier.clickable { navController.navigate("settings") })
-                    }
+                    IconButton(onClick = {}) { avatar() }
                 }
             },
             onSearch = {},

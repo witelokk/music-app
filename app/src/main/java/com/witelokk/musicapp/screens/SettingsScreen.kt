@@ -30,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,7 +81,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Avatar("R", radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
+                    Avatar(if (state.accountName.isNullOrEmpty()) "" else state.accountName!!.substring(0, 1), radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(stringResource(R.string.name_label, state.accountName?:""))
                         Spacer(modifier = Modifier.height(8.dp))
