@@ -46,6 +46,20 @@ fun CodeField(
     }
 
     fun onValueChanged(i: Int, text: String) {
+        // Handle paste: if more than one character is entered, distribute across fields
+        if (text.length > 1) {
+            val chars = text.filter { it.isDigit() }.take(length)
+            chars.forEachIndexed { index, c ->
+                fieldTexts[index].value = c.toString()
+            }
+            // Move focus to the last filled field
+            val lastIndex = chars.length.coerceAtMost(length) - 1
+            if (lastIndex >= 0) {
+                fieldFocuses[lastIndex].requestFocus()
+            }
+            return update()
+        }
+
         if (text.isNotEmpty() && !text.last().isDigit()) {
             return update()
         }
