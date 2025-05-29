@@ -223,7 +223,7 @@ fun ArtistScreen(
                                 viewModel.changeSongFavorite(song, !song.isFavorite)
                             },
                             isActive = (song.id == state.playerState?.currentSong?.id),
-                            isPlaying = state.playerState?.playing?: false,
+                            isPlaying = state.playerState?.playing ?: false,
                         ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_to_playlist)) },
@@ -259,6 +259,9 @@ fun ArtistScreen(
                                         if (albumsFilter) {
                                             viewModel.filterReleases("album")
                                         }
+                                        if (!singlesEPFilter && !albumsFilter) {
+                                            viewModel.filterReleases(null)
+                                        }
                                     },
                                     { Text(stringResource(R.string.albums)) })
                                 FilterChip(singlesEPFilter,
@@ -266,6 +269,9 @@ fun ArtistScreen(
                                         singlesEPFilter = !singlesEPFilter; albumsFilter = false;
                                         if (singlesEPFilter) {
                                             viewModel.filterReleases("single")
+                                        }
+                                        if (!singlesEPFilter && !albumsFilter) {
+                                            viewModel.filterReleases(null)
                                         }
                                     },
                                     { Text(stringResource(R.string.singles_and_eps)) })
@@ -275,7 +281,9 @@ fun ArtistScreen(
                         }
                     }
 
-                    items(state.filteredArtist?.releases?.releases ?: listOf()) { release ->
+                    items(
+                        state.filteredArtist?.releases?.releases ?: listOf(),
+                        key = { it.id }) { release ->
                         Card(
                             title = release.name,
                             subtitle = when (release.type) {
@@ -285,15 +293,16 @@ fun ArtistScreen(
                             } + ", " + release.releasedAt.substring(0, 4),
                             pictureUrl = release.coverUrl,
                             modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .clickable {
-                                navController.navigate(
-                                    PlaylistReleaseScreenRoute(
-                                        PlaylistReleaseScreenType.RELEASE,
-                                        release.id
+                                .padding(bottom = 16.dp)
+                                .animateItem()
+                                .clickable {
+                                    navController.navigate(
+                                        PlaylistReleaseScreenRoute(
+                                            PlaylistReleaseScreenType.RELEASE,
+                                            release.id
+                                        )
                                     )
-                                )
-                            })
+                                })
                     }
                 }
             }
