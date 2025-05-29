@@ -143,7 +143,8 @@ fun FavoritesScreen(
                     items(state.songs, key = { it.id }) { song ->
                         SongListItem(
                             song = song,
-                            isPlaying = state.playerState?.currentSong?.id == song.id,
+                            isActive = state.playerState?.currentSong?.id == song.id,
+                            isPlaying = state.playerState?.playing?: false,
                             showFavorite = false,
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

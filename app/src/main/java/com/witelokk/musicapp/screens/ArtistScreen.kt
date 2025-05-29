@@ -222,7 +222,8 @@ fun ArtistScreen(
                             onFavoriteClick = {
                                 viewModel.toggleSongFavorite(song)
                             },
-                            isPlaying = (song.id == state.playerState?.currentSong?.id),
+                            isActive = (song.id == state.playerState?.currentSong?.id),
+                            isPlaying = state.playerState?.playing?: false,
                         ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.add_to_playlist)) },

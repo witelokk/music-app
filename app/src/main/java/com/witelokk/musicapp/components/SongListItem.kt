@@ -2,7 +2,6 @@ package com.witelokk.musicapp.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,10 +52,11 @@ fun EqualizerBars(
     height: Dp,
     barCount: Int = 5,
     color: Color = Color(0xFF00FFAA),
-    spacingRatio: Float = 0.2f, // relative spacing between bars
-    animationDuration: Int = 150, // faster animation duration (ms)
-    animationDelay: Long = 100L,   // faster delay between animations (ms)
-    cornerRadiusDp: Dp = 6.dp      // rounded corner radius
+    spacingRatio: Float = 0.2f,
+    animationDuration: Int = 75,
+    animationDelay: Long = 100L,
+    cornerRadiusDp: Dp = 6.dp,
+    playing: Boolean = true
 ) {
     val density = LocalDensity.current
 
@@ -71,8 +71,8 @@ fun EqualizerBars(
         List(barCount) { Animatable(0f) }
     }
 
-    LaunchedEffect(barCount) {
-        while (true) {
+    LaunchedEffect(barCount, playing) {
+        while (playing) {
             heights.forEach { anim ->
                 val target = Random.nextFloat() * heightPx
                 anim.animateTo(
@@ -119,6 +119,7 @@ fun SongListItem(
     modifier: Modifier = Modifier,
     showFavorite: Boolean = true,
     showDuration: Boolean = false,
+    isActive: Boolean = false,
     isPlaying: Boolean = false,
     onFavoriteClick: () -> Unit = {},
     dropdownMenuItems: @Composable (MutableState<Boolean>) -> Unit = {},
@@ -134,12 +135,17 @@ fun SongListItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .alpha(if (isPlaying) 0.5f else 1f),
+                    .alpha(if (isActive) 0.5f else 1f),
                 error = painterResource(R.drawable.artist_placeholder)
             )
 
-            if (isPlaying) {
-                EqualizerBars(width = 30.dp, height = 30.dp, color = MaterialTheme.colorScheme.primary)
+            if (isActive) {
+                EqualizerBars(
+                    width = 30.dp,
+                    height = 30.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    playing = isPlaying
+                )
             }
         }
 
@@ -149,7 +155,7 @@ fun SongListItem(
             Text(
                 song.name,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                color = if (isActive) MaterialTheme.colorScheme.primary else Color.Unspecified,
                 modifier = Modifier.height(24.dp)
             )
             if (showDuration) {

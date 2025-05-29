@@ -218,7 +218,8 @@ fun PlaylistReleaseScreen(
                     items(state.songs) { song ->
                         SongListItem(
                             song = song,
-                            isPlaying = state.playerState?.currentSong?.id == song.id,
+                            isActive = state.playerState?.currentSong?.id == song.id,
+                            isPlaying = state.playerState?.playing?: false,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }
