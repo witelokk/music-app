@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 data class SettingsScreenState(
     val accountName: String? = null,
     val accountEmail: String? = null,
-    val songCachingEnabled: Boolean? = null,
     val theme: String? = null,
     val isLoggedOut: Boolean = false,
 )
@@ -58,16 +57,11 @@ class SettingsScreenViewModel(
             it.copy(
                 accountName = sharedPreferences.getString("accountName", null),
                 accountEmail = sharedPreferences.getString("accountEmail", null),
-                songCachingEnabled = sharedPreferences.getBoolean("songCachingEnabled", false),
                 theme = sharedPreferences.getString("theme", "system"),
             )
         }
     }
 
-    fun setSongCachingEnabled(enabled: Boolean) {
-        sharedPreferences.edit().putBoolean("songCachingEnabled", enabled).apply()
-        _state.update { it.copy(songCachingEnabled = enabled) }
-    }
 
     fun setTheme(theme: String) {
         sharedPreferences.edit().putString("theme", theme).apply()

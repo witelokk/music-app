@@ -158,22 +158,6 @@ fun SettingsScreen(
                     }
                 }
             }
-            item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Text(stringResource(R.string.song_caching), modifier = Modifier.weight(1f))
-                    Switch(
-                        state.songCachingEnabled ?: false,
-                        onCheckedChange = {
-                            viewModel.setSongCachingEnabled(it)
-                        }
-                    )
-                }
-            }
         }
     }
 }
