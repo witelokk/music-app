@@ -10,7 +10,6 @@ import com.witelokk.musicapp.api.models.VerificationCodeRequest
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.reflect.TypeInfo
 
-
 class Auth(
     private val authApi: AuthApi,
     private val usersApi: UsersApi,

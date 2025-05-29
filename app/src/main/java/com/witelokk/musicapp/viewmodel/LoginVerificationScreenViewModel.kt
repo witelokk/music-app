@@ -22,7 +22,6 @@ class LoginVerificationScreenViewModel(
     private val auth: Auth,
 ) : AndroidViewModel(application) {
     private val _state = MutableStateFlow(LoginVerificationScreenState())
-    private val sharedPreferences = application.getSharedPreferences("prefs", 0)
 
     val state = _state.asStateFlow()
 
@@ -32,6 +31,9 @@ class LoginVerificationScreenViewModel(
 
             try {
                 auth.signIn(email, code)
+                _state.update {
+                    it.copy(isAuthorized = true)
+                }
             } catch (e: Auth.Errors.InvalidCode) {
                 _state.update { it.copy(isCodeInvalid = true, isButtonEnabled = true) }
             } catch (e: Auth.Errors.InvalidUser) {
@@ -43,10 +45,6 @@ class LoginVerificationScreenViewModel(
                         isButtonEnabled = true
                     )
                 }
-            }
-
-            _state.update {
-                it.copy(isAuthorized = true)
             }
         }
     }
