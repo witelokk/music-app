@@ -172,6 +172,7 @@ class MusicPlayer
 
     fun seekToNext() {
         controller.seekToNextMediaItem()
+        controller.play()
     }
 
     fun seekToPrevious() {
