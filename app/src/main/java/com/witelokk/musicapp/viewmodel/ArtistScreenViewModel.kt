@@ -42,11 +42,11 @@ data class ArtistScreenState(
 
 class ArtistScreenViewModel(
     private val artistsApi: ArtistsApi,
-    private val favoritesApi: FavoritesApi,
     private val playlistsApi: PlaylistsApi,
     private val followingsApi: FollowingsApi,
     private val musicPlayer: MusicPlayer,
-) : BaseViewModel(musicPlayer, playlistsApi) {
+    favoritesApi: FavoritesApi,
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
     private val _state = MutableStateFlow(ArtistScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
 
@@ -96,29 +96,23 @@ class ArtistScreenViewModel(
         }
     }
 
-    fun toggleSongFavorite(song: Song) {
+    override fun changeSongFavorite(song: Song, favorite: Boolean) {
+        super.changeSongFavorite(song, favorite)
         _state.value.artist?.let { artist ->
-            viewModelScope.launch {
-                if (song.isFavorite) {
-                    favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
-                } else {
-                    favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+            _state.update {
+                val updatedSongs = artist.popularSongs.songs.map { updatedSong ->
+                    if (updatedSong.id == song.id) {
+                        val updatedSong = updatedSong.copy(isFavorite = !song.isFavorite)
+                        musicPlayer.updateSong(updatedSong)
+                        updatedSong
+                    } else updatedSong
                 }
+                val updatedPopularSongs = artist.popularSongs.copy(songs = updatedSongs)
+                val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
 
-                _state.update {
-                    val updatedSongs = artist.popularSongs.songs.map { updatedSong ->
-                        if (updatedSong.id == song.id) {
-                            val updatedSong = updatedSong.copy(isFavorite = !song.isFavorite)
-                            musicPlayer.updateSong(updatedSong)
-                            updatedSong
-                        } else updatedSong
-                    }
-                    val updatedPopularSongs = artist.popularSongs.copy(songs = updatedSongs)
-                    val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
-
-                    it.copy(artist = updatedArtist)
-                }
+                it.copy(artist = updatedArtist)
             }
+
         }
     }
 
@@ -131,7 +125,7 @@ class ArtistScreenViewModel(
                     followingsApi.followingsPost(StartFollowingRequest(artist.id))
 
                 _state.update {
-                    it.copy(artist=artist.copy(following = !artist.following))
+                    it.copy(artist = artist.copy(following = !artist.following))
                 }
             }
         }
@@ -153,22 +147,6 @@ class ArtistScreenViewModel(
 
             _state.update {
                 it.copy(playlists = response.body().playlists)
-            }
-        }
-    }
-
-    override fun changeSongFavorite(song: Song, favorite: Boolean) {
-        super.changeSongFavorite(song, favorite)
-        _state.value.artist?.let { artist ->
-            _state.update {
-                val updatedSongs = artist.popularSongs.songs.map { updatedSong ->
-                    if (updatedSong.id == song.id) updatedSong.copy(isFavorite = favorite)
-                    else updatedSong
-                }
-                val updatedPopularSongs = artist.popularSongs.copy(songs = updatedSongs)
-                val updatedArtist = artist.copy(popularSongs = updatedPopularSongs)
-
-                it.copy(artist = updatedArtist)
             }
         }
     }

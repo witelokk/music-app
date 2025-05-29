@@ -25,7 +25,7 @@ class QueueScreenViewModel(
     private val favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi,
-) : BaseViewModel(musicPlayer, playlistsApi) {
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
     private val _state =
         MutableStateFlow(
             QueueScreenState(

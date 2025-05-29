@@ -154,7 +154,7 @@ fun FavoritesScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.remove_from_favorite_songs)) },
                                 onClick = {
-                                    viewModel.removeSongFromFavorites(song)
+                                    viewModel.changeSongFavorite(song, false)
                                 }
                             )
                             DropdownMenuItem(

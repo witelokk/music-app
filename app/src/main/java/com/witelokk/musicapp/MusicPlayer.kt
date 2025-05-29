@@ -221,16 +221,17 @@ class MusicPlayer
     }
 
     fun updateSong(song: Song) {
-        if (queue.isNotEmpty() && queue[controller.currentMediaItemIndex].id == song.id) {
-            _state.update {
-                it?.copy(currentSong = song, currentSongIndex = queue.indexOf(song))
-            }
-        }
-
         for (i in 0..<queue.size) {
             if (queue[i].id == song.id) {
                 queue[i] = song
             }
+        }
+
+        _state.update {
+            it?.copy(
+                currentSong = if (it.currentSong.id == song.id) song else it.currentSong,
+                queue = queue,
+            )
         }
     }
 }

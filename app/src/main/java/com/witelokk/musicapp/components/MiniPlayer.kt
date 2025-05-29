@@ -69,7 +69,7 @@ fun MiniPlayer(
                     IconButton(onClick = {
                         onChangeFavorite(
                             song,
-                            song.isFavorite
+                            !song.isFavorite
                         )
                     }) {
                         Icon(

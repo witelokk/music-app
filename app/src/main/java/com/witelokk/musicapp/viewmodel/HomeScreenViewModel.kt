@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
+import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.HomeScreenApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
@@ -48,8 +49,9 @@ class HomeScreenViewModel(
     private val json: Json,
     private val playlistsApi: PlaylistsApi,
     private val usersApi: UsersApi,
+    favoritesApi: FavoritesApi,
     musicPlayer: MusicPlayer,
-) : BaseViewModel(musicPlayer, playlistsApi) {
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
     private val _state = MutableStateFlow(HomeViewModelState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
 

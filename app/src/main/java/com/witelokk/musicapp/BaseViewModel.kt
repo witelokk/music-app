@@ -2,16 +2,20 @@ package com.witelokk.musicapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
+import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
+import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 abstract class BaseViewModel(
     private val musicPlayer: MusicPlayer,
+    private val favoritesApi: FavoritesApi,
     private val playlistsApi: PlaylistsApi
-): ViewModel() {
+) : ViewModel() {
 
     protected val playerState = musicPlayer.state
 
@@ -48,6 +52,13 @@ abstract class BaseViewModel(
     }
 
     open fun changeSongFavorite(song: Song, favorite: Boolean) {
+        viewModelScope.launch {
+            if (song.isFavorite) {
+                favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+            } else {
+                favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+            }
+        }
         musicPlayer.updateSong(song.copy(isFavorite = favorite))
     }
 

@@ -27,7 +27,7 @@ class FavoritesScreenViewModel(
     private val favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi,
-) : BaseViewModel(musicPlayer, playlistsApi) {
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
     private val _state =
         MutableStateFlow(FavoritesScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
@@ -73,19 +73,19 @@ class FavoritesScreenViewModel(
         musicPlayer.setQueueAndPlay(state.value.songs, 0)
     }
 
-    fun removeSongFromFavorites(song: Song) {
-        viewModelScope.launch {
-            favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
-
-            _state.update { currentState ->
-                currentState.copy(
-                    songs = currentState.songs.filter { it != song }
-                )
-            }
-
-            musicPlayer.updateSong(song.copy(isFavorite = false))
-        }
-    }
+//    fun removeSongFromFavorites(song: Song) {
+//        viewModelScope.launch {
+//            favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+//
+//            _state.update { currentState ->
+//                currentState.copy(
+//                    songs = currentState.songs.filter { it != song }
+//                )
+//            }
+//
+//            musicPlayer.updateSong(song.copy(isFavorite = false))
+//        }
+//    }
 
     fun loadPlaylists() {
         viewModelScope.launch {

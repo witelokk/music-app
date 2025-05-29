@@ -32,8 +32,8 @@ class PlaylistReleaseScreenViewModel(
     private val playlistsApi: PlaylistsApi,
     private val releasesApi: ReleasesApi,
     private val favoritesApi: FavoritesApi,
-    private val musicPlayer: MusicPlayer
-) : BaseViewModel(musicPlayer, playlistsApi) {
+    private val musicPlayer: MusicPlayer,
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
     private val _state =
         MutableStateFlow(PlaylistReleaseScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()

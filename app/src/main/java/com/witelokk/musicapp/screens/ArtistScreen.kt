@@ -220,7 +220,7 @@ fun ArtistScreen(
                                 }
                                 .padding(horizontal = 4.dp, vertical = 8.dp),
                             onFavoriteClick = {
-                                viewModel.toggleSongFavorite(song)
+                                viewModel.changeSongFavorite(song, !song.isFavorite)
                             },
                             isActive = (song.id == state.playerState?.currentSong?.id),
                             isPlaying = state.playerState?.playing?: false,
