@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.DropdownMenuItem
@@ -96,8 +97,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
                 }
             }
             LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                items(state.songs.size) { i ->
-                    val song = state.songs[i]
+                itemsIndexed(state.songs) { i, song ->
                     SongListItem(
                         song = song,
                         isPlaying = i == 0,

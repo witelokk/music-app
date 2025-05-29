@@ -6,6 +6,7 @@ import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
+import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 data class QueueScreenState(
     val songs: List<Song> = listOf(),
+    val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState?,
 )
 
@@ -26,9 +28,9 @@ class QueueScreenViewModel(
 ) : BaseViewModel(musicPlayer, playlistsApi) {
     private val _state =
         MutableStateFlow(
-            FavoritesScreenState(
+            QueueScreenState(
                 playerState = musicPlayer.state.value,
-                songs = listOf(), //musicPlayer.state.value?.queue ?: listOf()
+                songs = musicPlayer.state.value?.queue ?: listOf()
             )
         )
     val state = _state.asStateFlow()

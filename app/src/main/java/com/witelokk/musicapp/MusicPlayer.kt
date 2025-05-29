@@ -30,7 +30,7 @@ class MusicPlayer
     val state = _state.asStateFlow()
 
     private lateinit var controller: MediaController
-    private val queue = arrayListOf<Song>()
+    private var queue = arrayListOf<Song>()
 
     init {
         initializeMediaController()
@@ -191,7 +191,14 @@ class MusicPlayer
 
     fun removeFromQueue(index: Int) {
         controller.removeMediaItem(index)
-        queue.removeAt(index)
+        val newQueue = arrayListOf<Song>()
+        queue.forEachIndexed { i, song ->
+            if (i == index)
+                return@forEachIndexed
+            newQueue.add(song)
+        }
+        queue = newQueue
+        _state.update { it?.copy(queue = newQueue) }
     }
 
     fun updateSong(song: Song) {
