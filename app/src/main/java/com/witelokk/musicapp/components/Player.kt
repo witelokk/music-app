@@ -19,8 +19,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
@@ -33,6 +31,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
@@ -101,7 +101,7 @@ fun Player(
     var openArtistsDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState (pageCount = {playerState.queue.size } )
+    val pagerState = rememberPagerState(pageCount = { playerState.queue.size })
     var previousPage by remember { mutableStateOf(0) }
 
     LaunchedEffect(playerState.currentPosition) {
@@ -141,9 +141,11 @@ fun Player(
 
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(playerState.currentSong.name,
+                Text(
+                    playerState.currentSong.name,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.basicMarquee())
+                    modifier = Modifier.basicMarquee()
+                )
                 Text(playerState.currentSong.artists.joinToString(", ") { it.name },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
@@ -180,7 +182,12 @@ fun Player(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = { onChangeFavorite(playerState.currentSong, !playerState.currentSong.isFavorite) }) {
+            IconButton(onClick = {
+                onChangeFavorite(
+                    playerState.currentSong,
+                    !playerState.currentSong.isFavorite
+                )
+            }) {
                 Icon(
                     if (playerState.currentSong.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,

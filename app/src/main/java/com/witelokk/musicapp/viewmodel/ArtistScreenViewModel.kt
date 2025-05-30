@@ -7,10 +7,8 @@ import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.FollowingsApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Artist
 import com.witelokk.musicapp.api.models.PlaylistSummary
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.api.models.StartFollowingRequest
 import com.witelokk.musicapp.api.models.StopFollowingRequest

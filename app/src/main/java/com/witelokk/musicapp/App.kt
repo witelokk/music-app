@@ -40,15 +40,17 @@ fun App(themeViewModel: ThemeViewModel = koinViewModel()) {
     val isSystemDarkTheme = isSystemInDarkTheme()
 
     LaunchedEffect(theme, isSystemDarkTheme) {
-        when(theme) {
+        when (theme) {
             "light" -> systemUiController.setSystemBarsColor(
                 color = Color.Transparent,
                 darkIcons = true
             )
+
             "dark" -> systemUiController.setSystemBarsColor(
                 color = Color.Transparent,
                 darkIcons = false
             )
+
             else -> systemUiController.setSystemBarsColor(
                 color = Color.Transparent,
                 darkIcons = !isSystemDarkTheme

@@ -37,7 +37,10 @@ fun FavoriteCard(modifier: Modifier = Modifier) {
                 )
             }
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(stringResource(R.string.favorite_songs), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.favorite_songs),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }

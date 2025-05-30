@@ -116,7 +116,9 @@ fun PlaylistReleaseScreen(
             title = { Text(stringResource(R.string.delete_playlists_dialog_title)) },
             onDismissRequest = { showDeletePlaylistDialog = false },
             confirmButton = {
-                TextButton(onClick = { showDeletePlaylistDialog = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    showDeletePlaylistDialog = false
+                }) { Text(stringResource(R.string.cancel)) }
                 TextButton(onClick = { viewModel.deletePlaylist() }) { Text(stringResource(R.string.yes)) }
             },
             text = { Text(stringResource(R.string.delete_playlists_dialog_text)) }
@@ -130,7 +132,9 @@ fun PlaylistReleaseScreen(
             title = { Text(stringResource(R.string.edit_playlist_name_dialog_title)) },
             onDismissRequest = { showDeletePlaylistDialog = false },
             confirmButton = {
-                TextButton(onClick = { showEditPlaylistDialog = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    showEditPlaylistDialog = false
+                }) { Text(stringResource(R.string.cancel)) }
                 TextButton(onClick = {
                     viewModel.editPlaylistName(newName)
                     showEditPlaylistDialog = false
@@ -219,7 +223,7 @@ fun PlaylistReleaseScreen(
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
-                            isPlaying = state.playerState?.playing?: false,
+                            isPlaying = state.playerState?.playing ?: false,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

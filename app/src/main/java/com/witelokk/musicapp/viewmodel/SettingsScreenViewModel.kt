@@ -28,7 +28,7 @@ class SettingsScreenViewModel(
         loadSettings()
     }
 
-    fun loadProfile() {
+    private fun loadProfile() {
         viewModelScope.launch {
             val response = usersApi.usersMeGet()
 
@@ -52,7 +52,7 @@ class SettingsScreenViewModel(
         }
     }
 
-    fun loadSettings() {
+    private fun loadSettings() {
         _state.update {
             it.copy(
                 accountName = sharedPreferences.getString("accountName", null),

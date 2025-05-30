@@ -97,12 +97,15 @@ fun LoginVerificationScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.confirm_your_login)) }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
-                }
-            })
-        }, modifier = Modifier.imePadding()) { innerPadding ->
+            TopAppBar(
+                title = { Text(stringResource(R.string.confirm_your_login)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
+                    }
+                })
+        }, modifier = Modifier.imePadding()
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

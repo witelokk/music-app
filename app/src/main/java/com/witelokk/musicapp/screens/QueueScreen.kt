@@ -106,7 +106,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
                     SongListItem(
                         song = song,
                         isActive = i == 0,
-                        isPlaying = state.playerState?.playing?: false,
+                        isPlaying = state.playerState?.playing ?: false,
                         onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }

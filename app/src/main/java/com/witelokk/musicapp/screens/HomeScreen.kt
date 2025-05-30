@@ -50,8 +50,8 @@ import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Avatar
-import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.Card
+import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.Search
 import com.witelokk.musicapp.components.SearchContent
@@ -59,8 +59,8 @@ import com.witelokk.musicapp.components.SearchEmptyContent
 import com.witelokk.musicapp.components.SearchFailedContent
 import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
-import com.witelokk.musicapp.withoutBottom
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
+import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,7 +80,7 @@ fun HomeScreen(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val lifecycleOwner = navBackStackEntry?.lifecycle
-    DisposableEffect (lifecycleOwner) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.loadHomePageLayout()

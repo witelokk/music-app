@@ -20,21 +20,21 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.apis.UsersApi
-import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
-import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
-import com.witelokk.musicapp.viewmodel.ThemeViewModel
-import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
-import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
-import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
-import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
-import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
+import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
+import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
+import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
+import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
+import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
+import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
+import com.witelokk.musicapp.viewmodel.ThemeViewModel
+import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.okhttp.*
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -149,7 +149,7 @@ val appModule = module {
                 addInterceptor(authInterceptor)
             }
         }
-    
+
         client.engine
     }
 

@@ -98,13 +98,16 @@ fun RegistrationVerificationScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.confirm_registration)) }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
-                }
-            })
+            TopAppBar(
+                title = { Text(stringResource(R.string.confirm_registration)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(R.string.back))
+                    }
+                })
         },
-        modifier = Modifier.imePadding()) { innerPadding ->
+        modifier = Modifier.imePadding()
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -80,11 +79,16 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Avatar(if (state.accountName.isNullOrEmpty()) "" else state.accountName!!.substring(0, 1), radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp))
+                    Avatar(
+                        if (state.accountName.isNullOrEmpty()) "" else state.accountName!!.substring(
+                            0,
+                            1
+                        ), radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp)
+                    )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.name_label, state.accountName?:""))
+                        Text(stringResource(R.string.name_label, state.accountName ?: ""))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(stringResource(R.string.email_label, state.accountEmail?:""))
+                        Text(stringResource(R.string.email_label, state.accountEmail ?: ""))
                     }
                     IconButton(onClick = {
                         viewModel.logout()

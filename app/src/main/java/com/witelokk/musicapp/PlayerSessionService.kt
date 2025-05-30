@@ -28,21 +28,9 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
 
         class Enums {
             companion object {
-//                private const val CUSTOM_COMMAND_NEXT_ACTION_ID = "NEXT"
-
                 enum class NotificationPlayerCustomCommandButton(
-                    val customAction: String,
                     val commandButton: CommandButton,
-                ) {
-//                    NEXT(
-//                        customAction = CUSTOM_COMMAND_NEXT_ACTION_ID,
-//                        commandButton = CommandButton.Builder()
-//                            .setDisplayName("Rewind")
-//                            .setSessionCommand(SessionCommand(CUSTOM_COMMAND_NEXT_ACTION_ID, Bundle()))
-//                    .setIconResId(R.drawable.outline_skip_next_24)
-//                            .build(),
-//                    ),
-                }
+                )
             }
         }
     }
@@ -50,11 +38,8 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
     private val player by inject<ExoPlayer>()
     private var mediaSession: MediaSession? = null
     private var currentSongPosition: Long = 0L
-    var seekForward = 5000
-    var seekBackward = 5000
     private var isPauseFromLoss = false
 
-    // for audio focus request
     private var audioManager: AudioManager? = null
     private var audioFocusState: Int = AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     private var focusRequest: AudioFocusRequest? = null
@@ -91,7 +76,8 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
                 .setOnAudioFocusChangeListener(focusChangeListener)
                 .build()
             focusRequest?.let {
-                audioFocusState = audioManager?.requestAudioFocus(it) ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
+                audioFocusState =
+                    audioManager?.requestAudioFocus(it) ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
             }
         } else {
             audioFocusState = audioManager?.requestAudioFocus(
@@ -99,14 +85,6 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN
             ) ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
-        }
-    }
-
-    private val playerListener = @UnstableApi object : Player.Listener {
-        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-            super.onPlayWhenReadyChanged(playWhenReady, reason)
-            if (playWhenReady)
-                setupAndRequestAudioFocus()
         }
     }
 
@@ -128,7 +106,7 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
             }
 
             AudioManager.AUDIOFOCUS_LOSS -> {
-                if (player.isPlaying){
+                if (player.isPlaying) {
                     player.pause()
                 }
             }
@@ -141,7 +119,7 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
         }
         mediaSession = mediaSessionInstance
 
-        mediaSession?.setCustomLayout(notificationPlayerCustomCommandButtons )
+        mediaSession?.setCustomLayout(notificationPlayerCustomCommandButtons)
     }
 
     override fun onAddMediaItems(
@@ -149,7 +127,8 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
         controller: MediaSession.ControllerInfo,
         mediaItems: MutableList<MediaItem>
     ): ListenableFuture<MutableList<MediaItem>> {
-        val updatedMediaItems = mediaItems.map { it.buildUpon().setUri(it.mediaId).build() }.toMutableList()
+        val updatedMediaItems =
+            mediaItems.map { it.buildUpon().setUri(it.mediaId).build() }.toMutableList()
         return Futures.immediateFuture(updatedMediaItems)
     }
 
@@ -160,7 +139,6 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
         val connectionResult = super.onConnect(session, controller)
         val availableSessionCommands = connectionResult.availableSessionCommands.buildUpon()
 
-        /* Registering custom player command buttons for player notification. */
         notificationPlayerCustomCommandButtons.forEach { commandButton ->
             commandButton.sessionCommand?.let(availableSessionCommands::add)
         }
@@ -174,7 +152,6 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
     override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
         super.onPostConnect(session, controller)
         if (notificationPlayerCustomCommandButtons.isNotEmpty()) {
-            /* Setting custom player command buttons to mediaLibrarySession for player notification. */
             mediaSession?.setCustomLayout(notificationPlayerCustomCommandButtons)
             if (player.playWhenReady)
                 setupAndRequestAudioFocus()
@@ -187,19 +164,11 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
         customCommand: SessionCommand,
         args: Bundle
     ): ListenableFuture<SessionResult> {
-        /* Handling custom command buttons from player notification. */
         currentSongPosition = session.player.currentPosition
 
         if (player.playWhenReady)
             setupAndRequestAudioFocus()
 
-//        if (customCommand.customAction == Enums.Companion.NotificationPlayerCustomCommandButton.NEXT.customAction) {
-//            if (currentSongPosition - seekBackward >= 0) {
-//                session.player.seekToNextMediaItem()
-//            } else {
-//                session.player.seekTo(0)
-//            }
-//        }
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
     }
 

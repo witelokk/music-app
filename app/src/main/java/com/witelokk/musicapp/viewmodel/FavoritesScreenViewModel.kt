@@ -5,9 +5,7 @@ import com.witelokk.musicapp.BaseViewModel
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow

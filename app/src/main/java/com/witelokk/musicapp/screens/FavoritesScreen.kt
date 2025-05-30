@@ -144,7 +144,7 @@ fun FavoritesScreen(
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
-                            isPlaying = state.playerState?.playing?: false,
+                            isPlaying = state.playerState?.playing ?: false,
                             showFavorite = false,
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }
