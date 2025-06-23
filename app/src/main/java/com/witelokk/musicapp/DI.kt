@@ -74,7 +74,6 @@ object UUIDSerializer : KSerializer<UUID> {
 
 val customSerializersModule = SerializersModule {
     contextual(UUID::class, UUIDSerializer)
-//    contextual(Instant::class, DateTimeSerializer)
 }
 
 val json = Json {
@@ -96,7 +95,6 @@ fun HttpClientConfig<*>.default() {
 @OptIn(UnstableApi::class)
 val appModule = module {
     val baseUrl = "https://music.witelokk.ru/"
-//    val baseUrl = "http://10.0.2.2:8080/"
 
     single { json }
 
