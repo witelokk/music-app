@@ -35,7 +35,7 @@ This app requires the [music-api](https://github.com/witelokk/music-api) backend
 ## Installation
 
 1. **Set up backend**
-   - Clone and run [music-api](https://github.com/witelokk/music-api)
+   - Run [music-api](https://github.com/witelokk/music-api)
 
 2. **Configure backend URL**
    - Open `app/src/main/java/com/witelokk/musicapp/DI.kt`
@@ -50,13 +50,15 @@ This app requires the [music-api](https://github.com/witelokk/music-api) backend
 
 ## Screenshots
 
-![Welcome screen](images/welcome.png)
-![Login screen](images/login.png)
-![Login confirmation screen](images/login-confirmation.png)
-![Home screen](images/home.png)
-![Artist screen](images/artist.png)
-![Player screen](images/player.png)
-![Search screen](images/search.png)
+<p float="center">
+<img src="images/welcome.png" alt="Welcome screen" width="33%">
+<img src="images/login.png" alt="Login screen" width="33%">
+<img src="images/login-confirmation.png" alt="Login confirmation screen" width="33%">
+<img src="images/home.png" alt="Home screen" width="33%">
+<img src="images/artist.png" alt="Artist screen" width="33%">
+<img src="images/player.png" alt="Player screen" width="33%">
+<img src="images/search.png" alt="Search screen" width="33%">
+</p>
 
 ## Project Structure
 
