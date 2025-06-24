@@ -51,13 +51,13 @@ This app requires the [music-api](https://github.com/witelokk/music-api) backend
 ## Screenshots
 
 <p float="center">
-<img src="images/welcome.png" alt="Welcome screen" width="33%">
-<img src="images/login.png" alt="Login screen" width="33%">
-<img src="images/login-confirmation.png" alt="Login confirmation screen" width="33%">
-<img src="images/home.png" alt="Home screen" width="33%">
-<img src="images/artist.png" alt="Artist screen" width="33%">
-<img src="images/player.png" alt="Player screen" width="33%">
-<img src="images/search.png" alt="Search screen" width="33%">
+<img src="images/welcome.png" alt="Welcome screen" width="32%">
+<img src="images/login.png" alt="Login screen" width="32%">
+<img src="images/login-confirmation.png" alt="Login confirmation screen" width="32%">
+<img src="images/home.png" alt="Home screen" width="32%">
+<img src="images/artist.png" alt="Artist screen" width="32%">
+<img src="images/player.png" alt="Player screen" width="32%">
+<img src="images/search.png" alt="Search screen" width="32%">
 </p>
 
 ## Project Structure
