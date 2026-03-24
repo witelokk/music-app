@@ -40,12 +40,6 @@ actual val platformModule = module {
     }
 
     single<GoogleSignIn> {
-        object : GoogleSignIn {
-            override suspend fun signIn(
-                signIn: (String) -> Unit,
-                onSingInFailed: () -> Unit
-            ) {
-            }
-        }
+        IosGoogleSignIn()
     }
 }

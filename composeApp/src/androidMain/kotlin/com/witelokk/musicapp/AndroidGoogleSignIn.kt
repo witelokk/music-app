@@ -20,7 +20,7 @@ class AndroidGoogleSignIn(private val context: Context) : GoogleSignIn {
         val nonce = generateNonce()
 
         val signInWithGoogleOption: GetSignInWithGoogleOption =
-            GetSignInWithGoogleOption.Builder("408356281538-1vldoc1rlnrpp0pkm9d1gkec4k7csfdk.apps.googleusercontent.com")
+            GetSignInWithGoogleOption.Builder("408356281538-bimfjgt9o4shke6oen3bqom6napt63oe.apps.googleusercontent.com")
                 .setNonce(nonce)
                 .build()
 
@@ -37,6 +37,7 @@ class AndroidGoogleSignIn(private val context: Context) : GoogleSignIn {
             )
             handleCredentialResult(result, signIn, onSingInFailed)
         } catch (e: Exception) {
+            logd("GOOGLE_SIGN_IN", e.toString())
             onSingInFailed()
         }
     }

@@ -48,7 +48,8 @@ expect val platformModule: Module
 val appModule = module {
     includes(platformModule)
 
-    val baseUrl = "https://music.witelokk.ru/"
+//    val baseUrl = "https://music.witelokk.ru/"
+    val baseUrl = "http://192.168.1.133:8080/"
 
     single {
         Json

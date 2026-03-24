@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.serialization)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -16,16 +17,25 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+
+    cocoapods {
+        version = "1.0"
+        summary = "MusicApp shared module"
+        homepage = "https://example.com/musicapp"
+        ios.deploymentTarget = "16.0"
+
+        podfile = project.file("../iosApp/Podfile")
+
+        pod("GoogleSignIn")
+
+        framework {
             baseName = "ComposeApp"
             isStatic = true
         }
     }
+
+    iosArm64()
+    iosSimulatorArm64()
     
     sourceSets {
         androidMain.dependencies {
@@ -102,4 +112,3 @@ android {
 dependencies {
     debugImplementation(libs.compose.uiTooling)
 }
-
