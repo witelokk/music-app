@@ -33,7 +33,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -44,7 +46,7 @@ import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun PlayerSheetScaffold(
     navController: NavController,
@@ -67,6 +69,8 @@ fun PlayerSheetScaffold(
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+
     val statusBarHeight = with(LocalDensity.current) {
         WindowInsets.statusBars.getTop(this).toDp()
     }
@@ -101,11 +105,11 @@ fun PlayerSheetScaffold(
         }
     }
 
-//    BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
-//        scope.launch {
-//            scaffoldState.bottomSheetState.partialExpand()
-//        }
-//    }
+    BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+        scope.launch {
+            scaffoldState.bottomSheetState.partialExpand()
+        }
+    }
 }
 
 
