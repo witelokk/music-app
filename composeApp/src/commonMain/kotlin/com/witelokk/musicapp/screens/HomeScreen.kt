@@ -37,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -195,10 +196,11 @@ fun HomeScreen(
                     searchQuery.value = it
                 },
                 avatar = {
-                    Avatar(if (state.accountName.isEmpty()) "" else state.accountName.substring(
-                        0,
-                        1
-                    ),
+                    Avatar(
+                        if (state.accountName.isEmpty()) "" else state.accountName.substring(
+                            0,
+                            1
+                        ),
                         modifier = Modifier.clickable { navController.navigate("settings") })
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -338,8 +340,7 @@ fun HomeScreen(
                         }
                         items(state.layout.sections) { section ->
                             Text(
-// todo:                                if (LocalConfiguration.current.locales[0].language == "ru") section.titleRu else section.title,
-                                section.title,
+                                if (Locale.current.language == "ru") section.titleRu else section.title,
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(24.dp)
                             )
