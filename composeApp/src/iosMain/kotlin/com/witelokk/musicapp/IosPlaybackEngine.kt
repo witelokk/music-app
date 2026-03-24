@@ -16,9 +16,13 @@ import platform.AVFoundation.removeTimeObserver
 import platform.AVFoundation.seekToTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
+import platform.Foundation.NSData
 import platform.Foundation.NSURL
+import platform.Foundation.dataWithContentsOfURL
 import platform.MediaPlayer.MPChangePlaybackPositionCommandEvent
+import platform.MediaPlayer.MPMediaItemArtwork
 import platform.MediaPlayer.MPMediaItemPropertyArtist
+import platform.MediaPlayer.MPMediaItemPropertyArtwork
 import platform.MediaPlayer.MPMediaItemPropertyPlaybackDuration
 import platform.MediaPlayer.MPMediaItemPropertyTitle
 import platform.MediaPlayer.MPNowPlayingInfoCenter
@@ -27,6 +31,7 @@ import platform.MediaPlayer.MPNowPlayingInfoPropertyPlaybackRate
 import platform.MediaPlayer.MPRemoteCommandCenter
 import platform.MediaPlayer.MPRemoteCommandEvent
 import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
+import platform.UIKit.UIImage
 import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
@@ -36,6 +41,7 @@ class IosPlaybackEngine : PlaybackEngine {
     private var currentItem: PlaybackItem? = null
     private var player: AVPlayer? = null
     private var timeObserver: Any? = null
+    private var artwork: MPMediaItemArtwork? = null
 
     private var playing = false
     private var positionMs = 0L
@@ -56,6 +62,7 @@ class IosPlaybackEngine : PlaybackEngine {
 
         player?.pause()
         player = null
+        artwork = null
 
         configureAudioSession()
         configureRemoteCommands()
@@ -64,6 +71,8 @@ class IosPlaybackEngine : PlaybackEngine {
         val playerItem = AVPlayerItem(url)
         val newPlayer = AVPlayer(playerItem)
         player = newPlayer
+
+        artwork = loadArtwork(item.artworkUrl)
 
         attachTimeObserver(newPlayer)
         updateNowPlaying()
@@ -75,6 +84,8 @@ class IosPlaybackEngine : PlaybackEngine {
     override fun play() {
         val p = player ?: return
         if (currentItem == null) return
+
+        configureAudioSession()
 
         p.play()
         playing = true
@@ -207,18 +218,32 @@ class IosPlaybackEngine : PlaybackEngine {
 
         val info = mutableMapOf<Any?, Any>(
             MPMediaItemPropertyTitle to item.title,
+            MPMediaItemPropertyArtist to item.artist,
             MPNowPlayingInfoPropertyElapsedPlaybackTime to elapsedSeconds,
             MPNowPlayingInfoPropertyPlaybackRate to if (playing) 1.0 else 0.0
         )
-
-        item.artist?.let {
-            info[MPMediaItemPropertyArtist] = it
-        }
 
         durationSeconds?.let {
             info[MPMediaItemPropertyPlaybackDuration] = it
         }
 
+        artwork?.let {
+            info[MPMediaItemPropertyArtwork] = it
+        }
+
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = info
+    }
+
+    private fun loadArtwork(url: String?): MPMediaItemArtwork? {
+        if (url.isNullOrBlank()) return null
+
+        val nsUrl = NSURL.URLWithString(url) ?: return null
+        val data = NSData.dataWithContentsOfURL(nsUrl) ?: return null
+        val image = UIImage(data = data) ?: return null
+
+        return MPMediaItemArtwork(
+            boundsSize = image.size,
+            requestHandler = { _ -> image }
+        )
     }
 }
