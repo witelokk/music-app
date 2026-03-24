@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.getScreenHeight
 import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -64,7 +67,9 @@ fun PlayerSheetScaffold(
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
+    val statusBarHeight = with(LocalDensity.current) {
+        WindowInsets.statusBars.getTop(this).toDp()
+    }
 
     LaunchedEffect(playerState) {
         if (playerState == null) {
@@ -88,7 +93,7 @@ fun PlayerSheetScaffold(
                 onAddToPlaylist,
                 onChangeFavorite,
                 onPlaySongInQueue,
-                modifier
+                modifier.height(getScreenHeight()-statusBarHeight-49.dp)
             )
     }, modifier = modifier.fillMaxHeight(), topBar = topBar) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -125,7 +130,6 @@ fun SheetContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(810.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() }, indication = null
             ) {
