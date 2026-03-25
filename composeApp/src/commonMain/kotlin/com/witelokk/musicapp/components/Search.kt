@@ -224,9 +224,6 @@ fun SearchHistoryContent(
     onClearClick: () -> Unit = {},
 ) {
     if (results.isEmpty()) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Search history is empty", modifier = Modifier.padding(16.dp))
-        }
         return
     }
 

@@ -96,7 +96,11 @@ class HomeScreenViewModel(
     fun loadSearchHistory() = viewModelScope.launch {
         settings.searchHistory.collect { history ->
             _state.update {
-                it.copy(searchHistory = Json.decodeFromString(history))
+                it.copy(
+                    searchHistory = if (history.isEmpty()) listOf() else Json.decodeFromString(
+                        history
+                    )
+                )
             }
         }
     }
@@ -175,7 +179,7 @@ class HomeScreenViewModel(
     }
 
     fun clearSearchHistory() = viewModelScope.launch {
-        settings.setSearchHistory("")
+        settings.setSearchHistory("[]")
         _state.update {
             it.copy(searchHistory = listOf())
         }
