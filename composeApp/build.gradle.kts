@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -21,7 +19,7 @@ kotlin {
     cocoapods {
         version = "1.0"
         summary = "MusicApp shared module"
-        homepage = "https://example.com/musicapp"
+        homepage = "https://music.witelokk.ru"
         ios.deploymentTarget = "16.0"
 
         podfile = project.file("../iosApp/Podfile")
