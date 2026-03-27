@@ -1,0 +1,74 @@
+name: Build Android APK and iOS unsigned IPA
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  android-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Build release APK
+        run: ./gradlew :composeApp:assembleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: composeApp/build/outputs/apk/release/*.apk
+
+  ios-ipa:
+    name: Build iOS unsigned IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods dependencies
+        run: pod install --project-directory=iosApp
+
+      - name: Build unsigned iOS app
+        env:
+          # Disable code signing so that the resulting app bundle is unsigned
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGNING_REQUIRED: "NO"
+          CODE_SIGN_IDENTITY: ""
+        run: |
+          set -e
+          xcodebuild \
+            -workspace iosApp/iosApp.xcworkspace \
+            -scheme iosApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath iosApp/build
+
+      - name: Create unsigned IPA
+        run: |
+          set -e
+          APP_PATH="iosApp/build/Build/Products/Release-iphoneos/MusicApp.app"
+          IPA_DIR="iosApp/build/ipa"
+          mkdir -p "$IPA_DIR/Payload"
+          cp -R "$APP_PATH" "$IPA_DIR/Payload/"
+          cd "$IPA_DIR"
+          zip -r MusicApp-unsigned.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-ipa
+          path: iosApp/build/ipa/MusicApp-unsigned.ipa
