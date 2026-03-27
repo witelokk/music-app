@@ -1,6 +1,6 @@
 # MusicApp 🎵
 
-A modern Android music streaming app built with Jetpack Compose and Material 3 design.
+A modern music streaming app for **Android and iOS** built with **Compose Multiplatform** and Material 3.
 
 ## Features
 
@@ -13,40 +13,81 @@ A modern Android music streaming app built with Jetpack Compose and Material 3 d
 - **🌍 Multi-language** support (English & Russian)
 - **📱 System controls** on lock screen and quick settings
 
-## Backend Requirement
+## Backend
 
-This app requires the [music-api](https://github.com/witelokk/music-api) backend to function. The backend provides authentication, music metadata, streaming, and all API endpoints.
+The app consumes the [music-api](https://github.com/witelokk/music-api) backend for authentication, music metadata, streaming, and all API endpoints.
+
+- By default, the app is configured to use the hosted backend at:
+  ```kotlin
+  // composeApp/src/commonMain/kotlin/com/witelokk/musicapp/AppModule.kt
+  val baseUrl = "https://music.witelokk.ru/"
+  ```
+- To use your own backend, change `baseUrl` in `AppModule.kt` to point to your deployment.
 
 ## Tech Stack
 
-- **Frontend**: Jetpack Compose, Material 3, Navigation Compose
-- **Backend**: Ktor Client, OkHttp, Kotlinx Serialization
-- **Architecture**: MVVM with Koin DI, AndroidX Lifecycle
-- **Media**: Media3 ExoPlayer, Media3 Session
-- **Auth**: Android Credentials API, Google Identity
+- **UI / Shared**
+  - Compose Multiplatform
+  - Material 3
+  - Navigation Compose
+  - Coil 3 (with Ktor 3 integration)
+  - Kotlin Multiplatform (common business logic, view models, networking)
+- **Networking & Data**
+  - Ktor Client (OkHttp on Android, Darwin on iOS)
+  - Kotlinx Serialization
+  - AndroidX DataStore
+  - Auto-generated API client from `music-api`
+- **Architecture**
+  - MVVM
+  - Koin for DI (including `koin-compose` view models)
+  - AndroidX Lifecycle (Compose integration)
+- **Media & Auth (Android)**
+  - Media3 ExoPlayer + HLS + MediaSession
+  - Android Credentials API
+  - Google Identity / Google Sign-In
 
 ## Requirements
 
-- Android SDK 24+ (Android 7.0+)
-- Target SDK 35 (Android 15)
-- Kotlin 2.1.0+, Java 11+
-- Backend API running and accessible
+**Common**
+- Kotlin `2.3.20+`
+- JDK 11+
 
-## Installation
+**Android**
+- Android Studio (Hedgehog / Ladybug or newer)
+- Android SDK 24+ (minSdk 24)
+- Target SDK 36
 
-1. **Set up backend**
-   - Run [music-api](https://github.com/witelokk/music-api)
+**iOS**
+- Xcode 15+
+- CocoaPods
+- iOS 16.0+ deployment target
 
-2. **Configure backend URL**
-   - Open `app/src/main/java/com/witelokk/musicapp/DI.kt`
-   - Update `baseUrl`:
-   ```kotlin
-   val baseUrl = "https://your-backend-url.com/"
+## Running the App
+
+### 1. Backend (optional if you use the hosted instance)
+
+If you want to run your own backend:
+
+1. Clone and run [music-api](https://github.com/witelokk/music-api).
+2. Update `baseUrl` in `composeApp/src/commonMain/kotlin/com/witelokk/musicapp/AppModule.kt` to point to your backend URL.
+
+### 2. Android
+
+1. Open the project root in **Android Studio**.
+2. Let Gradle sync.
+3. Select the `composeApp` Android run configuration.
+4. Run on an Android device or emulator.
+
+### 3. iOS
+
+1. Install CocoaPods dependencies:
+   ```bash
+   cd iosApp
+   pod install
    ```
-
-3. **Build and run**
-   - Open in Android Studio
-   - Sync project and run
+2. Open `iosApp/iosApp.xcworkspace` in **Xcode**.
+3. Select an iOS simulator or device.
+4. Build and run the `iosApp` target.
 
 ## Screenshots
 
@@ -64,16 +105,20 @@ This app requires the [music-api](https://github.com/witelokk/music-api) backend
 
 ```
 MusicApp/
-├── app/src/main/java/com/witelokk/musicapp/
-│   ├── api/                    # Auto-generated API client
-│   ├── components/             # Reusable UI components
-│   ├── screens/                # Screen composables
-│   ├── viewmodel/              # ViewModels
-│   ├── App.kt                  # Main app composable
-│   └── DI.kt                   # Dependency injection & base URL
-└── gradle/libs.versions.toml   # Dependency versions
+├── composeApp/                              # Shared Kotlin Multiplatform + Android app
+│   ├── src/commonMain/kotlin/com/witelokk/musicapp/
+│   │   ├── api/                            # Auto-generated API client
+│   │   ├── components/                     # Reusable UI components
+│   │   ├── screens/                        # Screen composables
+│   │   ├── viewmodel/                      # ViewModels
+│   │   ├── App.kt                          # Root Compose app
+│   │   └── AppModule.kt                    # DI & backend base URL
+│   ├── src/androidMain/                    # Android-specific implementations
+│   └── src/iosMain/                        # iOS-specific implementations
+├── iosApp/                                 # iOS app (Xcode project + workspace)
+└── gradle/libs.versions.toml               # Dependency versions
 ```
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
