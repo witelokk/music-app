@@ -2,6 +2,8 @@ package com.witelokk.musicapp.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -24,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -36,6 +40,7 @@ import musicapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -45,6 +50,7 @@ fun WelcomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(state.isAuthorized) {
         if (state.isAuthorized) {
@@ -72,7 +78,14 @@ fun WelcomeScreen(
                 Icon(
                     painterResource(Res.drawable.music),
                     "",
-                    modifier = Modifier.size(96.dp),
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            viewModel.onLogoTapped()
+                        },
                     tint = MaterialTheme.colorScheme.onBackground
                 )
 
@@ -86,19 +99,29 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { navController.navigate("login") },
+                    onClick = {
+                        scope.launch {
+                            viewModel.commitServerUrl()
+                            navController.navigate("login")
+                        }
+                    },
                     modifier = Modifier.requiredWidth(284.dp)
                 ) {
-                    Text(stringResource(Res.string.sign_in))
+                        Text(stringResource(Res.string.sign_in))
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 OutlinedButton(
-                    onClick = { navController.navigate(Registration()) },
+                    onClick = {
+                        scope.launch {
+                            viewModel.commitServerUrl()
+                            navController.navigate(Registration())
+                        }
+                    },
                     modifier = Modifier.requiredWidth(284.dp)
                 ) {
-                    Text(stringResource(Res.string.sign_up))
+                        Text(stringResource(Res.string.sign_up))
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -116,8 +139,29 @@ fun WelcomeScreen(
                         contentDescription = stringResource(Res.string.sign_in_with_google)
                     )
                 }
+
+                AnimatedVisibility(visible = state.showServerSettings) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Text(stringResource(Res.string.server_url))
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        OutlinedTextField(
+                            value = state.serverUrlInput,
+                            onValueChange = { newValue ->
+                                viewModel.onServerUrlChanged(newValue)
+                            },
+                            singleLine = true,
+                            modifier = Modifier.requiredWidth(284.dp),
+                            placeholder = {
+                                Text(text = stringResource(Res.string.server_url_placeholder))
+                            }
+                        )
+                    }
+                }
             }
         }
     }
 }
-

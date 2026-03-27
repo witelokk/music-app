@@ -20,9 +20,11 @@ The app consumes the [music-api](https://github.com/witelokk/music-api) backend 
 - By default, the app is configured to use the hosted backend at:
   ```kotlin
   // composeApp/src/commonMain/kotlin/com/witelokk/musicapp/AppModule.kt
-  val baseUrl = "https://music.witelokk.ru/"
+  const val DEFAULT_BASE_URL = "https://music.witelokk.ru/"
   ```
-- To use your own backend, change `baseUrl` in `AppModule.kt` to point to your deployment.
+- To use your own backend, you can either:
+  - On the **Welcome** screen, tap the app logo 7 times to reveal the hidden **Server URL** field, enter your backend URL (used immediately for login and API calls).
+  - Or change `DEFAULT_BASE_URL` in `AppModule.kt` to point to your deployment and rebuild the app.
 
 ## Tech Stack
 

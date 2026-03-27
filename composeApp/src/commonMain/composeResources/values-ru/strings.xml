@@ -70,4 +70,6 @@
     <string name="edit_playlist_name_dialog_title">Изменить название плейлиста</string>
     <string name="add">Добавить</string>
     <string name="cancel">Отмена</string>
+    <string name="server_url">Адрес сервера</string>
+    <string name="server_url_placeholder">https://ваш-сервер.example.com/</string>
 </resources>

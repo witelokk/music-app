@@ -16,6 +16,7 @@ private object PrefKeys {
     val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     val SEARCH_HISTORY = stringPreferencesKey("search_history")
     val THEME = stringPreferencesKey("theme")
+    val SERVER_URL = stringPreferencesKey("server_url")
 }
 
 class SettingsRepository(
@@ -38,6 +39,9 @@ class SettingsRepository(
 
     val theme: Flow<String> =
         dataStore.data.map { prefs -> prefs[PrefKeys.THEME] ?: "" }
+
+    val serverUrl: Flow<String> =
+        dataStore.data.map { prefs -> prefs[PrefKeys.SERVER_URL] ?: DEFAULT_BASE_URL }
 
     suspend fun setAccountName(value: String) {
         dataStore.edit { prefs ->
@@ -73,6 +77,13 @@ class SettingsRepository(
     suspend fun setTheme(value: String) {
         dataStore.edit { prefs ->
             prefs[PrefKeys.THEME] = value
+        }
+    }
+
+    suspend fun setServerUrl(value: String) {
+        val normalized = if (value.isBlank()) DEFAULT_BASE_URL else value
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.SERVER_URL] = normalized
         }
     }
 

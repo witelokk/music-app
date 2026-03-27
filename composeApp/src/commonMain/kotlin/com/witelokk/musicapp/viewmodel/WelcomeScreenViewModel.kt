@@ -2,6 +2,7 @@ package com.witelokk.musicapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.witelokk.musicapp.DEFAULT_BASE_URL
 import com.witelokk.musicapp.GoogleSignIn
 import com.witelokk.musicapp.SettingsRepository
 import com.witelokk.musicapp.api.apis.AuthApi
@@ -16,6 +17,8 @@ data class WelcomeScreenState(
     var isCheckingAuthorization: Boolean = true,
     var isAuthorized: Boolean = false,
     var signInFailed: Boolean = false,
+    val serverUrlInput: String = DEFAULT_BASE_URL,
+    val showServerSettings: Boolean = false,
 )
 
 class WelcomeScreenViewModel(
@@ -27,8 +30,11 @@ class WelcomeScreenViewModel(
 
     val state = _state.asStateFlow()
 
+    private var logoTapCount: Int = 0
+
     init {
         viewModelScope.launch { checkAuthorization() }
+        viewModelScope.launch { loadServerUrl() }
     }
 
     private suspend fun checkAuthorization() {
@@ -41,6 +47,27 @@ class WelcomeScreenViewModel(
         _state.update {
             it.copy(isCheckingAuthorization = false)
         }
+    }
+
+    private suspend fun loadServerUrl() {
+        val url = settingsRepository.serverUrl.first()
+        _state.update { it.copy(serverUrlInput = url) }
+    }
+
+    fun onLogoTapped() {
+        logoTapCount++
+        if (logoTapCount >= 7 && !_state.value.showServerSettings) {
+            _state.update { it.copy(showServerSettings = true) }
+        }
+    }
+
+    fun onServerUrlChanged(newValue: String) {
+        _state.update { it.copy(serverUrlInput = newValue) }
+    }
+
+    suspend fun commitServerUrl() {
+        val value = state.value.serverUrlInput
+        settingsRepository.setServerUrl(value)
     }
 
     fun signInWithGoogle() = viewModelScope.launch {

@@ -71,4 +71,6 @@
     <string name="edit_playlist_name_dialog_title">Edit playlist name</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
+    <string name="server_url">Server URL</string>
+    <string name="server_url_placeholder">https://your-server.example.com/</string>
 </resources>

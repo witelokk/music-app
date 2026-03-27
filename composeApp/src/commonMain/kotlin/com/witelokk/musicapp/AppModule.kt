@@ -30,6 +30,8 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -45,10 +47,10 @@ class CustomHttpLogger : Logger {
 
 expect val platformModule: Module
 
+const val DEFAULT_BASE_URL = "https://music.witelokk.ru/"
+
 val appModule = module {
     includes(platformModule)
-
-    val baseUrl = "https://music.witelokk.ru/"
 
     single {
         Json
@@ -62,11 +64,13 @@ val appModule = module {
         MusicPlayer(get())
     }
 
-    single {
+    factory {
         Auth(get(), get(), get())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         AuthApi(baseUrl, httpClientConfig = {})
     }
 
@@ -87,38 +91,56 @@ val appModule = module {
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         UsersApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         SearchApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         ArtistsApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         FavoritesApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         PlaylistsApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         FavoritesApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         ReleasesApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         HomeScreenApi(baseUrl, get<HttpClient>())
     }
 
     factory {
+        val settingsRepository: SettingsRepository = get()
+        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         FollowingsApi(baseUrl, get<HttpClient>())
     }
 
