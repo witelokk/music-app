@@ -12,6 +12,8 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.okhttp.OkHttp
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.koin.dsl.module
 
 actual val platformModule = module {
@@ -36,7 +38,7 @@ actual val platformModule = module {
         val dataSourceFactory = DefaultHttpDataSource.Factory().apply {
             setDefaultRequestProperties(
                 mapOf(
-                    "Authorization" to "Bearer " + (get<SettingsRepository>().accessToken)
+                    "Authorization" to "Bearer " + (runBlocking {get<SettingsRepository>().accessToken.first()})
                 )
             )
         }

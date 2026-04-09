@@ -36,7 +36,7 @@ actual val platformModule = module {
     }
 
     single<PlaybackEngine> {
-        IosPlaybackEngine()
+        IosPlaybackEngine(get())
     }
 
     single<GoogleSignIn> {

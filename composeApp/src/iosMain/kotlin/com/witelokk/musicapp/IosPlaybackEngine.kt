@@ -1,11 +1,14 @@
 package com.witelokk.musicapp
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.setActive
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
+import platform.AVFoundation.AVURLAsset
 import platform.AVFoundation.addPeriodicTimeObserverForInterval
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
@@ -35,7 +38,9 @@ import platform.UIKit.UIImage
 import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
-class IosPlaybackEngine : PlaybackEngine {
+class IosPlaybackEngine(
+    private val settingsRepository: SettingsRepository
+) : PlaybackEngine {
     private var listener: PlaybackEngineListener? = null
 
     private var currentItem: PlaybackItem? = null
@@ -68,7 +73,7 @@ class IosPlaybackEngine : PlaybackEngine {
         configureRemoteCommands()
 
         val url = NSURL.URLWithString(item.url) ?: return
-        val playerItem = AVPlayerItem(url)
+        val playerItem = createPlayerItem(url)
         val newPlayer = AVPlayer(playerItem)
         player = newPlayer
 
@@ -119,6 +124,27 @@ class IosPlaybackEngine : PlaybackEngine {
 
     override fun setListener(listener: PlaybackEngineListener) {
         this.listener = listener
+    }
+
+    private fun createPlayerItem(url: NSURL): AVPlayerItem {
+        val token = runBlocking { settingsRepository.accessToken.first() }
+
+        if (token.isNotBlank()) {
+            logd("IOS_PLAYBACK_ENGINE", "ACCESS TOKEN is $token")
+
+            val options: Map<Any?, Any> = mapOf(
+                "AVURLAssetHTTPHeaderFieldsKey" to mapOf(
+                    "Authorization" to "Bearer $token"
+                )
+            )
+            val asset = AVURLAsset(
+                uRL = url,
+                options = options
+            )
+            return AVPlayerItem(asset = asset)
+        }
+
+        return AVPlayerItem(uRL = url)
     }
 
     private fun seekInternal(targetMs: Long) {
