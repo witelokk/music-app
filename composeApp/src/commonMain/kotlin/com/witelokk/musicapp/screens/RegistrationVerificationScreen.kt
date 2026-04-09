@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -14,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -28,10 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.witelokk.musicapp.components.CodeField
 import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
@@ -123,16 +127,20 @@ fun RegistrationVerificationScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            CodeField(
-                length = 4,
-                onCodeChanged = {
-                    code = it
+            OutlinedTextField(
+                value = code,
+                onValueChange = { newValue ->
+                    val filtered = newValue.filter { it.isDigit() }.take(4)
+                    code = filtered
                     isCodeInvalid = false
-
-                    isButtonEnabled = code.length == 4
+                    isButtonEnabled = filtered.length == 4
                 },
-                isCodeInvalid = isCodeInvalid,
-                focusRequester = codeFocusRequester,
+                isError = isCodeInvalid,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier
+                    .width(100.dp)
+                    .focusRequester(codeFocusRequester)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
