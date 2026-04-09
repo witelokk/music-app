@@ -30,9 +30,9 @@ import kotlinx.serialization.encoding.*
 
 data class TokensResponse (
 
-    @SerialName(value = "accessToken") @Required val accessToken: kotlin.String,
+    @SerialName(value = "access_token") @Required val accessToken: kotlin.String,
 
-    @SerialName(value = "refreshToken") @Required val refreshToken: kotlin.String
+    @SerialName(value = "refresh_token") @Required val refreshToken: kotlin.String
 
 ) {
 
