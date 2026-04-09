@@ -30,7 +30,7 @@ suspend fun handleAuth(
     val refreshToken = settingsRepository.refreshToken.first()
 
     val tokensResponse = authApi.tokensPost(
-        TokensRequest("refresh_token", refreshToken)
+        TokensRequest("refresh_token", refreshToken = refreshToken)
     )
 
     if (!tokensResponse.success) return originalCall
