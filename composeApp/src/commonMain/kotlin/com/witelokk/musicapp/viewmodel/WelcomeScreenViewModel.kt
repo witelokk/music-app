@@ -7,6 +7,7 @@ import com.witelokk.musicapp.GoogleSignIn
 import com.witelokk.musicapp.SettingsRepository
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.logd
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -27,7 +28,6 @@ class WelcomeScreenViewModel(
     private val googleSignIn: GoogleSignIn,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WelcomeScreenState())
-
     val state = _state.asStateFlow()
 
     private var logoTapCount: Int = 0
@@ -66,13 +66,22 @@ class WelcomeScreenViewModel(
     }
 
     suspend fun commitServerUrl() {
-        val value = state.value.serverUrlInput
-        settingsRepository.setServerUrl(value)
+        authApi.baseUrl = state.value.serverUrlInput
+        settingsRepository.setServerUrl(state.value.serverUrlInput)
     }
 
     fun signInWithGoogle() = viewModelScope.launch {
         googleSignIn.signIn(
-            signIn = { viewModelScope.launch { this@WelcomeScreenViewModel.signIn(it) } },
+            signIn = { it ->
+                viewModelScope.launch {
+                    try {
+                        this@WelcomeScreenViewModel.signIn(it)
+                    } catch (e: Exception) {
+                        logd("GOOGLE_SIGN_IN", e.toString())
+                        _state.update { it.copy(signInFailed = true) }
+                    }
+                }
+            },
             onSingInFailed = {
                 _state.update { it.copy(signInFailed = true) }
             }

@@ -21,7 +21,7 @@ import kotlinx.serialization.json.Json
 import com.witelokk.musicapp.api.auth.*
 
 open class ApiClient(
-        private val baseUrl: String
+    var baseUrl: String
 ) {
 
     private lateinit var client: HttpClient

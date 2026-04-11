@@ -131,7 +131,10 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 IconButton(onClick = {
-                    viewModel.signInWithGoogle()
+                    scope.launch {
+                        viewModel.commitServerUrl()
+                        viewModel.signInWithGoogle()
+                    }
                 }) {
                     Image(
                         painterResource(Res.drawable.google),
@@ -144,7 +147,7 @@ fun WelcomeScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Text(stringResource(Res.string.server_url))
+                        Text("SERVER URL")
 
                         Spacer(modifier = Modifier.height(4.dp))
 
@@ -156,7 +159,7 @@ fun WelcomeScreen(
                             singleLine = true,
                             modifier = Modifier.requiredWidth(284.dp),
                             placeholder = {
-                                Text(text = stringResource(Res.string.server_url_placeholder))
+                                Text(text = "SERVER URL PLACEHOLDER")
                             }
                         )
                     }
