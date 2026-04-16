@@ -15,15 +15,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -32,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,10 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
+import com.witelokk.musicapp.components.DeletePlaylistDialog
+import com.witelokk.musicapp.components.EditPlaylistNameDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
@@ -67,8 +68,9 @@ fun PlaylistReleaseScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
-    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    var addToPlaylistDialogSong by rememberSaveable { mutableStateOf<Song?>(null) }
     var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -79,8 +81,8 @@ fun PlaylistReleaseScreen(
             viewModel.loadRelease(route.id)
     }
 
-    LaunchedEffect(showAddToPlaylistDialog) {
-        if (showAddToPlaylistDialog) {
+    LaunchedEffect(addToPlaylistDialogSong) {
+        if (addToPlaylistDialogSong != null) {
             viewModel.loadPlaylists()
         }
     }
@@ -95,53 +97,41 @@ fun PlaylistReleaseScreen(
         }
     }
 
-    if (showAddToPlaylistDialog) {
-        AddToPlaylistsDialog(
-            state.playlists,
-            onDismissRequest = { showAddToPlaylistDialog = false },
-            onAddRequest = { playlists ->
-                viewModel.addSongToPlaylists(
-                    songToAddToPlaylists!!,
-                    playlists
-                ); showAddToPlaylistDialog = false
-            },
-        )
-    }
+    AddToPlaylistsDialog(
+        showDialog = addToPlaylistDialogSong != null,
+        playlists = state.playlists,
+        onDismissRequest = { addToPlaylistDialogSong = null },
+        onAddRequest = { playlists ->
+            viewModel.addSongToPlaylists(
+                addToPlaylistDialogSong!!,
+                playlists
+            )
+            addToPlaylistDialogSong = null
+        },
+    )
 
-    if (showDeletePlaylistDialog) {
-        AlertDialog(
-            title = { Text(stringResource(Res.string.delete_playlists_dialog_title)) },
-            onDismissRequest = { showDeletePlaylistDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDeletePlaylistDialog = false
-                }) { Text(stringResource(Res.string.cancel)) }
-                TextButton(onClick = { viewModel.deletePlaylist() }) { Text(stringResource(Res.string.yes)) }
-            },
-            text = { Text(stringResource(Res.string.delete_playlists_dialog_text)) }
-        )
-    }
+    DeletePlaylistDialog(
+        showDialog = showDeletePlaylistDialog,
+        playlistName = state.name,
+        onDismissRequest = { showDeletePlaylistDialog = false },
+        onConfirmDelete = {
+            viewModel.deletePlaylist()
+            showDeletePlaylistDialog = false
+        },
+    )
 
-    if (showEditPlaylistDialog) {
-        var newName by remember { mutableStateOf(state.name) }
+    var newName by remember { mutableStateOf(state.name) }
 
-        AlertDialog(
-            title = { Text(stringResource(Res.string.edit_playlist_name_dialog_title)) },
-            onDismissRequest = { showDeletePlaylistDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    showEditPlaylistDialog = false
-                }) { Text(stringResource(Res.string.cancel)) }
-                TextButton(onClick = {
-                    viewModel.editPlaylistName(newName)
-                    showEditPlaylistDialog = false
-                }) { Text(stringResource(Res.string.yes)) }
-            },
-            text = {
-                OutlinedTextField(newName, onValueChange = { newName = it })
-            }
-        )
-    }
+    EditPlaylistNameDialog(
+        showDialog = showEditPlaylistDialog,
+        currentName = newName,
+        onNameChange = { newName = it },
+        onDismissRequest = { showEditPlaylistDialog = false },
+        onConfirm = {
+            viewModel.editPlaylistName(newName)
+            showEditPlaylistDialog = false
+        },
+    )
 
     LaunchedEffect(state.deleted) {
         if (state.deleted) {
@@ -184,8 +174,7 @@ fun PlaylistReleaseScreen(
         onSeekToNext = { viewModel.seekPlayerToNext() },
         onPlayPause = { viewModel.playPausePlayer() },
         onAddToPlaylist = { song ->
-            songToAddToPlaylists = song
-            showAddToPlaylistDialog = true
+            addToPlaylistDialogSong = song
         },
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
@@ -229,8 +218,11 @@ fun PlaylistReleaseScreen(
                                 text = { Text(stringResource(Res.string.add_to_playlist)) },
                                 onClick = {
                                     menuExpanded.value = false
-                                    songToAddToPlaylists = song
-                                    showAddToPlaylistDialog = true
+                                    scope.launch {
+                                        // wait until menu closes
+                                        delay(100)
+                                        addToPlaylistDialogSong = song
+                                    }
                                 }
                             )
                             DropdownMenuItem(

@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +26,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,7 +34,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -257,41 +253,17 @@ fun Player(
         Text("")
     }
 
-    when {
-        openArtistsDialog -> AlertDialog(onDismissRequest = {
-            openArtistsDialog = false
-        }, title = { Text("Artists") }, confirmButton = {
-            TextButton(onClick = {
-                openArtistsDialog = false
-            }) { Text("Close") }
-        }, text = {
-            LazyColumn {
-                items(playerState.currentSong.artists) { artist ->
-                    Row(verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable {
-                                scope.launch {
-                                    sheetState.partialExpand()
-                                    navController.navigate(ArtistScreenRoute(playerState.currentSong.artists[0].id))
-                                }
-                            }
-                            .fillParentMaxWidth()
-                            .padding(vertical = 8.dp)) {
-                        AsyncImage(
-                            artist.avatarUrl,
-                            "",
-                            error = painterResource(Res.drawable.artist_placeholder),
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(
-                                    RoundedCornerShape(100)
-                                )
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(artist.name, style = MaterialTheme.typography.bodyLarge)
-                    }
+    if (openArtistsDialog) {
+        ArtistsDialog(
+            showDialog = openArtistsDialog,
+            song = playerState.currentSong,
+            onArtistSelected = { artistId ->
+                scope.launch {
+                    sheetState.partialExpand()
+                    navController.navigate(ArtistScreenRoute(artistId))
                 }
-            }
-        })
+            },
+            onDismissRequest = { openArtistsDialog = false },
+        )
     }
 }

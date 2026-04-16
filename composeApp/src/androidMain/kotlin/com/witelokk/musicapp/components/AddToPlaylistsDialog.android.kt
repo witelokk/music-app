@@ -22,11 +22,14 @@ import musicapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun AddToPlaylistsDialog(
+actual fun AddToPlaylistsDialog(
+    showDialog: Boolean,
     playlists: List<PlaylistSummary>,
     onDismissRequest: () -> Unit,
     onAddRequest: (List<String>) -> Unit,
 ) {
+    if (!showDialog) return
+
     val selectedPlaylists = rememberSaveable { mutableStateOf(setOf<String>()) }
 
     AlertDialog(
@@ -41,7 +44,10 @@ fun AddToPlaylistsDialog(
         text = {
             Column {
                 if (playlists.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         CircularProgressIndicator()
                     }
                 }
@@ -67,3 +73,4 @@ fun AddToPlaylistsDialog(
         }
     )
 }
+

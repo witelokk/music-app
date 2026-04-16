@@ -74,13 +74,15 @@ fun FavoritesScreen(
 
     if (showAddToPlaylistDialog) {
         AddToPlaylistsDialog(
-            state.playlists,
+            showDialog = showAddToPlaylistDialog,
+            playlists = state.playlists,
             onDismissRequest = { showAddToPlaylistDialog = false },
             onAddRequest = { playlists ->
                 viewModel.addSongToPlaylists(
                     songToAddToPlaylists!!,
                     playlists
-                ); showAddToPlaylistDialog = false
+                )
+                showAddToPlaylistDialog = false
             },
         )
     }

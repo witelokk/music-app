@@ -105,18 +105,17 @@ fun ArtistScreen(
         }
     }
 
-    if (showAddToPlaylistDialog) {
-        AddToPlaylistsDialog(
-            state.playlists,
-            onDismissRequest = { showAddToPlaylistDialog = false },
-            onAddRequest = { playlists ->
-                viewModel.addSongToPlaylists(
-                    songToAddToPlaylists!!,
-                    playlists
-                ); showAddToPlaylistDialog = false
-            },
-        )
-    }
+    AddToPlaylistsDialog(
+        showDialog = showAddToPlaylistDialog,
+        playlists = state.playlists,
+        onDismissRequest = { showAddToPlaylistDialog = false },
+        onAddRequest = { playlists ->
+            viewModel.addSongToPlaylists(
+                songToAddToPlaylists!!,
+                playlists
+            ); showAddToPlaylistDialog = false
+        },
+    )
 
     PlayerSheetScaffold(
         navController,

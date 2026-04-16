@@ -49,6 +49,7 @@ import com.witelokk.musicapp.components.AddCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.components.Card
+import com.witelokk.musicapp.components.CreatePlaylistDialog
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.Search
@@ -131,35 +132,32 @@ fun HomeScreen(
         }
     }
 
-    if (showAddToPlaylistDialog) {
-        AddToPlaylistsDialog(
-            state.playlists,
-            onDismissRequest = { showAddToPlaylistDialog = false },
-            onAddRequest = { playlists ->
-                viewModel.addSongToPlaylists(
-                    songToAddToPlaylists!!,
-                    playlists
-                ); showAddToPlaylistDialog = false
-            },
-        )
-    }
+    AddToPlaylistsDialog(
+        showDialog = showAddToPlaylistDialog,
+        playlists = state.playlists,
+        onDismissRequest = { showAddToPlaylistDialog = false },
+        onAddRequest = { playlists ->
+            viewModel.addSongToPlaylists(
+                songToAddToPlaylists!!,
+                playlists
+            )
+            showAddToPlaylistDialog = false
+        },
+    )
 
     var playlistName by rememberSaveable { mutableStateOf("") }
-    if (showCreatePlaylistDialog) {
-        AlertDialog(onDismissRequest = {
+
+    CreatePlaylistDialog(
+        showDialog = showCreatePlaylistDialog,
+        playlistName = playlistName,
+        onNameChange = { playlistName = it },
+        onDismissRequest = { showCreatePlaylistDialog = false },
+        onCreate = {
+            viewModel.createPlaylist(playlistName)
+            playlistName = ""
             showCreatePlaylistDialog = false
-        }, title = { Text(stringResource(Res.string.create_playlist)) }, confirmButton = {
-            TextButton(onClick = {
-                viewModel.createPlaylist(playlistName)
-                playlistName = ""
-                showCreatePlaylistDialog = false
-            }, enabled = (playlistName.isNotEmpty())) { Text(stringResource(Res.string.create)) }
-        }, text = {
-            Column {
-                OutlinedTextField(playlistName, { playlistName = it })
-            }
-        })
-    }
+        },
+    )
 
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
@@ -306,9 +304,11 @@ fun HomeScreen(
                                         })
                                 }
                                 item {
-                                    AddCard(modifier = Modifier.clickable {
-                                        showCreatePlaylistDialog = true
-                                    })
+                                    AddCard(
+                                        modifier = Modifier.clickable {
+                                            showCreatePlaylistDialog = true
+                                        }
+                                    )
                                 }
                             }
                         }

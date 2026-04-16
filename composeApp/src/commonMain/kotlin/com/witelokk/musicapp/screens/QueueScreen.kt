@@ -54,18 +54,17 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         }
     }
 
-    if (showAddToPlaylistDialog) {
-        AddToPlaylistsDialog(
-            state.playlists,
-            onDismissRequest = { showAddToPlaylistDialog = false },
-            onAddRequest = { playlists ->
-                viewModel.addSongToPlaylists(
-                    songToAddToPlaylists!!,
-                    playlists
-                ); showAddToPlaylistDialog = false
-            },
-        )
-    }
+    AddToPlaylistsDialog(
+        showDialog = showAddToPlaylistDialog,
+        playlists = state.playlists,
+        onDismissRequest = { showAddToPlaylistDialog = false },
+        onAddRequest = { playlists ->
+            viewModel.addSongToPlaylists(
+                songToAddToPlaylists!!,
+                playlists
+            ); showAddToPlaylistDialog = false
+        },
+    )
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     PlayerSheetScaffold(
