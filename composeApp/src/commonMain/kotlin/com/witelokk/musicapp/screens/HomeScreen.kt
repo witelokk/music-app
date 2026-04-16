@@ -7,23 +7,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -186,7 +181,11 @@ fun HomeScreen(
         },
         onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding.withoutBottom())) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding.withoutBottom())
+        ) {
             Search(
                 navController,
                 expanded = searchExpanded,
@@ -271,104 +270,113 @@ fun HomeScreen(
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
-                    LazyColumn {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)
+                    ) {
                         item {
-                            Text(
-                                stringResource(Res.string.playlists),
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(24.dp)
-                            )
-
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                item {
-                                    FavoriteCard(modifier = Modifier.clickable {
-                                        navController.navigate(
-                                            "favorites"
-                                        )
-                                    })
-                                }
-                                items(state.layout.playlists.playlists) { playlist ->
-                                    Card(
-                                        title = playlist.name,
-                                        pictureUrl = playlist.coverUrl,
-                                        modifier = Modifier.clickable {
-                                            navController.navigate(
-                                                PlaylistReleaseScreenRoute(
-                                                    "playlist",
-                                                    playlist.id
-                                                )
-                                            )
-                                        })
-                                }
-                                item {
-                                    AddCard(
-                                        modifier = Modifier.clickable {
-                                            showCreatePlaylistDialog = true
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                        if (state.layout.followedArtists.count != 0) {
-                            item {
+                            Column(modifier = Modifier.fillMaxWidth()) {
                                 Text(
-                                    stringResource(Res.string.followed_artists),
+                                    stringResource(Res.string.playlists),
                                     style = MaterialTheme.typography.labelLarge,
                                     modifier = Modifier.padding(24.dp)
                                 )
 
                                 LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
                                     contentPadding = PaddingValues(horizontal = 16.dp),
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    items(state.layout.followedArtists.artists) { artist ->
+                                    item {
+                                        FavoriteCard(modifier = Modifier.clickable {
+                                            navController.navigate(
+                                                "favorites"
+                                            )
+                                        })
+                                    }
+                                    items(state.layout.playlists.playlists) { playlist ->
                                         Card(
-                                            title = artist.name,
-                                            subtitle = stringResource(Res.string.artist),
-                                            pictureUrl = artist.avatarUrl,
+                                            title = playlist.name,
+                                            pictureUrl = playlist.coverUrl,
                                             modifier = Modifier.clickable {
                                                 navController.navigate(
-                                                    ArtistScreenRoute(artist.id)
+                                                    PlaylistReleaseScreenRoute(
+                                                        "playlist",
+                                                        playlist.id
+                                                    )
                                                 )
                                             })
+                                    }
+                                    item {
+                                        AddCard(
+                                            modifier = Modifier.clickable {
+                                                showCreatePlaylistDialog = true
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        if (state.layout.followedArtists.count != 0) {
+                            item {
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    Text(
+                                        stringResource(Res.string.followed_artists),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        modifier = Modifier.padding(24.dp)
+                                    )
+
+                                    LazyRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        items(state.layout.followedArtists.artists) { artist ->
+                                            Card(
+                                                title = artist.name,
+                                                subtitle = stringResource(Res.string.artist),
+                                                pictureUrl = artist.avatarUrl,
+                                                modifier = Modifier.clickable {
+                                                    navController.navigate(
+                                                        ArtistScreenRoute(artist.id)
+                                                    )
+                                                })
+                                        }
                                     }
                                 }
                             }
                         }
                         items(state.layout.sections) { section ->
-                            Text(
-                                if (Locale.current.language == "ru") section.titleRu else section.title,
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(24.dp)
-                            )
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Text(
+                                    if (Locale.current.language == "ru") section.titleRu else section.title,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    modifier = Modifier.padding(24.dp)
+                                )
 
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(section.releases.releases) { release ->
-                                    Card(
-                                        title = release.name,
-                                        subtitle = release.artists.names,
-                                        pictureUrl = release.coverUrl,
-                                        modifier = Modifier
-                                            .width(155.dp)
-                                            .clickable {
-                                                navController.navigate(
-                                                    PlaylistReleaseScreenRoute(
-                                                        "release",
-                                                        release.id
+                                LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(section.releases.releases) { release ->
+                                        Card(
+                                            title = release.name,
+                                            subtitle = release.artists.names,
+                                            pictureUrl = release.coverUrl,
+                                            modifier = Modifier
+                                                .width(155.dp)
+                                                .clickable {
+                                                    navController.navigate(
+                                                        PlaylistReleaseScreenRoute(
+                                                            "release",
+                                                            release.id
+                                                        )
                                                     )
-                                                )
-                                            })
+                                                })
+                                    }
                                 }
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 24.dp))
                         }
                     }
                 }
