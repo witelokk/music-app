@@ -20,8 +20,11 @@ import platform.AVFoundation.seekToTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSData
+import platform.Foundation.NSMutableURLRequest
+import platform.Foundation.NSURLConnection
 import platform.Foundation.NSURL
-import platform.Foundation.dataWithContentsOfURL
+import platform.Foundation.sendSynchronousRequest
+import platform.Foundation.setValue
 import platform.MediaPlayer.MPChangePlaybackPositionCommandEvent
 import platform.MediaPlayer.MPMediaItemArtwork
 import platform.MediaPlayer.MPMediaItemPropertyArtist
@@ -77,7 +80,7 @@ class IosPlaybackEngine(
         val newPlayer = AVPlayer(playerItem)
         player = newPlayer
 
-        artwork = loadArtwork(item.artworkUrl)
+        artwork = loadArtwork(item)
 
         attachTimeObserver(newPlayer)
         updateNowPlaying()
@@ -260,16 +263,33 @@ class IosPlaybackEngine(
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = info
     }
 
-    private fun loadArtwork(url: String?): MPMediaItemArtwork? {
-        if (url.isNullOrBlank()) return null
+    private fun loadArtwork(item: PlaybackItem): MPMediaItemArtwork? {
+        val artworkUrl = item.artworkUrl
+        if (artworkUrl.isNullOrBlank()) return null
 
-        val nsUrl = NSURL.URLWithString(url) ?: return null
-        val data = NSData.dataWithContentsOfURL(nsUrl) ?: return null
-        val image = UIImage(data = data) ?: return null
+        val nsUrl = NSURL.URLWithString(artworkUrl) ?: return null
+        val token = runBlocking { settingsRepository.accessToken.first() }
+        val request = NSMutableURLRequest.requestWithURL(nsUrl).apply {
+            if (token.isNotBlank()) {
+                setValue("Bearer $token", forHTTPHeaderField = "Authorization")
+            }
+        }
 
-        return MPMediaItemArtwork(
-            boundsSize = image.size,
-            requestHandler = { _ -> image }
-        )
+        return runCatching {
+            val data = NSURLConnection.sendSynchronousRequest(
+                request = request,
+                returningResponse = null,
+                error = null
+            ) ?: return null
+            val image = UIImage(data = data) ?: return null
+
+            MPMediaItemArtwork(
+                boundsSize = image.size,
+                requestHandler = { _ -> image }
+            )
+        }.getOrElse { error ->
+            loge("IOS_PLAYBACK_ENGINE", "Failed to load artwork for $artworkUrl: ${error.message}")
+            null
+        }
     }
 }
