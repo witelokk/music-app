@@ -15,31 +15,31 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.Releases
-
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.Required
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * 
  *
- * @param title 
- * @param titleRu 
+ * @param titles
  * @param releases 
  */
 @Serializable
-
 data class HomeScreenLayoutCompanionSection (
 
-    @SerialName(value = "title") @Required val title: kotlin.String,
-
-    @SerialName(value = "title_ru") @Required val titleRu: kotlin.String,
+    @SerialName(value = "titles") @Required val titles: kotlin.collections.Map<kotlin.String, kotlin.String>,
 
     @SerialName(value = "releases") @Required val releases: Releases
 
 ) {
-
+    fun titleFor(language: String): String {
+        return titles[language]
+            ?: titles[language.substringBefore('-')]
+            ?: titles["en"]
+            ?: titles["ru"]
+            ?: titles.values.firstOrNull()
+            ?: ""
+    }
 
 }
-

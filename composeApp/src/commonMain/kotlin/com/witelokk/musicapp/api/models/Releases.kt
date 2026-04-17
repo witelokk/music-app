@@ -15,11 +15,9 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.Release
-
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.Required
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * 
@@ -33,10 +31,9 @@ data class Releases (
 
     @SerialName(value = "count") @Required val count: kotlin.Int,
 
-    @SerialName(value = "releases") @Required val releases: kotlin.collections.List<Release>
+    @SerialName(value = "releases") @Required val releases: kotlin.collections.List<ReleaseSummary>
 
 ) {
 
 
 }
-

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AddCard(modifier: Modifier = Modifier) {
+fun CreatePlaylistCard(modifier: Modifier = Modifier) {
     OutlinedCard(modifier = modifier) {
         Column {
             Box(

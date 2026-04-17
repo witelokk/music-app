@@ -165,7 +165,7 @@ fun SearchResults(
 }
 
 @Composable
-fun SearchContent(
+fun SearchSuccessfulContent(
     results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
