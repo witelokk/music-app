@@ -55,6 +55,7 @@ import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
+import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.withoutBottom
@@ -173,6 +174,11 @@ fun ArtistScreen(
             ) {
                 CircularProgressIndicator()
             }
+        } else if (state.isError) {
+            RequestFailedContent(
+                retry = { viewModel.loadArtist(artist.id) },
+                modifier = Modifier.padding(innerPadding),
+            )
         } else {
             AnimatedVisibility(
                 visible = !state.isLoading,

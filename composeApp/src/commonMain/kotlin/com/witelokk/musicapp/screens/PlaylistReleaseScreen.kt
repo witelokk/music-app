@@ -42,6 +42,7 @@ import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.DeletePlaylistDialog
 import com.witelokk.musicapp.components.EditPlaylistNameDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
+import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
 import kotlinx.coroutines.delay
@@ -190,6 +191,14 @@ fun PlaylistReleaseScreen(
             ) {
                 CircularProgressIndicator()
             }
+        } else if (state.isError) {
+            RequestFailedContent(
+                retry = {
+                    if (route.type == "playlist") viewModel.loadPlaylist(route.id)
+                    else viewModel.loadRelease(route.id)
+                },
+                modifier = Modifier.padding(innerPadding),
+            )
         } else {
             AnimatedVisibility(
                 visible = !state.isLoading,

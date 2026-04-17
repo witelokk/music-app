@@ -54,7 +54,7 @@ class QueueScreenViewModel(
     }
 
     fun toggleSongFavorite(song: Song) {
-        viewModelScope.launch {
+        launchCatching(action = "toggle favorite for song ${song.id} in queue") {
             if (song.isFavorite) {
                 favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
             } else {
@@ -79,11 +79,11 @@ class QueueScreenViewModel(
     }
 
     fun loadPlaylists() {
-        viewModelScope.launch {
+        launchCatching(action = "load playlists for queue screen") {
             val response = playlistsApi.playlistsGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load playlists for queue screen")) {
+                return@launchCatching
             }
 
             _state.update {

@@ -42,12 +42,14 @@ class FavoritesScreenViewModel(
     }
 
     fun loadFavorites() {
-        viewModelScope.launch {
+        launchCatching(action = "load favorites", onError = {
+            _state.update { state -> state.copy(isError = true, isLoading = false) }
+        }) {
             val response = favoritesApi.favoritesGet()
 
-            if (!response.success) {
+            if (response.logIfFailure("load favorites")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
-                return@launch
+                return@launchCatching
             }
 
             val favorites = response.body()
@@ -85,11 +87,11 @@ class FavoritesScreenViewModel(
 //    }
 
     fun loadPlaylists() {
-        viewModelScope.launch {
+        launchCatching(action = "load playlists for favorites screen") {
             val response = playlistsApi.playlistsGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load playlists for favorites screen")) {
+                return@launchCatching
             }
 
             _state.update {

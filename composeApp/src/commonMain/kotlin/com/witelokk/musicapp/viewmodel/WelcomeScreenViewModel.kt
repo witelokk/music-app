@@ -8,6 +8,7 @@ import com.witelokk.musicapp.SettingsRepository
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.models.TokensRequest
 import com.witelokk.musicapp.logd
+import com.witelokk.musicapp.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -73,13 +74,11 @@ class WelcomeScreenViewModel(
     fun signInWithGoogle() = viewModelScope.launch {
         googleSignIn.signIn(
             signIn = { it ->
-                viewModelScope.launch {
-                    try {
-                        this@WelcomeScreenViewModel.signIn(it)
-                    } catch (e: Exception) {
-                        logd("GOOGLE_SIGN_IN", e.toString())
-                        _state.update { it.copy(signInFailed = true) }
-                    }
+                launchCatching(tag = "GOOGLE_SIGN_IN", action = "exchange Google sign-in token", onError = { error ->
+                    loge("GOOGLE_SIGN_IN", error.toString())
+                    _state.update { state -> state.copy(signInFailed = true) }
+                }) {
+                    this@WelcomeScreenViewModel.signIn(it)
                 }
             },
             onSingInFailed = {
@@ -89,14 +88,18 @@ class WelcomeScreenViewModel(
     }
 
     private suspend fun signIn(googleIdToken: String) {
-        val response = authApi.tokensPost(
+        val response = runApiCatching(tag = "GOOGLE_SIGN_IN", action = "request app tokens with Google token", onError = {
+            _state.update { state -> state.copy(signInFailed = true) }
+        }) {
+            authApi.tokensPost(
             TokensRequest(
                 grantType = "google_token",
                 googleToken = googleIdToken,
             )
-        )
+            )
+        } ?: return
 
-        if (!response.success) {
+        if (response.logIfFailure("request app tokens with Google token", tag = "GOOGLE_SIGN_IN")) {
             _state.update {
                 it.copy(signInFailed = true)
             }

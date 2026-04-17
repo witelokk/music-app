@@ -29,11 +29,11 @@ class SettingsScreenViewModel(
     }
 
     private fun loadProfile() {
-        viewModelScope.launch {
+        launchCatching(action = "load settings profile") {
             val response = usersApi.usersMeGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load settings profile")) {
+                return@launchCatching
             }
 
             val me = response.body()

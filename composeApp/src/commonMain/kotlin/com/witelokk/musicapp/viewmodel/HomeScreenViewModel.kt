@@ -73,12 +73,14 @@ class HomeScreenViewModel(
     }
 
     fun loadHomePageLayout() {
-        viewModelScope.launch {
+        launchCatching(action = "load home page layout", onError = {
+            _state.update { state -> state.copy(isError = true, isLoading = false) }
+        }) {
             val response = homeScreenApi.homeScreenLayoutGet()
 
-            if (!response.success) {
+            if (response.logIfFailure("load home page layout")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
-                return@launch
+                return@launchCatching
             }
 
             val layout = response.body()
@@ -106,9 +108,11 @@ class HomeScreenViewModel(
     }
 
     fun loadProfile() = viewModelScope.launch {
-        val response = usersApi.usersMeGet()
+        val response = runApiCatching(action = "load profile") {
+            usersApi.usersMeGet()
+        } ?: return@launch
 
-        if (!response.success) {
+        if (response.logIfFailure("load profile")) {
             return@launch
         }
 
@@ -145,8 +149,15 @@ class HomeScreenViewModel(
 
         _state.update { it.copy(isSearchLoading = true) }
 
-        viewModelScope.launch {
-//            try {
+        launchCatching(action = "search for '$query'", onError = {
+            _state.update {
+                it.copy(
+                    isSearchLoading = false,
+                    isSearchFailure = true,
+                    searchResults = null
+                )
+            }
+        }) {
             searchApi.searchGet(query, type = null, page = "1", limit = "10").let { response ->
                 if (response.success) {
                     _state.update {
@@ -166,15 +177,6 @@ class HomeScreenViewModel(
                     }
                 }
             }
-//            } catch (_: UnknownHostException) {
-//                _state.update {
-//                    it.copy(
-//                        isSearchLoading = false,
-//                        isSearchFailure = true,
-//                        searchResults = null
-//                    )
-//                }
-//            } todo: fix
         }
     }
 
@@ -196,11 +198,11 @@ class HomeScreenViewModel(
     }
 
     fun loadPlaylists() {
-        viewModelScope.launch {
+        launchCatching(action = "load playlists for home screen") {
             val response = playlistsApi.playlistsGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load playlists for home screen")) {
+                return@launchCatching
             }
 
             _state.update {
@@ -210,8 +212,12 @@ class HomeScreenViewModel(
     }
 
     fun createPlaylist(name: String) {
-        viewModelScope.launch {
+        launchCatching(action = "create playlist '$name'") {
             val response = playlistsApi.playlistsPost(CreatePlaylistRequest(name))
+
+            if (response.logIfFailure("create playlist '$name'")) {
+                return@launchCatching
+            }
 
             val newPlaylist = PlaylistSummary(
                 id = response.body().id,

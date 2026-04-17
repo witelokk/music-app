@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
+import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import kotlinx.coroutines.delay
@@ -126,6 +127,11 @@ fun FavoritesScreen(
             ) {
                 CircularProgressIndicator()
             }
+        } else if (state.isError) {
+            RequestFailedContent(
+                retry = { viewModel.loadFavorites() },
+                modifier = Modifier.padding(innerPadding),
+            )
         } else {
             AnimatedVisibility(
                 visible = !state.isLoading,

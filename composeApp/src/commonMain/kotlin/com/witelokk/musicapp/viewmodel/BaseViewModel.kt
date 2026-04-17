@@ -11,7 +11,6 @@ import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 abstract class BaseViewModel(
@@ -47,7 +46,7 @@ abstract class BaseViewModel(
     }
 
     open fun addSongToPlaylists(song: Song, playlistIds: List<String>) {
-        viewModelScope.launch {
+        launchCatching(action = "add song ${song.id} to playlists") {
             for (playlistId in playlistIds) {
                 playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(song.id))
             }
@@ -55,7 +54,7 @@ abstract class BaseViewModel(
     }
 
     open fun changeSongFavorite(song: Song, favorite: Boolean) {
-        viewModelScope.launch {
+        launchCatching(action = "change favorite for song ${song.id}") {
             if (song.isFavorite) {
                 favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
             } else {

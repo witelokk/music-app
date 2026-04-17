@@ -58,12 +58,14 @@ class ArtistScreenViewModel(
     }
 
     fun loadArtist(artistId: String) {
-        viewModelScope.launch {
+        launchCatching(action = "load artist $artistId", onError = {
+            _state.update { state -> state.copy(isError = true, isLoading = false) }
+        }) {
             val response = artistsApi.artistsIdGet(artistId)
 
-            if (!response.success) {
+            if (response.logIfFailure("load artist $artistId")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
-                return@launch
+                return@launchCatching
             }
 
             val artist = response.body()
@@ -115,7 +117,7 @@ class ArtistScreenViewModel(
 
     fun toggleFollowing() {
         state.value.artist?.let { artist ->
-            viewModelScope.launch {
+            launchCatching(action = "toggle following for artist ${artist.id}") {
                 if (artist.following)
                     followingsApi.followingsDelete(StopFollowingRequest(artist.id))
                 else
@@ -135,11 +137,11 @@ class ArtistScreenViewModel(
     }
 
     fun loadPlaylists() {
-        viewModelScope.launch {
+        launchCatching(action = "load playlists for artist screen") {
             val response = playlistsApi.playlistsGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load playlists for artist screen")) {
+                return@launchCatching
             }
 
             _state.update {

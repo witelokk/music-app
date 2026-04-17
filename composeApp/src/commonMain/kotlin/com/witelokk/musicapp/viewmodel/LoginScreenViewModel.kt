@@ -8,7 +8,6 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 data class LoginScreenState(
     var isEmailInvalid: Boolean = false,
@@ -26,7 +25,9 @@ class LoginScreenViewModel(private val authApi: AuthApi) : ViewModel() {
             return
         }
 
-        viewModelScope.launch {
+        launchCatching(action = "send verification code for $email", onError = {
+            _state.update { state -> state.copy(verificationCodeRequestFailed = true) }
+        }) {
             val response = authApi.verificationCodeRequestPost(
                 VerificationCodeRequest(
                     email = email
@@ -34,8 +35,9 @@ class LoginScreenViewModel(private val authApi: AuthApi) : ViewModel() {
             )
 
             if (!response.success and (response.status != HttpStatusCode.TooManyRequests.value)) {
+                response.logIfFailure("send verification code for $email")
                 _state.update { it.copy(verificationCodeRequestFailed = true) }
-                return@launch
+                return@launchCatching
             }
 
             _state.update { it.copy(isVerificationCodeSent = true) }

@@ -50,12 +50,14 @@ class PlaylistReleaseScreenViewModel(
 
     fun loadPlaylist(id: String) {
         playlistId = id
-        viewModelScope.launch {
+        launchCatching(action = "load playlist $id", onError = {
+            _state.update { state -> state.copy(isError = true, isLoading = false) }
+        }) {
             val response = playlistsApi.playlistsIdGet(id)
 
-            if (!response.success) {
+            if (response.logIfFailure("load playlist $id")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
-                return@launch
+                return@launchCatching
             }
 
             val playlist = response.body()
@@ -73,12 +75,14 @@ class PlaylistReleaseScreenViewModel(
     }
 
     fun loadRelease(id: String) {
-        viewModelScope.launch {
+        launchCatching(action = "load release $id", onError = {
+            _state.update { state -> state.copy(isError = true, isLoading = false) }
+        }) {
             val response = releasesApi.releasesIdGet(id)
 
-            if (!response.success) {
+            if (response.logIfFailure("load release $id")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
-                return@launch
+                return@launchCatching
             }
 
             val release = response.body()
@@ -104,7 +108,7 @@ class PlaylistReleaseScreenViewModel(
     }
 
     fun toggleSongFavorite(song: Song) {
-        viewModelScope.launch {
+        launchCatching(action = "toggle favorite for song ${song.id} on playlist/release screen") {
             if (song.isFavorite) {
                 favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
             } else {
@@ -125,11 +129,11 @@ class PlaylistReleaseScreenViewModel(
     }
 
     fun loadPlaylists() {
-        viewModelScope.launch {
+        launchCatching(action = "load playlists for playlist/release screen") {
             val response = playlistsApi.playlistsGet()
 
-            if (!response.success) {
-                return@launch
+            if (response.logIfFailure("load playlists for playlist/release screen")) {
+                return@launchCatching
             }
 
             _state.update {
@@ -140,19 +144,26 @@ class PlaylistReleaseScreenViewModel(
 
     fun deletePlaylist() {
         playlistId?.let { playlistId ->
-            viewModelScope.launch {
-                playlistsApi.playlistsIdDelete(playlistId)
+            launchCatching(action = "delete playlist $playlistId") {
+                val response = playlistsApi.playlistsIdDelete(playlistId)
+
+                if (response.logIfFailure("delete playlist $playlistId")) {
+                    return@launchCatching
+                }
 
                 _state.update { it.copy(deleted = true) }
             }
         }
-        _state.update { it.copy(deleted = true) }
     }
 
     fun editPlaylistName(name: String) {
         playlistId?.let { playlistId ->
-            viewModelScope.launch {
-                playlistsApi.playlistsIdPut(playlistId, UpdatePlaylistRequest(name))
+            launchCatching(action = "rename playlist $playlistId") {
+                val response = playlistsApi.playlistsIdPut(playlistId, UpdatePlaylistRequest(name))
+
+                if (response.logIfFailure("rename playlist $playlistId")) {
+                    return@launchCatching
+                }
 
                 _state.update { it.copy(name = name) }
             }

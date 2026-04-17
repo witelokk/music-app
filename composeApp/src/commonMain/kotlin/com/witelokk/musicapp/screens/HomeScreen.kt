@@ -45,6 +45,7 @@ import com.witelokk.musicapp.components.CreatePlaylistDialog
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.LoadingContainer
 import com.witelokk.musicapp.components.PlayerSheetScaffold
+import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.Search
 import com.witelokk.musicapp.components.SearchSuccessfulContent
 import com.witelokk.musicapp.components.SearchEmptyContent
@@ -216,6 +217,13 @@ private fun HomeScreenScaffoldContent(
         }
 
         LoadingContainer(state.isLoading) {
+            if (state.isError) {
+                RequestFailedContent(
+                    retry = { viewModel.loadHomePageLayout() },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                return@LoadingContainer
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)

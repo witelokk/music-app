@@ -38,6 +38,7 @@
     <string name="dark">Dark</string>
     <string name="song_caching">Song caching</string>
     <string name="sign_in_failed_toast">Sign in failed</string>
+    <string name="load_failed">Failed to load data</string>
     <string name="welcome_message">Welcome to Music App, where\n you can listen to your favorite music</string>
     <string name="sign_in_with">Sign in with</string>
     <string name="sign_in_with_google">Sign in with Google</string>
