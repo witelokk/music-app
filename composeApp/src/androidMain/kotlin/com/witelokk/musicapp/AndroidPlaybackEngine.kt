@@ -11,14 +11,22 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @OptIn(UnstableApi::class)
 class AndroidPlaybackEngine(
-    private val mediaControllerFuture: ListenableFuture<MediaController>
+    private val mediaControllerFuture: ListenableFuture<MediaController>,
+    private val settingsRepository: SettingsRepository,
 ) : PlaybackEngine {
 
     private lateinit var controller: MediaController
     private var listener: PlaybackEngineListener? = null
+    @Volatile
+    private var artworkRequestId = 0
 
     init {
         mediaControllerFuture.addListener(
@@ -62,9 +70,12 @@ class AndroidPlaybackEngine(
         get() = if (::controller.isInitialized) controller.currentPosition else 0L
 
     override fun load(item: PlaybackItem) {
+        val requestId = ++artworkRequestId
         controller.setMediaItem(item.toMediaItem())
         controller.prepare()
         controller.seekTo(0)
+
+        loadArtwork(item, requestId)
     }
 
     override fun play() {
@@ -87,7 +98,45 @@ class AndroidPlaybackEngine(
         this.listener = listener
     }
 
-    private fun PlaybackItem.toMediaItem(): MediaItem {
+    private fun loadArtwork(item: PlaybackItem, requestId: Int) {
+        val artworkUrl = item.artworkUrl ?: return
+
+        thread(name = "artwork-loader-${item.id}") {
+            val artworkBytes = runCatching {
+                val connection = (URL(artworkUrl).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "GET"
+                    connectTimeout = 5000
+                    readTimeout = 5000
+                    val token = runBlocking { settingsRepository.accessToken.first() }
+                    if (token.isNotBlank()) {
+                        setRequestProperty("Authorization", "Bearer $token")
+                    }
+                }
+
+                try {
+                    connection.inputStream.use { input -> input.readBytes() }
+                } finally {
+                    connection.disconnect()
+                }
+            }.getOrElse { error ->
+                loge("ANDROID_PLAYBACK_ENGINE", "Failed to load artwork for $artworkUrl: ${error.message}")
+                null
+            } ?: return@thread
+
+            Handler(Looper.getMainLooper()).post {
+                if (!::controller.isInitialized || requestId != artworkRequestId) return@post
+                val currentIndex = controller.currentMediaItemIndex
+                if (currentIndex == -1) return@post
+
+                controller.replaceMediaItem(
+                    currentIndex,
+                    item.toMediaItem(artworkBytes)
+                )
+            }
+        }
+    }
+
+    private fun PlaybackItem.toMediaItem(artworkData: ByteArray? = null): MediaItem {
         return MediaItem.Builder()
             .setMediaId(url)
             .setUri(url)
@@ -96,7 +145,7 @@ class AndroidPlaybackEngine(
                     .setTitle(title)
                     .setDisplayTitle(title)
                     .setArtist(artist)
-                    .setArtworkUri(artworkUrl?.let(Uri::parse))
+                    .setArtworkData(artworkData, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
                     .build()
             )
             .build()
