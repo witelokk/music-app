@@ -177,6 +177,7 @@ fun ArtistScreen(
             }
         } else if (state.isError) {
             RequestFailedContent(
+                message = stringResource(Res.string.load_failed),
                 retry = { viewModel.loadArtist(artist.id) },
                 modifier = Modifier.padding(innerPadding),
             )

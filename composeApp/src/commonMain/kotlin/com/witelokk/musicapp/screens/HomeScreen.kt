@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
@@ -74,13 +76,16 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val loadFailedMessage = stringResource(Res.string.load_failed)
+    val connectionFailedMessage = stringResource(Res.string.connection_failed)
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val lifecycleOwner = navBackStackEntry?.lifecycle
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.loadHomePageLayout()
+                viewModel.loadHomeFeed()
                 viewModel.loadPlaylists()
             }
         }
@@ -114,6 +119,16 @@ fun HomeScreen(
     LaunchedEffect(showAddToPlaylistDialog) {
         if (showAddToPlaylistDialog) {
             viewModel.loadPlaylists()
+        }
+    }
+
+    LaunchedEffect(state.snackbarEventId) {
+        if (state.snackbarEventId == 0L || !state.hasCachedFeed) {
+            return@LaunchedEffect
+        }
+
+        if (state.isError && !state.isConnectionError) {
+            snackbarHostState.showSnackbar(loadFailedMessage)
         }
     }
 
@@ -170,6 +185,7 @@ fun HomeScreen(
             viewModel.changeSongFavorite(song, favorite)
         },
         onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         HomeScreenScaffoldContent(
             innerPadding,
@@ -178,7 +194,9 @@ fun HomeScreen(
             searchQuery,
             state,
             viewModel,
-            showCreatePlaylistDialog
+            showCreatePlaylistDialog,
+            loadFailedMessage,
+            connectionFailedMessage,
         )
     }
 }
@@ -191,7 +209,9 @@ private fun HomeScreenScaffoldContent(
     searchQuery: MutableStateFlow<String>,
     state: HomeViewModelState,
     viewModel: HomeScreenViewModel,
-    showCreatePlaylistDialog: MutableState<Boolean>
+    showCreatePlaylistDialog: MutableState<Boolean>,
+    loadFailedMessage: String,
+    connectionFailedMessage: String,
 ) {
     Column(
         modifier = Modifier
@@ -218,9 +238,10 @@ private fun HomeScreenScaffoldContent(
         }
 
         LoadingContainer(state.isLoading) {
-            if (state.isError) {
+            if (state.isError && !state.hasCachedFeed) {
                 RequestFailedContent(
-                    retry = { viewModel.loadHomePageLayout() },
+                    message = if (state.isConnectionError) connectionFailedMessage else loadFailedMessage,
+                    retry = { viewModel.retryLoadHomeFeed() },
                     modifier = Modifier.fillMaxSize(),
                 )
                 return@LoadingContainer
@@ -249,7 +270,7 @@ private fun HomeScreenScaffoldContent(
                                     )
                                 })
                             }
-                            items(state.layout.playlists.playlists) { playlist ->
+                            items(state.feed.playlists.playlists) { playlist ->
                                 PlaylistCard(playlist, modifier = Modifier.clickable {
                                     navController.navigate(
                                         PlaylistReleaseScreenRoute(
@@ -269,7 +290,7 @@ private fun HomeScreenScaffoldContent(
                         }
                     }
                 }
-                if (state.layout.followedArtists.count != 0) {
+                if (state.feed.followedArtists.count != 0) {
                     item {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
@@ -283,7 +304,7 @@ private fun HomeScreenScaffoldContent(
                                 contentPadding = PaddingValues(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                items(state.layout.followedArtists.artists) { artist ->
+                                items(state.feed.followedArtists.artists) { artist ->
                                     Card(
                                         title = artist.name,
                                         subtitle = stringResource(Res.string.artist),
@@ -298,7 +319,7 @@ private fun HomeScreenScaffoldContent(
                         }
                     }
                 }
-                items(state.layout.sections) { section ->
+                items(state.feed.sections) { section ->
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             section.titles[Locale.current.language] ?: section.titles["en"] ?: "",

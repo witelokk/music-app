@@ -193,6 +193,7 @@ fun PlaylistReleaseScreen(
             }
         } else if (state.isError) {
             RequestFailedContent(
+                message = stringResource(Res.string.load_failed),
                 retry = {
                     if (route.type == "playlist") viewModel.loadPlaylist(route.id)
                     else viewModel.loadRelease(route.id)

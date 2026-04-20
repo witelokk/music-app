@@ -21,6 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RequestFailedContent(
+    message: String,
     retry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -29,7 +30,7 @@ fun RequestFailedContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(stringResource(Res.string.load_failed))
+        Text(message)
         Button(onClick = retry) {
             Icon(Icons.Default.Replay, contentDescription = stringResource(Res.string.retry))
             Spacer(modifier = Modifier.width(8.dp))

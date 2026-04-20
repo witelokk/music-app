@@ -5,17 +5,18 @@ import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.SettingsRepository
 import com.witelokk.musicapp.api.apis.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
-import com.witelokk.musicapp.api.apis.HomeApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
 import com.witelokk.musicapp.api.models.ArtistList
 import com.witelokk.musicapp.api.models.CreatePlaylistRequest
-import com.witelokk.musicapp.api.models.HomeScreenLayout
+import com.witelokk.musicapp.api.models.HomeFeed
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.PlaylistsSummary
 import com.witelokk.musicapp.api.models.SearchResponse
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.repository.ConnectionErrorException
+import com.witelokk.musicapp.repository.HomeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,14 +24,18 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 data class HomeViewModelState(
-    val layout: HomeScreenLayout = HomeScreenLayout(
+    val feed: HomeFeed = HomeFeed(
         PlaylistsSummary(0, listOf()),
         ArtistList(0, listOf(), ""),
         listOf()
     ),
     val isLoading: Boolean = true,
+    val hasObservedFeed: Boolean = false,
+    val hasCachedFeed: Boolean = false,
+    val isConnectionError: Boolean = false,
     val isFailure: Boolean = false,
     val isError: Boolean = false,
+    val snackbarEventId: Long = 0,
     val isSearchLoading: Boolean = false,
     val isSearchFailure: Boolean = false,
     val searchResults: SearchResponse? = null,
@@ -42,7 +47,7 @@ data class HomeViewModelState(
 
 class HomeScreenViewModel(
     private val searchApi: SearchApi,
-    private val homeApi: HomeApi,
+    private val homeRepository: HomeRepository,
     private val settings: SettingsRepository,
     private val playlistsApi: PlaylistsApi,
     private val authApi: CompatAuthApi,
@@ -53,7 +58,26 @@ class HomeScreenViewModel(
     val state = _state.asStateFlow()
 
     init {
-        loadHomePageLayout()
+        viewModelScope.launch {
+            var isInitialEmission = true
+
+            homeRepository.observeFeed().collect { feed ->
+                _state.update {
+                    it.copy(
+                        isLoading = isInitialEmission && feed == null,
+                        hasObservedFeed = true,
+                        hasCachedFeed = feed != null || it.hasCachedFeed,
+                        isConnectionError = false,
+                        isError = false,
+                        feed = feed ?: it.feed,
+                    )
+                }
+
+                isInitialEmission = false
+            }
+        }
+
+        loadHomeFeed()
         loadSearchHistory()
         loadProfile()
 
@@ -72,26 +96,38 @@ class HomeScreenViewModel(
         }
     }
 
-    fun loadHomePageLayout() {
-        launchCatching(action = "load home page layout", onError = {
-            _state.update { state -> state.copy(isError = true, isLoading = false) }
-        }) {
-            val response = homeApi.getHomeFeed()
-
-            if (response.logIfFailure("load home page layout")) {
-                _state.update { it.copy(isError = true, isLoading = false) }
-                return@launchCatching
-            }
-
-            val layout = response.body()
-
-            _state.update {
-                it.copy(
+    fun loadHomeFeed() {
+        launchCatching(action = "load home page feed", onError = {
+            _state.update { state ->
+                state.copy(
+                    isConnectionError = it is ConnectionErrorException,
+                    isError = true,
                     isLoading = false,
-                    isError = false,
-                    layout = layout,
+                    snackbarEventId = state.snackbarEventId + 1,
                 )
             }
+        }) {
+            homeRepository.refreshHomeFeed()
+        }
+    }
+
+    fun retryLoadHomeFeed() {
+        _state.update {
+            it.copy(
+                isConnectionError = false,
+                isError = false,
+                isLoading = !it.hasCachedFeed,
+            )
+        }
+        loadHomeFeed()
+    }
+
+    fun dismissLoadHomePageError() {
+        _state.update {
+            it.copy(
+                isConnectionError = false,
+                isError = false,
+            )
         }
     }
 
@@ -228,10 +264,10 @@ class HomeScreenViewModel(
             _state.update {
                 it.copy(
                     playlists = listOf(newPlaylist) + it.playlists,
-                    layout = it.layout.copy(
-                        playlists = it.layout.playlists.copy(
-                            count = it.layout.playlists.count + 1,
-                            listOf(newPlaylist) + it.layout.playlists.playlists
+                    feed = it.feed.copy(
+                        playlists = it.feed.playlists.copy(
+                            count = it.feed.playlists.count + 1,
+                            listOf(newPlaylist) + it.feed.playlists.playlists
                         )
                     )
                 )

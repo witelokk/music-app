@@ -15,23 +15,13 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.Error
-import com.witelokk.musicapp.api.models.HomeScreenLayout
+import com.witelokk.musicapp.api.models.HomeFeed
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.request.forms.formData
 import io.ktor.client.engine.HttpClientEngine
 import kotlinx.serialization.json.Json
-import io.ktor.http.ParametersBuilder
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.ContentType
-import io.ktor.http.content.PartData
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
 
 open class HomeApi : ApiClient {
 
@@ -50,10 +40,10 @@ open class HomeApi : ApiClient {
     /**
      * Get home screen layout
      * 
-     * @return HomeScreenLayout
+     * @return HomeFeed
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun getHomeFeed(): HttpResponse<HomeScreenLayout> {
+    open suspend fun getHomeFeed(): HttpResponse<HomeFeed> {
 
         val localVariableAuthNames = listOf<String>("bearerAuth")
 
