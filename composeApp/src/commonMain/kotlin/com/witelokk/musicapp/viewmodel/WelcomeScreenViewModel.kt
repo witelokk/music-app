@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.DEFAULT_BASE_URL
 import com.witelokk.musicapp.GoogleSignIn
 import com.witelokk.musicapp.SettingsRepository
-import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.api.models.GetTokensByGoogleTokenRequest
 import com.witelokk.musicapp.logd
 import com.witelokk.musicapp.loge
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,7 @@ data class WelcomeScreenState(
 )
 
 class WelcomeScreenViewModel(
-    private val authApi: AuthApi,
+    private val authApi: CompatAuthApi,
     private val settingsRepository: SettingsRepository,
     private val googleSignIn: GoogleSignIn,
 ) : ViewModel() {
@@ -67,7 +67,6 @@ class WelcomeScreenViewModel(
     }
 
     suspend fun commitServerUrl() {
-        authApi.baseUrl = state.value.serverUrlInput
         settingsRepository.setServerUrl(state.value.serverUrlInput)
     }
 
@@ -91,11 +90,11 @@ class WelcomeScreenViewModel(
         val response = runApiCatching(tag = "GOOGLE_SIGN_IN", action = "request app tokens with Google token", onError = {
             _state.update { state -> state.copy(signInFailed = true) }
         }) {
-            authApi.tokensPost(
-            TokensRequest(
-                grantType = "google_token",
-                googleToken = googleIdToken,
-            )
+            authApi.generateTokens(
+                GetTokensByGoogleTokenRequest(
+                    grantType = GetTokensByGoogleTokenRequest.GrantType.google_token,
+                    googleToken = googleIdToken,
+                )
             )
         } ?: return
 

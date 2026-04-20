@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ArtistsSummary
-import com.witelokk.musicapp.api.models.HomeScreenLayoutCompanionSection
+import com.witelokk.musicapp.api.models.ArtistList
+import com.witelokk.musicapp.api.models.HomeScreenSection
 import com.witelokk.musicapp.api.models.PlaylistsSummary
 
 import kotlinx.serialization.*
@@ -36,9 +36,9 @@ data class HomeScreenLayout (
 
     @SerialName(value = "playlists") @Required val playlists: PlaylistsSummary,
 
-    @SerialName(value = "followedArtists") @Required val followedArtists: ArtistsSummary,
+    @SerialName(value = "followedArtists") @Required val followedArtists: ArtistList,
 
-    @SerialName(value = "sections") @Required val sections: kotlin.collections.List<HomeScreenLayoutCompanionSection>
+    @SerialName(value = "sections") @Required val sections: kotlin.collections.List<HomeScreenSection>
 
 ) {
 

@@ -23,18 +23,18 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param name User's display name.
- * @param email User's email address.
+ * @param grantType Grant type to use.
+ * @param email User email.
  * @param code Verification code received by email.
  */
 @Serializable
 
-data class CreateUserRequest (
+data class GetTokensByCodeRequest (
 
-    /* User's display name. */
-    @SerialName(value = "name") @Required val name: kotlin.String,
+    /* Grant type to use. */
+    @SerialName(value = "grant_type") @Required val grantType: GetTokensByCodeRequest.GrantType,
 
-    /* User's email address. */
+    /* User email. */
     @SerialName(value = "email") @Required val email: kotlin.String,
 
     /* Verification code received by email. */
@@ -42,6 +42,15 @@ data class CreateUserRequest (
 
 ) {
 
+    /**
+     * Grant type to use.
+     *
+     * Values: code
+     */
+    @Serializable
+    enum class GrantType(val value: kotlin.String) {
+        @SerialName(value = "code") code("code");
+    }
 
 }
 

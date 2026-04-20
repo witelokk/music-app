@@ -15,6 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.ReleaseSummaryList
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -23,13 +24,16 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param songId 
+ * @param titles 
+ * @param releases 
  */
 @Serializable
 
-data class RemoveFavoriteSongRequest (
+data class HomeScreenSection (
 
-    @SerialName(value = "song_id") @Required val songId: kotlin.String
+    @SerialName(value = "titles") @Required val titles: kotlin.collections.Map<kotlin.String, kotlin.String>,
+
+    @SerialName(value = "releases") @Required val releases: ReleaseSummaryList
 
 ) {
 

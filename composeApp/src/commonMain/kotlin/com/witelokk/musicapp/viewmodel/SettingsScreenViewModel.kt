@@ -3,7 +3,7 @@ package com.witelokk.musicapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.SettingsRepository
-import com.witelokk.musicapp.api.apis.UsersApi
+import com.witelokk.musicapp.api.apis.CompatAuthApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +18,7 @@ data class SettingsScreenState(
 
 class SettingsScreenViewModel(
     private val settingsRepository: SettingsRepository,
-    private val usersApi: UsersApi,
+    private val authApi: CompatAuthApi,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsScreenState())
     val state = _state.asStateFlow()
@@ -30,7 +30,7 @@ class SettingsScreenViewModel(
 
     private fun loadProfile() {
         launchCatching(action = "load settings profile") {
-            val response = usersApi.usersMeGet()
+            val response = authApi.getCurrentUser()
 
             if (response.logIfFailure("load settings profile")) {
                 return@launchCatching

@@ -15,8 +15,11 @@
 
 package com.witelokk.musicapp.api.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.witelokk.musicapp.api.models.ReleaseType
+
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
 /**
  * 
@@ -25,26 +28,19 @@ import kotlinx.serialization.Serializable
  * @param name 
  * @param type 
  * @param releasedAt 
- * @param artists
  * @param coverUrl 
  */
 @Serializable
 
 data class ReleaseSummary (
 
-    @SerialName(value = "id") val id: kotlin.String,
+    @SerialName(value = "id") @Required val id: kotlin.String,
 
-    @SerialName(value = "name") val name: kotlin.String,
+    @SerialName(value = "name") @Required val name: kotlin.String,
 
-    @SerialName(value = "type") val type: kotlin.String,
+    @SerialName(value = "type") @Required val type: ReleaseType,
 
-    @SerialName(value = "released_at") val releasedAt: kotlin.String,
-
-    @SerialName(value = "artists") val artists: ArtistsSummary = ArtistsSummary(
-        count = 0,
-        artists = emptyList(),
-        names = ""
-    ),
+    @SerialName(value = "released_at") @Required val releasedAt: kotlin.String,
 
     @SerialName(value = "cover_url") val coverUrl: kotlin.String? = null
 
@@ -52,3 +48,4 @@ data class ReleaseSummary (
 
 
 }
+

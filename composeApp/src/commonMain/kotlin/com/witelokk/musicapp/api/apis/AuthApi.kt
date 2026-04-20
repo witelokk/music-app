@@ -15,10 +15,13 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.api.models.CreateUserRequest
+import com.witelokk.musicapp.api.models.CurrentUser
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.GetTokensRequest
+import com.witelokk.musicapp.api.models.SendVerificationEmailRequest
 import com.witelokk.musicapp.api.models.TokensResponse
-import com.witelokk.musicapp.api.models.VerificationCodeRequest
+import com.witelokk.musicapp.api.models.User
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -50,17 +53,82 @@ open class AuthApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
+     * Create user with verification code
      * 
-     * Get tokens
-     * @param tokensRequest  (optional)
-     * @return TokensResponse
+     * @param createUserRequest 
+     * @return User
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun tokensPost(tokensRequest: TokensRequest? = null): HttpResponse<TokensResponse> {
+    open suspend fun createUser(createUserRequest: CreateUserRequest): HttpResponse<User> {
 
         val localVariableAuthNames = listOf<String>()
 
-        val localVariableBody = tokensRequest
+        val localVariableBody = createUserRequest
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.POST,
+            "/users",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+
+    /**
+     * Send verification email
+     * 
+     * @param sendVerificationEmailRequest 
+     * @return void
+     */
+    open suspend fun createVerificationCodeRequest(sendVerificationEmailRequest: SendVerificationEmailRequest): HttpResponse<Unit> {
+
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody = sendVerificationEmailRequest
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.POST,
+            "/verification-code-requests",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+
+    /**
+     * Obtain access and refresh tokens
+     * 
+     * @param getTokensRequest 
+     * @return TokensResponse
+     */
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun generateTokens(getTokensRequest: GetTokensRequest): HttpResponse<TokensResponse> {
+
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody = getTokensRequest
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
@@ -83,35 +151,35 @@ open class AuthApi : ApiClient {
 
 
     /**
+     * Get current authenticated user
      * 
-     * Request a verification code
-     * @param verificationCodeRequest  (optional)
-     * @return void
+     * @return CurrentUser
      */
-    open suspend fun verificationCodeRequestPost(verificationCodeRequest: VerificationCodeRequest? = null): HttpResponse<Unit> {
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun getCurrentUser(): HttpResponse<CurrentUser> {
 
-        val localVariableAuthNames = listOf<String>()
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = verificationCodeRequest
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.POST,
-            "/verification-code-request",
+            RequestMethod.GET,
+            "/users/me",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = false,
+            requiresAuthentication = true,
         )
 
-        return jsonRequest(
+        return request(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
         ).wrap()
     }
-
 
 
 }

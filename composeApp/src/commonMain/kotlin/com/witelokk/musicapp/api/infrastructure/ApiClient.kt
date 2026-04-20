@@ -21,7 +21,7 @@ import kotlinx.serialization.json.Json
 import com.witelokk.musicapp.api.auth.*
 
 open class ApiClient(
-    var baseUrl: String
+        private val baseUrl: String
 ) {
 
     private lateinit var client: HttpClient
@@ -51,11 +51,11 @@ open class ApiClient(
 
     private val authentications: kotlin.collections.Map<String, Authentication> by lazy {
         mapOf(
-                "Authorization" to HttpBearerAuth("bearer"))
+                "bearerAuth" to HttpBearerAuth("bearer"))
     }
 
     companion object {
-        const val BASE_URL: String = "http://localhost"
+        const val BASE_URL: String = "http://localhost/api/v1"
         val JSON_DEFAULT: Json = Json {
           ignoreUnknownKeys = true
           prettyPrint = true

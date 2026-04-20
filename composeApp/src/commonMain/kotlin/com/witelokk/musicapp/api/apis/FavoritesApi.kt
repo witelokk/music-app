@@ -15,10 +15,9 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
-import com.witelokk.musicapp.api.models.Songs
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.FavoriteSongRequest
+import com.witelokk.musicapp.api.models.SongList
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -50,22 +49,22 @@ open class FavoritesApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
+     * Add song to favorites
      * 
-     * Remove favorite song
-     * @param removeFavoriteSongRequest  (optional)
+     * @param favoriteSongRequest 
      * @return void
      */
-    open suspend fun favoritesDelete(removeFavoriteSongRequest: RemoveFavoriteSongRequest? = null): HttpResponse<Unit> {
+    open suspend fun addFavorite(favoriteSongRequest: FavoriteSongRequest): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = removeFavoriteSongRequest
+        val localVariableBody = favoriteSongRequest
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.DELETE,
+            RequestMethod.POST,
             "/favorites",
             query = localVariableQuery,
             headers = localVariableHeaders,
@@ -82,14 +81,14 @@ open class FavoritesApi : ApiClient {
 
 
     /**
-     * 
      * Get favorite songs
-     * @return Songs
+     * 
+     * @return SongList
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun favoritesGet(): HttpResponse<Songs> {
+    open suspend fun getFavorites(): HttpResponse<SongList> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
@@ -114,35 +113,35 @@ open class FavoritesApi : ApiClient {
 
 
     /**
+     * Remove song from favorites
      * 
-     * Add favorite song
-     * @param addFavoriteSongRequest  (optional)
+     * @param id 
      * @return void
      */
-    open suspend fun favoritesPost(addFavoriteSongRequest: AddFavoriteSongRequest? = null): HttpResponse<Unit> {
+    open suspend fun removeFavorite(id: kotlin.String): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = addFavoriteSongRequest
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.POST,
-            "/favorites",
+            RequestMethod.DELETE,
+            "/favorites/{id}".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,
         )
 
-        return jsonRequest(
+        return request(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
         ).wrap()
     }
-
 
 
 }

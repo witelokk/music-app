@@ -23,16 +23,13 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param error 
- * @param message 
+ * @param songId 
  */
 @Serializable
 
-data class FailureResponse (
+data class FavoriteSongRequest (
 
-    @SerialName(value = "error") @Required val error: kotlin.String,
-
-    @SerialName(value = "message") @Required val message: kotlin.String
+    @SerialName(value = "song_id") @Required val songId: kotlin.String
 
 ) {
 

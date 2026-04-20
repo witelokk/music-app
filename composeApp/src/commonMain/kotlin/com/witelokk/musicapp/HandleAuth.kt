@@ -1,7 +1,7 @@
 package com.witelokk.musicapp
 
-import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.models.TokensRequest
+import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.api.models.GetTokensByRefreshTokenRequest
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.HttpHeaders
@@ -12,7 +12,7 @@ suspend fun handleAuth(
     request: HttpRequestBuilder,
     execute: suspend (HttpRequestBuilder) -> HttpClientCall,
     settingsRepository: SettingsRepository,
-    authApi: AuthApi
+    authApi: CompatAuthApi
 ): HttpClientCall {
     val accessToken = settingsRepository.accessToken.first()
 
@@ -29,8 +29,11 @@ suspend fun handleAuth(
 
     val refreshToken = settingsRepository.refreshToken.first()
 
-    val tokensResponse = authApi.tokensPost(
-        TokensRequest("refresh_token", refreshToken = refreshToken)
+    val tokensResponse = authApi.generateTokens(
+        GetTokensByRefreshTokenRequest(
+            grantType = GetTokensByRefreshTokenRequest.GrantType.refresh_token,
+            refreshToken = refreshToken
+        )
     )
 
     if (!tokensResponse.success) return originalCall

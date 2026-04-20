@@ -15,6 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.Song
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -23,22 +24,16 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param id 
- * @param name 
- * @param email 
- * @param createdAt 
+ * @param count 
+ * @param songs 
  */
 @Serializable
 
-data class User (
+data class SongList (
 
-    @SerialName(value = "id") @Required val id: kotlin.String,
+    @SerialName(value = "count") @Required val count: kotlin.Int,
 
-    @SerialName(value = "name") @Required val name: kotlin.String,
-
-    @SerialName(value = "email") @Required val email: kotlin.String,
-
-    @SerialName(value = "created_at") @Required val createdAt: kotlin.time.Instant
+    @SerialName(value = "songs") @Required val songs: kotlin.collections.List<Song>
 
 ) {
 

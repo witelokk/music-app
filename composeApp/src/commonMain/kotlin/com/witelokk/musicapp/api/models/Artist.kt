@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.Releases
-import com.witelokk.musicapp.api.models.Songs
+import com.witelokk.musicapp.api.models.ReleaseSummaryList
+import com.witelokk.musicapp.api.models.SongList
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -46,9 +46,9 @@ data class Artist (
 
     @SerialName(value = "following") @Required val following: kotlin.Boolean,
 
-    @SerialName(value = "popularSongs") @Required val popularSongs: Songs,
+    @SerialName(value = "popularSongs") @Required val popularSongs: SongList,
 
-    @SerialName(value = "releases") @Required val releases: Releases,
+    @SerialName(value = "releases") @Required val releases: ReleaseSummaryList,
 
     @SerialName(value = "avatar_url") val avatarUrl: kotlin.String? = null,
 

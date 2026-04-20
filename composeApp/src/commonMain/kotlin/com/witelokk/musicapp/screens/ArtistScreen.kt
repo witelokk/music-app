@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.add
+import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Card
@@ -263,7 +264,7 @@ fun ArtistScreen(
                                         albumsFilter = !albumsFilter;
                                         singlesEPFilter = false;
                                         if (albumsFilter) {
-                                            viewModel.filterReleases("album")
+                                            viewModel.filterReleases(ReleaseType.album)
                                         }
                                         if (!singlesEPFilter && !albumsFilter) {
                                             viewModel.filterReleases(null)
@@ -274,7 +275,7 @@ fun ArtistScreen(
                                     onClick = {
                                         singlesEPFilter = !singlesEPFilter; albumsFilter = false;
                                         if (singlesEPFilter) {
-                                            viewModel.filterReleases("single")
+                                            viewModel.filterReleases(ReleaseType.single)
                                         }
                                         if (!singlesEPFilter && !albumsFilter) {
                                             viewModel.filterReleases(null)
@@ -293,9 +294,9 @@ fun ArtistScreen(
                         Card(
                             title = release.name,
                             subtitle = when (release.type) {
-                                "single" -> stringResource(Res.string.single)
-                                "album" -> stringResource(Res.string.album)
-                                else -> release.type
+                                ReleaseType.single -> stringResource(Res.string.single)
+                                ReleaseType.album -> stringResource(Res.string.album)
+                                ReleaseType.ep -> stringResource(Res.string.singles_and_eps)
                             } + ", " + release.releasedAt.substring(0, 4),
                             pictureUrl = release.coverUrl,
                             modifier = Modifier

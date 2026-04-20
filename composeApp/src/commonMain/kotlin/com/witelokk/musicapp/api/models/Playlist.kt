@@ -15,7 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.Songs
+import com.witelokk.musicapp.api.models.SongList
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -27,8 +27,8 @@ import kotlinx.serialization.encoding.*
  * @param id 
  * @param name 
  * @param songsCount 
- * @param songs 
  * @param coverUrl 
+ * @param songs 
  */
 @Serializable
 
@@ -40,9 +40,9 @@ data class Playlist (
 
     @SerialName(value = "songs_count") @Required val songsCount: kotlin.Int,
 
-    @SerialName(value = "songs") @Required val songs: Songs,
+    @SerialName(value = "cover_url") val coverUrl: kotlin.String? = null,
 
-    @SerialName(value = "cover_url") val coverUrl: kotlin.String? = null
+    @SerialName(value = "songs") val songs: SongList? = null
 
 ) {
 

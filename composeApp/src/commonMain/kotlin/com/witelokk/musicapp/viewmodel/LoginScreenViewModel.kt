@@ -1,9 +1,8 @@
 package com.witelokk.musicapp.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.models.VerificationCodeRequest
+import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.api.models.SendVerificationEmailRequest
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +14,7 @@ data class LoginScreenState(
     var verificationCodeRequestFailed: Boolean = false,
 )
 
-class LoginScreenViewModel(private val authApi: AuthApi) : ViewModel() {
+class LoginScreenViewModel(private val authApi: CompatAuthApi) : ViewModel() {
     private val _state = MutableStateFlow(LoginScreenState())
     val state = _state.asStateFlow()
 
@@ -28,13 +27,11 @@ class LoginScreenViewModel(private val authApi: AuthApi) : ViewModel() {
         launchCatching(action = "send verification code for $email", onError = {
             _state.update { state -> state.copy(verificationCodeRequestFailed = true) }
         }) {
-            val response = authApi.verificationCodeRequestPost(
-                VerificationCodeRequest(
-                    email = email
-                )
+            val response = authApi.createVerificationCodeRequest(
+                SendVerificationEmailRequest(email)
             )
 
-            if (!response.success and (response.status != HttpStatusCode.TooManyRequests.value)) {
+            if (!response.success && response.status != HttpStatusCode.TooManyRequests.value) {
                 response.logIfFailure("send verification code for $email")
                 _state.update { it.copy(verificationCodeRequestFailed = true) }
                 return@launchCatching

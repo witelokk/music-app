@@ -15,25 +15,25 @@
 
 package com.witelokk.musicapp.api.models
 
-import kotlinx.serialization.Required
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
 /**
  * 
  *
- * @param count 
- * @param releases 
+ * @param error Human-readable error message.
  */
 @Serializable
 
-data class Releases (
+data class Error (
 
-    @SerialName(value = "count") @Required val count: kotlin.Int,
-
-    @SerialName(value = "releases") @Required val releases: kotlin.collections.List<ReleaseSummary>
+    /* Human-readable error message. */
+    @SerialName(value = "error") @Required val error: kotlin.String
 
 ) {
 
 
 }
+

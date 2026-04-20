@@ -7,10 +7,10 @@ import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.FollowingsApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.Artist
+import com.witelokk.musicapp.api.models.FollowArtistRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
+import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
-import com.witelokk.musicapp.api.models.StartFollowingRequest
-import com.witelokk.musicapp.api.models.StopFollowingRequest
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,7 @@ data class ArtistScreenState(
     val artist: Artist? = null,
     val isLoading: Boolean = true,
     var isError: Boolean = false,
-    val selectedReleaseType: String? = null,
+    val selectedReleaseType: ReleaseType? = null,
     val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState? = null,
 ) {
@@ -61,7 +61,7 @@ class ArtistScreenViewModel(
         launchCatching(action = "load artist $artistId", onError = {
             _state.update { state -> state.copy(isError = true, isLoading = false) }
         }) {
-            val response = artistsApi.artistsIdGet(artistId)
+            val response = artistsApi.getArtist(artistId)
 
             if (response.logIfFailure("load artist $artistId")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
@@ -119,9 +119,9 @@ class ArtistScreenViewModel(
         state.value.artist?.let { artist ->
             launchCatching(action = "toggle following for artist ${artist.id}") {
                 if (artist.following)
-                    followingsApi.followingsDelete(StopFollowingRequest(artist.id))
+                    followingsApi.unfollowArtist(artist.id)
                 else
-                    followingsApi.followingsPost(StartFollowingRequest(artist.id))
+                    followingsApi.followArtist(FollowArtistRequest(artist.id))
 
                 _state.update {
                     it.copy(artist = artist.copy(following = !artist.following))
@@ -130,7 +130,7 @@ class ArtistScreenViewModel(
         }
     }
 
-    fun filterReleases(type: String?) {
+    fun filterReleases(type: ReleaseType?) {
         _state.update {
             it.copy(selectedReleaseType = type)
         }
@@ -138,7 +138,7 @@ class ArtistScreenViewModel(
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for artist screen") {
-            val response = playlistsApi.playlistsGet()
+            val response = playlistsApi.getPlaylists()
 
             if (response.logIfFailure("load playlists for artist screen")) {
                 return@launchCatching

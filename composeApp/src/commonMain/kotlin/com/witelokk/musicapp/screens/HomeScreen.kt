@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.CreatePlaylistCard
@@ -300,7 +301,7 @@ private fun HomeScreenScaffoldContent(
                 items(state.layout.sections) { section ->
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            section.titleFor(Locale.current.language),
+                            section.titles[Locale.current.language] ?: section.titles["en"] ?: "",
                             style = MaterialTheme.typography.labelLarge,
                             modifier = Modifier.padding(24.dp)
                         )
@@ -313,7 +314,7 @@ private fun HomeScreenScaffoldContent(
                             items(section.releases.releases) { release ->
                                 Card(
                                     title = release.name,
-                                    subtitle = release.artists.names.ifBlank { release.type },
+                                    subtitle = release.type.value,
                                     pictureUrl = release.coverUrl,
                                     modifier = Modifier
                                         .width(155.dp)
@@ -364,16 +365,16 @@ private fun SearchContent(
     } else if (searchQuery.collectAsState().value.isBlank()) {
         SearchHistoryContent(state.searchHistory, onResultClick = {
             when (it.type) {
-                "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
-                "release" -> navController.navigate(
+                SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
+                SearchResultItem.Type.release -> navController.navigate(
                     PlaylistReleaseScreenRoute(
                         "release",
                         it.release!!.id
                     )
                 )
 
-                "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                "playlist" -> navController.navigate(
+                SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
+                SearchResultItem.Type.playlist -> navController.navigate(
                     PlaylistReleaseScreenRoute(
                         "playlist",
                         it.playlist!!.id
@@ -387,16 +388,16 @@ private fun SearchContent(
         SearchSuccessfulContent(state.searchResults?.results ?: listOf(), onResultClick = {
             viewModel.addToSearchHistory(it)
             when (it.type) {
-                "song" -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
-                "release" -> navController.navigate(
+                SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
+                SearchResultItem.Type.release -> navController.navigate(
                     PlaylistReleaseScreenRoute(
                         "release",
                         it.release!!.id
                     )
                 )
 
-                "artist" -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                "playlist" -> navController.navigate(
+                SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
+                SearchResultItem.Type.playlist -> navController.navigate(
                     PlaylistReleaseScreenRoute(
                         "playlist",
                         it.playlist!!.id

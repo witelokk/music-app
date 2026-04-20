@@ -15,8 +15,7 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.HomeScreenLayout
+import com.witelokk.musicapp.api.models.Error
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -33,7 +32,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 
-open class HomeScreenApi : ApiClient {
+open class MediaApi : ApiClient {
 
     constructor(
         baseUrl: String = ApiClient.BASE_URL,
@@ -48,14 +47,15 @@ open class HomeScreenApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
+     * Get media file
      * 
-     * Get home screen layout
-     * @return HomeScreenLayout
+     * @param id 
+     * @return com.witelokk.musicapp.api.infrastructure.OctetByteArray
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun homeScreenLayoutGet(): HttpResponse<HomeScreenLayout> {
+    open suspend fun getMedia(id: kotlin.String): HttpResponse<com.witelokk.musicapp.api.infrastructure.OctetByteArray> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
@@ -65,7 +65,7 @@ open class HomeScreenApi : ApiClient {
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
             RequestMethod.GET,
-            "/home-screen-layout",
+            "/media/{id}".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,

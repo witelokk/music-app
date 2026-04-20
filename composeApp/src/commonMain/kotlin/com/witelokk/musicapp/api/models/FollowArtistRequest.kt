@@ -23,13 +23,13 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param songId 
+ * @param artistId 
  */
 @Serializable
 
-data class AddFavoriteSongRequest (
+data class FollowArtistRequest (
 
-    @SerialName(value = "song_id") @Required val songId: kotlin.String
+    @SerialName(value = "artist_id") @Required val artistId: kotlin.String
 
 ) {
 

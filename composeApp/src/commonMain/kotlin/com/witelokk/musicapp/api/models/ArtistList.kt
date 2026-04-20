@@ -15,6 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.ArtistSummary
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -23,13 +24,19 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param artistId 
+ * @param count 
+ * @param artists 
+ * @param names 
  */
 @Serializable
 
-data class StartFollowingRequest (
+data class ArtistList (
 
-    @SerialName(value = "artist_id") @Required val artistId: kotlin.String
+    @SerialName(value = "count") @Required val count: kotlin.Int,
+
+    @SerialName(value = "artists") @Required val artists: kotlin.collections.List<ArtistSummary>,
+
+    @SerialName(value = "names") @Required val names: kotlin.String
 
 ) {
 

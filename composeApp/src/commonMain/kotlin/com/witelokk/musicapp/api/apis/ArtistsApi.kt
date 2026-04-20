@@ -16,7 +16,7 @@
 package com.witelokk.musicapp.api.apis
 
 import com.witelokk.musicapp.api.models.Artist
-import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.Error
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -48,15 +48,15 @@ open class ArtistsApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
-     * 
      * Get artist by ID
-     * @param id Artist ID
+     * 
+     * @param id 
      * @return Artist
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun artistsIdGet(id: kotlin.String): HttpResponse<Artist> {
+    open suspend fun getArtist(id: kotlin.String): HttpResponse<Artist> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent

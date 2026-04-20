@@ -32,7 +32,7 @@ import kotlinx.serialization.encoding.*
  */
 @Serializable
 
-data class SearchResult (
+data class SearchResponse (
 
     @SerialName(value = "query") @Required val query: kotlin.String,
 

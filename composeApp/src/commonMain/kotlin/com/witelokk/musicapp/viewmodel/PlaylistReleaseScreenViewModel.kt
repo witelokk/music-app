@@ -5,9 +5,8 @@ import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
+import com.witelokk.musicapp.api.models.FavoriteSongRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.api.models.UpdatePlaylistRequest
 import com.witelokk.musicapp.data.PlayerState
@@ -53,7 +52,7 @@ class PlaylistReleaseScreenViewModel(
         launchCatching(action = "load playlist $id", onError = {
             _state.update { state -> state.copy(isError = true, isLoading = false) }
         }) {
-            val response = playlistsApi.playlistsIdGet(id)
+            val response = playlistsApi.getPlaylist(id, includeSongs = true)
 
             if (response.logIfFailure("load playlist $id")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
@@ -66,7 +65,7 @@ class PlaylistReleaseScreenViewModel(
                 it.copy(
                     isLoading = false,
                     isError = false,
-                    songs = playlist.songs.songs,
+                    songs = playlist.songs?.songs.orEmpty(),
                     name = playlist.name,
                     coverUrl = playlist.coverUrl,
                 )
@@ -78,7 +77,7 @@ class PlaylistReleaseScreenViewModel(
         launchCatching(action = "load release $id", onError = {
             _state.update { state -> state.copy(isError = true, isLoading = false) }
         }) {
-            val response = releasesApi.releasesIdGet(id)
+            val response = releasesApi.getRelease(id)
 
             if (response.logIfFailure("load release $id")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
@@ -110,9 +109,9 @@ class PlaylistReleaseScreenViewModel(
     fun toggleSongFavorite(song: Song) {
         launchCatching(action = "toggle favorite for song ${song.id} on playlist/release screen") {
             if (song.isFavorite) {
-                favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+                favoritesApi.removeFavorite(song.id)
             } else {
-                favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+                favoritesApi.addFavorite(FavoriteSongRequest(song.id))
             }
 
             musicPlayer.updateSong(song.copy(isFavorite = !song.isFavorite))
@@ -130,7 +129,7 @@ class PlaylistReleaseScreenViewModel(
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for playlist/release screen") {
-            val response = playlistsApi.playlistsGet()
+            val response = playlistsApi.getPlaylists()
 
             if (response.logIfFailure("load playlists for playlist/release screen")) {
                 return@launchCatching
@@ -145,7 +144,7 @@ class PlaylistReleaseScreenViewModel(
     fun deletePlaylist() {
         playlistId?.let { playlistId ->
             launchCatching(action = "delete playlist $playlistId") {
-                val response = playlistsApi.playlistsIdDelete(playlistId)
+                val response = playlistsApi.deletePlaylist(playlistId)
 
                 if (response.logIfFailure("delete playlist $playlistId")) {
                     return@launchCatching
@@ -159,7 +158,7 @@ class PlaylistReleaseScreenViewModel(
     fun editPlaylistName(name: String) {
         playlistId?.let { playlistId ->
             launchCatching(action = "rename playlist $playlistId") {
-                val response = playlistsApi.playlistsIdPut(playlistId, UpdatePlaylistRequest(name))
+                val response = playlistsApi.updatePlaylist(playlistId, UpdatePlaylistRequest(name))
 
                 if (response.logIfFailure("rename playlist $playlistId")) {
                     return@launchCatching

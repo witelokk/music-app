@@ -15,10 +15,9 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.ArtistsSummary
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.StartFollowingRequest
-import com.witelokk.musicapp.api.models.StopFollowingRequest
+import com.witelokk.musicapp.api.models.ArtistList
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.FollowArtistRequest
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -50,22 +49,22 @@ open class FollowingsApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
+     * Follow an artist
      * 
-     * Stop following an artist
-     * @param stopFollowingRequest  (optional)
+     * @param followArtistRequest 
      * @return void
      */
-    open suspend fun followingsDelete(stopFollowingRequest: StopFollowingRequest? = null): HttpResponse<Unit> {
+    open suspend fun followArtist(followArtistRequest: FollowArtistRequest): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = stopFollowingRequest
+        val localVariableBody = followArtistRequest
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.DELETE,
+            RequestMethod.POST,
             "/followings",
             query = localVariableQuery,
             headers = localVariableHeaders,
@@ -82,14 +81,14 @@ open class FollowingsApi : ApiClient {
 
 
     /**
+     * Get followed artists
      * 
-     * Get a list of followed artists
-     * @return ArtistsSummary
+     * @return ArtistList
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun followingsGet(): HttpResponse<ArtistsSummary> {
+    open suspend fun getFollowings(): HttpResponse<ArtistList> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
@@ -114,35 +113,35 @@ open class FollowingsApi : ApiClient {
 
 
     /**
+     * Unfollow an artist
      * 
-     * Start following an artist
-     * @param startFollowingRequest  (optional)
+     * @param id 
      * @return void
      */
-    open suspend fun followingsPost(startFollowingRequest: StartFollowingRequest? = null): HttpResponse<Unit> {
+    open suspend fun unfollowArtist(id: kotlin.String): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = startFollowingRequest
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.POST,
-            "/followings",
+            RequestMethod.DELETE,
+            "/followings/{id}".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,
         )
 
-        return jsonRequest(
+        return request(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
         ).wrap()
     }
-
 
 
 }

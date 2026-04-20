@@ -1,17 +1,15 @@
 package com.witelokk.musicapp
 
-import com.witelokk.musicapp.api.apis.AuthApi
-import com.witelokk.musicapp.api.apis.UsersApi
+import com.witelokk.musicapp.api.apis.CompatAuthApi
 import com.witelokk.musicapp.api.models.CreateUserRequest
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.TokensRequest
-import com.witelokk.musicapp.api.models.VerificationCodeRequest
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.GetTokensByCodeRequest
+import com.witelokk.musicapp.api.models.SendVerificationEmailRequest
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.reflect.TypeInfo
 
 class Auth(
-    private val authApi: AuthApi,
-    private val usersApi: UsersApi,
+    private val authApi: CompatAuthApi,
     private val settingsRepository: SettingsRepository,
 ) {
     companion object Errors {
@@ -21,17 +19,17 @@ class Auth(
     }
 
     suspend fun signIn(email: String, code: String) {
-        val response = authApi.tokensPost(
-            TokensRequest(
-                grantType = "code",
+        val response = authApi.generateTokens(
+            GetTokensByCodeRequest(
+                grantType = GetTokensByCodeRequest.GrantType.code,
                 email = email,
                 code = code
             )
         )
 
         if (response.status == HttpStatusCode.BadRequest.value) {
-            val errorResponse = response.typedBody<FailureResponse>(
-                TypeInfo(FailureResponse::class)
+            val errorResponse = response.typedBody<Error>(
+                TypeInfo(Error::class)
             )
 
             if (errorResponse.error == "invalid_code") {
@@ -51,7 +49,7 @@ class Auth(
     }
 
     suspend fun createUserAndSignIn(name: String, email: String, code: String) {
-        val response = usersApi.usersPost(
+        val response = authApi.createUser(
             CreateUserRequest(
                 name = name,
                 email = email,
@@ -72,7 +70,7 @@ class Auth(
 
     suspend fun verificationCodeRequestPost(email: String) {
         val response =
-            authApi.verificationCodeRequestPost(VerificationCodeRequest(email))
+            authApi.createVerificationCodeRequest(SendVerificationEmailRequest(email))
 
         if (!response.success and (response.status != HttpStatusCode.TooManyRequests.value)) {
             error(response)

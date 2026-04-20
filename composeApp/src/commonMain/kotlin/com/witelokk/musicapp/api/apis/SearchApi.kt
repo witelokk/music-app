@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.SearchResult
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.SearchResponse
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -47,26 +47,47 @@ open class SearchApi : ApiClient {
         httpClient: HttpClient
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
+
     /**
+     * enum for parameter type
+     */
+    @Serializable
+    enum class TypeSearch(val value: kotlin.String) {
+        
+        @SerialName(value = "song")
+        song("song"),
+        
+        @SerialName(value = "release")
+        release("release"),
+        
+        @SerialName(value = "artist")
+        artist("artist"),
+        
+        @SerialName(value = "playlist")
+        playlist("playlist")
+        
+    }
+
+    /**
+     * Search songs, artists, releases and playlists
      * 
-     * Search for artists, songs, albums, and playlists
-     * @param q Search query (optional)
-     * @param type Search type (optional)
-     * @param page Page number (optional)
-     * @param limit Results per page (optional)
-     * @return SearchResult
+     * @param q 
+     * @param type  (optional)
+     * @param page  (optional, default to 1)
+     * @param limit  (optional, default to 20)
+     * @return SearchResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun searchGet(q: kotlin.String? = null, type: kotlin.String? = null, page: kotlin.String? = null, limit: kotlin.String? = null): HttpResponse<SearchResult> {
+    open suspend fun search(q: kotlin.String, type: TypeSearch? = null, page: kotlin.Int? = 1, limit: kotlin.Int? = 20): HttpResponse<SearchResponse> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         q?.apply { localVariableQuery["q"] = listOf("$q") }
-        type?.apply { localVariableQuery["type"] = listOf("$type") }
+        type?.apply { localVariableQuery["type"] = listOf("${ type.value }") }
         page?.apply { localVariableQuery["page"] = listOf("$page") }
         limit?.apply { localVariableQuery["limit"] = listOf("$limit") }
         val localVariableHeaders = mutableMapOf<String, String>()

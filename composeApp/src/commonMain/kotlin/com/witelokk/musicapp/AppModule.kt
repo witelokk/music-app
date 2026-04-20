@@ -2,13 +2,13 @@ package com.witelokk.musicapp
 
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
+import com.witelokk.musicapp.api.apis.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.FollowingsApi
-import com.witelokk.musicapp.api.apis.HomeScreenApi
+import com.witelokk.musicapp.api.apis.HomeApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.apis.SearchApi
-import com.witelokk.musicapp.api.apis.UsersApi
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
@@ -65,13 +65,13 @@ val appModule = module {
     }
 
     factory {
-        Auth(get(), get(), get())
+        Auth(get(), get())
     }
 
     factory {
         val settingsRepository: SettingsRepository = get()
         val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
-        AuthApi(baseUrl, httpClientConfig = {})
+        CompatAuthApi(baseUrl, httpClientConfig = {})
     }
 
     single {
@@ -88,12 +88,6 @@ val appModule = module {
             handleAuth(request, ::execute, get(), get())
         }
         client
-    }
-
-    factory {
-        val settingsRepository: SettingsRepository = get()
-        val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
-        UsersApi(baseUrl, get<HttpClient>())
     }
 
     factory {
@@ -135,7 +129,7 @@ val appModule = module {
     factory {
         val settingsRepository: SettingsRepository = get()
         val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
-        HomeScreenApi(baseUrl, get<HttpClient>())
+        HomeApi(baseUrl, get<HttpClient>())
     }
 
     factory {

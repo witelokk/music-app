@@ -15,7 +15,6 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ArtistSummary
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -24,19 +23,14 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param count 
- * @param artists 
- * @param names 
+ * @param email Email address to send a verification code to.
  */
 @Serializable
 
-data class ArtistsSummary (
+data class SendVerificationEmailRequest (
 
-    @SerialName(value = "count") @Required val count: kotlin.Int,
-
-    @SerialName(value = "artists") @Required val artists: kotlin.collections.List<ArtistSummary>,
-
-    @SerialName(value = "names") @Required val names: kotlin.String
+    /* Email address to send a verification code to. */
+    @SerialName(value = "email") @Required val email: kotlin.String
 
 ) {
 

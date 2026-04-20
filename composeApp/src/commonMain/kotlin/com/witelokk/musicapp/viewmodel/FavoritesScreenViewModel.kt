@@ -45,7 +45,7 @@ class FavoritesScreenViewModel(
         launchCatching(action = "load favorites", onError = {
             _state.update { state -> state.copy(isError = true, isLoading = false) }
         }) {
-            val response = favoritesApi.favoritesGet()
+            val response = favoritesApi.getFavorites()
 
             if (response.logIfFailure("load favorites")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
@@ -88,7 +88,7 @@ class FavoritesScreenViewModel(
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for favorites screen") {
-            val response = playlistsApi.playlistsGet()
+            val response = playlistsApi.getPlaylists()
 
             if (response.logIfFailure("load playlists for favorites screen")) {
                 return@launchCatching

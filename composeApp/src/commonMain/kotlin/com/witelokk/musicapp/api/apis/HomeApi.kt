@@ -15,9 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.CreateUserRequest
-import com.witelokk.musicapp.api.models.FailureResponse
-import com.witelokk.musicapp.api.models.User
+import com.witelokk.musicapp.api.models.Error
+import com.witelokk.musicapp.api.models.HomeScreenLayout
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -34,7 +33,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 
-open class UsersApi : ApiClient {
+open class HomeApi : ApiClient {
 
     constructor(
         baseUrl: String = ApiClient.BASE_URL,
@@ -49,14 +48,14 @@ open class UsersApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
+     * Get home screen layout
      * 
-     * Get info about current user
-     * @return User
+     * @return HomeScreenLayout
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun usersMeGet(): HttpResponse<User> {
+    open suspend fun getHomeFeed(): HttpResponse<HomeScreenLayout> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
@@ -66,7 +65,7 @@ open class UsersApi : ApiClient {
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
             RequestMethod.GET,
-            "/users/me",
+            "/home-feed",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,
@@ -78,38 +77,6 @@ open class UsersApi : ApiClient {
             localVariableAuthNames
         ).wrap()
     }
-
-
-    /**
-     * 
-     * Create a user
-     * @param createUserRequest  (optional)
-     * @return void
-     */
-    open suspend fun usersPost(createUserRequest: CreateUserRequest? = null): HttpResponse<Unit> {
-
-        val localVariableAuthNames = listOf<String>()
-
-        val localVariableBody = createUserRequest
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.POST,
-            "/users",
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = false,
-        )
-
-        return jsonRequest(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
 
 
 }

@@ -18,11 +18,10 @@ package com.witelokk.musicapp.api.apis
 import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
 import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.CreatePlaylistResponse
-import com.witelokk.musicapp.api.models.FailureResponse
+import com.witelokk.musicapp.api.models.Error
 import com.witelokk.musicapp.api.models.Playlist
 import com.witelokk.musicapp.api.models.PlaylistsSummary
-import com.witelokk.musicapp.api.models.RemoveSongFromPlaylistRequest
-import com.witelokk.musicapp.api.models.Songs
+import com.witelokk.musicapp.api.models.SongList
 import com.witelokk.musicapp.api.models.UpdatePlaylistRequest
 
 import com.witelokk.musicapp.api.infrastructure.*
@@ -55,211 +54,15 @@ open class PlaylistsApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
-     * 
-     * Get a list of playlists
-     * @return PlaylistsSummary
-     */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun playlistsGet(): HttpResponse<PlaylistsSummary> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = 
-            io.ktor.client.utils.EmptyContent
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.GET,
-            "/playlists",
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return request(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-    /**
-     * 
-     * Delete a playlist
-     * @param id Playlist ID
-     * @return void
-     */
-    open suspend fun playlistsIdDelete(id: kotlin.String): HttpResponse<Unit> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = 
-            io.ktor.client.utils.EmptyContent
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.DELETE,
-            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return request(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-    /**
-     * 
-     * Get playlist by ID
-     * @param id Playlist ID
-     * @return Playlist
-     */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun playlistsIdGet(id: kotlin.String): HttpResponse<Playlist> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = 
-            io.ktor.client.utils.EmptyContent
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.GET,
-            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return request(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-    /**
-     * 
-     * Update a playlist
-     * @param id Playlist ID
-     * @param updatePlaylistRequest  (optional)
-     * @return void
-     */
-    open suspend fun playlistsIdPut(id: kotlin.String, updatePlaylistRequest: UpdatePlaylistRequest? = null): HttpResponse<Unit> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = updatePlaylistRequest
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.PUT,
-            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return jsonRequest(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-
-    /**
-     * 
-     * Remove song from playlist
-     * @param id Playlist ID
-     * @param removeSongFromPlaylistRequest  (optional)
-     * @return void
-     */
-    open suspend fun playlistsIdSongsDelete(id: kotlin.String, removeSongFromPlaylistRequest: RemoveSongFromPlaylistRequest? = null): HttpResponse<Unit> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = removeSongFromPlaylistRequest
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.DELETE,
-            "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return jsonRequest(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-
-    /**
-     * 
-     * Get playlist songs
-     * @param id Playlist ID
-     * @return Songs
-     */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun playlistsIdSongsGet(id: kotlin.String): HttpResponse<Songs> {
-
-        val localVariableAuthNames = listOf<String>("Authorization")
-
-        val localVariableBody = 
-            io.ktor.client.utils.EmptyContent
-
-        val localVariableQuery = mutableMapOf<String, List<String>>()
-        val localVariableHeaders = mutableMapOf<String, String>()
-
-        val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.GET,
-            "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
-            query = localVariableQuery,
-            headers = localVariableHeaders,
-            requiresAuthentication = true,
-        )
-
-        return request(
-            localVariableConfig,
-            localVariableBody,
-            localVariableAuthNames
-        ).wrap()
-    }
-
-
-    /**
-     * 
      * Add song to playlist
-     * @param id Playlist ID
-     * @param addSongToPlaylistRequest  (optional)
+     * 
+     * @param id 
+     * @param addSongToPlaylistRequest 
      * @return void
      */
-    open suspend fun playlistsIdSongsPost(id: kotlin.String, addSongToPlaylistRequest: AddSongToPlaylistRequest? = null): HttpResponse<Unit> {
+    open suspend fun addSongToPlaylist(id: kotlin.String, addSongToPlaylistRequest: AddSongToPlaylistRequest): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = addSongToPlaylistRequest
 
@@ -284,15 +87,15 @@ open class PlaylistsApi : ApiClient {
 
 
     /**
-     * 
      * Create a new playlist
-     * @param createPlaylistRequest  (optional)
+     * 
+     * @param createPlaylistRequest 
      * @return CreatePlaylistResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun playlistsPost(createPlaylistRequest: CreatePlaylistRequest? = null): HttpResponse<CreatePlaylistResponse> {
+    open suspend fun createPlaylist(createPlaylistRequest: CreatePlaylistRequest): HttpResponse<CreatePlaylistResponse> {
 
-        val localVariableAuthNames = listOf<String>("Authorization")
+        val localVariableAuthNames = listOf<String>("bearerAuth")
 
         val localVariableBody = createPlaylistRequest
 
@@ -302,6 +105,204 @@ open class PlaylistsApi : ApiClient {
         val localVariableConfig = RequestConfig<kotlin.Any?>(
             RequestMethod.POST,
             "/playlists",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+
+    /**
+     * Delete a playlist
+     * 
+     * @param id 
+     * @return void
+     */
+    open suspend fun deletePlaylist(id: kotlin.String): HttpResponse<Unit> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.DELETE,
+            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+    /**
+     * Get playlist by ID
+     * 
+     * @param id 
+     * @param includeSongs  (optional, default to false)
+     * @return Playlist
+     */
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun getPlaylist(id: kotlin.String, includeSongs: kotlin.Boolean? = false): HttpResponse<Playlist> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        includeSongs?.apply { localVariableQuery["include_songs"] = listOf("$includeSongs") }
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.GET,
+            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+    /**
+     * Get playlist songs
+     * 
+     * @param id 
+     * @return SongList
+     */
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun getPlaylistSongs(id: kotlin.String): HttpResponse<SongList> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.GET,
+            "/playlists/{id}/songs".replace("{" + "id" + "}", "$id"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+    /**
+     * Get a list of playlists
+     * 
+     * @return PlaylistsSummary
+     */
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun getPlaylists(): HttpResponse<PlaylistsSummary> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.GET,
+            "/playlists",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+    /**
+     * Remove song from playlist
+     * 
+     * @param id 
+     * @param songId 
+     * @return void
+     */
+    open suspend fun removeSongFromPlaylist(id: kotlin.String, songId: kotlin.String): HttpResponse<Unit> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = 
+            io.ktor.client.utils.EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.DELETE,
+            "/playlists/{id}/songs/{songId}".replace("{" + "id" + "}", "$id").replace("{" + "songId" + "}", "$songId"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = true,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+
+    /**
+     * Update a playlist
+     * 
+     * @param id 
+     * @param updatePlaylistRequest 
+     * @return void
+     */
+    open suspend fun updatePlaylist(id: kotlin.String, updatePlaylistRequest: UpdatePlaylistRequest): HttpResponse<Unit> {
+
+        val localVariableAuthNames = listOf<String>("bearerAuth")
+
+        val localVariableBody = updatePlaylistRequest
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<kotlin.Any?>(
+            RequestMethod.PUT,
+            "/playlists/{id}".replace("{" + "id" + "}", "$id"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,

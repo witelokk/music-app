@@ -5,9 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
 import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
+import com.witelokk.musicapp.api.models.FavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.StateFlow
@@ -48,7 +47,7 @@ abstract class BaseViewModel(
     open fun addSongToPlaylists(song: Song, playlistIds: List<String>) {
         launchCatching(action = "add song ${song.id} to playlists") {
             for (playlistId in playlistIds) {
-                playlistsApi.playlistsIdSongsPost(playlistId, AddSongToPlaylistRequest(song.id))
+                playlistsApi.addSongToPlaylist(playlistId, AddSongToPlaylistRequest(song.id))
             }
         }
     }
@@ -56,9 +55,9 @@ abstract class BaseViewModel(
     open fun changeSongFavorite(song: Song, favorite: Boolean) {
         launchCatching(action = "change favorite for song ${song.id}") {
             if (song.isFavorite) {
-                favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+                favoritesApi.removeFavorite(song.id)
             } else {
-                favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+                favoritesApi.addFavorite(FavoriteSongRequest(song.id))
             }
         }
         musicPlayer.updateSong(song.copy(isFavorite = favorite))

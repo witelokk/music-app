@@ -4,9 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
-import com.witelokk.musicapp.api.models.AddFavoriteSongRequest
+import com.witelokk.musicapp.api.models.FavoriteSongRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
-import com.witelokk.musicapp.api.models.RemoveFavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,9 +55,9 @@ class QueueScreenViewModel(
     fun toggleSongFavorite(song: Song) {
         launchCatching(action = "toggle favorite for song ${song.id} in queue") {
             if (song.isFavorite) {
-                favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
+                favoritesApi.removeFavorite(song.id)
             } else {
-                favoritesApi.favoritesPost(AddFavoriteSongRequest(song.id))
+                favoritesApi.addFavorite(FavoriteSongRequest(song.id))
             }
 
             musicPlayer.updateSong(song.copy(isFavorite = !song.isFavorite))
@@ -80,7 +79,7 @@ class QueueScreenViewModel(
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for queue screen") {
-            val response = playlistsApi.playlistsGet()
+            val response = playlistsApi.getPlaylists()
 
             if (response.logIfFailure("load playlists for queue screen")) {
                 return@launchCatching

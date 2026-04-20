@@ -15,6 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.ReleaseSummary
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -23,13 +24,16 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param email 
+ * @param count 
+ * @param releases 
  */
 @Serializable
 
-data class VerificationCodeRequest (
+data class ReleaseSummaryList (
 
-    @SerialName(value = "email") @Required val email: kotlin.String
+    @SerialName(value = "count") @Required val count: kotlin.Int,
+
+    @SerialName(value = "releases") @Required val releases: kotlin.collections.List<ReleaseSummary>
 
 ) {
 

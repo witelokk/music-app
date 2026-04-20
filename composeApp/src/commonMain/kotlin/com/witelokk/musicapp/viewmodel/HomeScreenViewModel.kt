@@ -3,17 +3,17 @@ package com.witelokk.musicapp.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.SettingsRepository
+import com.witelokk.musicapp.api.apis.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
-import com.witelokk.musicapp.api.apis.HomeScreenApi
+import com.witelokk.musicapp.api.apis.HomeApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.SearchApi
-import com.witelokk.musicapp.api.apis.UsersApi
-import com.witelokk.musicapp.api.models.ArtistsSummary
+import com.witelokk.musicapp.api.models.ArtistList
 import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.HomeScreenLayout
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.PlaylistsSummary
-import com.witelokk.musicapp.api.models.SearchResult
+import com.witelokk.musicapp.api.models.SearchResponse
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +25,7 @@ import kotlinx.serialization.json.Json
 data class HomeViewModelState(
     val layout: HomeScreenLayout = HomeScreenLayout(
         PlaylistsSummary(0, listOf()),
-        ArtistsSummary(0, listOf(), ""),
+        ArtistList(0, listOf(), ""),
         listOf()
     ),
     val isLoading: Boolean = true,
@@ -33,7 +33,7 @@ data class HomeViewModelState(
     val isError: Boolean = false,
     val isSearchLoading: Boolean = false,
     val isSearchFailure: Boolean = false,
-    val searchResults: SearchResult? = null,
+    val searchResults: SearchResponse? = null,
     val searchHistory: List<SearchResultItem> = listOf(),
     val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState? = null,
@@ -42,10 +42,10 @@ data class HomeViewModelState(
 
 class HomeScreenViewModel(
     private val searchApi: SearchApi,
-    private val homeScreenApi: HomeScreenApi,
+    private val homeApi: HomeApi,
     private val settings: SettingsRepository,
     private val playlistsApi: PlaylistsApi,
-    private val usersApi: UsersApi,
+    private val authApi: CompatAuthApi,
     favoritesApi: FavoritesApi,
     musicPlayer: MusicPlayer,
 ) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
@@ -76,7 +76,7 @@ class HomeScreenViewModel(
         launchCatching(action = "load home page layout", onError = {
             _state.update { state -> state.copy(isError = true, isLoading = false) }
         }) {
-            val response = homeScreenApi.homeScreenLayoutGet()
+            val response = homeApi.getHomeFeed()
 
             if (response.logIfFailure("load home page layout")) {
                 _state.update { it.copy(isError = true, isLoading = false) }
@@ -109,7 +109,7 @@ class HomeScreenViewModel(
 
     fun loadProfile() = viewModelScope.launch {
         val response = runApiCatching(action = "load profile") {
-            usersApi.usersMeGet()
+            authApi.getCurrentUser()
         } ?: return@launch
 
         if (response.logIfFailure("load profile")) {
@@ -158,7 +158,7 @@ class HomeScreenViewModel(
                 )
             }
         }) {
-            searchApi.searchGet(query, type = null, page = "1", limit = "10").let { response ->
+            searchApi.search(query, type = null, page = 1, limit = 10).let { response ->
                 if (response.success) {
                     _state.update {
                         it.copy(
@@ -199,7 +199,7 @@ class HomeScreenViewModel(
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for home screen") {
-            val response = playlistsApi.playlistsGet()
+            val response = playlistsApi.getPlaylists()
 
             if (response.logIfFailure("load playlists for home screen")) {
                 return@launchCatching
@@ -213,7 +213,7 @@ class HomeScreenViewModel(
 
     fun createPlaylist(name: String) {
         launchCatching(action = "create playlist '$name'") {
-            val response = playlistsApi.playlistsPost(CreatePlaylistRequest(name))
+            val response = playlistsApi.createPlaylist(CreatePlaylistRequest(name))
 
             if (response.logIfFailure("create playlist '$name'")) {
                 return@launchCatching

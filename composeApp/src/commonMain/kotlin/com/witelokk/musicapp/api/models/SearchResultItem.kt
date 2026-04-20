@@ -27,7 +27,7 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
- * @param type 
+ * @param type Type of the search result.
  * @param song 
  * @param release 
  * @param artist 
@@ -37,7 +37,8 @@ import kotlinx.serialization.encoding.*
 
 data class SearchResultItem (
 
-    @SerialName(value = "type") @Required val type: kotlin.String,
+    /* Type of the search result. */
+    @SerialName(value = "type") @Required val type: SearchResultItem.Type,
 
     @SerialName(value = "song") val song: Song? = null,
 
@@ -49,6 +50,18 @@ data class SearchResultItem (
 
 ) {
 
+    /**
+     * Type of the search result.
+     *
+     * Values: song,release,artist,playlist
+     */
+    @Serializable
+    enum class Type(val value: kotlin.String) {
+        @SerialName(value = "song") song("song"),
+        @SerialName(value = "release") release("release"),
+        @SerialName(value = "artist") artist("artist"),
+        @SerialName(value = "playlist") playlist("playlist");
+    }
 
 }
 

@@ -139,17 +139,17 @@ fun SearchResults(
 ) {
     LazyColumn(modifier = modifier) {
         items(results) {
-            if (it.type == "song" && (filter == "Songs" || filter == null)) {
+            if (it.type == SearchResultItem.Type.song && (filter == "Songs" || filter == null)) {
                 SongListItem(
                     it.song!!,
                     modifier = itemModifier.clickable { onResultClick(it) },
                 )
-            } else if (it.type == "artist" && (filter == "Artists" || filter == null)) {
+            } else if (it.type == SearchResultItem.Type.artist && (filter == "Artists" || filter == null)) {
                 ArtistListItem(
                     it.artist!!,
                     modifier = itemModifier.clickable { onResultClick(it) },
                 )
-            } else if (it.type == "playlist" && (filter == "Playlists" || filter == null)) {
+            } else if (it.type == SearchResultItem.Type.playlist && (filter == "Playlists" || filter == null)) {
                 PlaylistListItem(
                     Playlist(
                         name = it.playlist!!.name,
