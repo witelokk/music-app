@@ -1,5 +1,8 @@
 package com.witelokk.musicapp
 
+import androidx.room.RoomDatabase
+import com.witelokk.musicapp.cache.MusicAppDatabase
+import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -28,6 +31,10 @@ actual val platformModule = module {
                 requireNotNull(documentDirectory).path + "/$DATASTORE_FILE_NAME"
             }
         )
+    }
+
+    single<RoomDatabase.Builder<MusicAppDatabase>> {
+        getRoomDatabaseBuilder()
     }
 
     single<PlaybackEngine> {

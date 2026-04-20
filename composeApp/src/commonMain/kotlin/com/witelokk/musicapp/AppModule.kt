@@ -14,6 +14,12 @@ import com.witelokk.musicapp.api.apis.HomeApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.apis.SearchApi
+import com.witelokk.musicapp.cache.FavoritesCache
+import com.witelokk.musicapp.cache.FavoritesCacheImpl
+import com.witelokk.musicapp.cache.MusicAppDatabase
+import com.witelokk.musicapp.cache.getRoomDatabase
+import com.witelokk.musicapp.repository.FavoritesRepository
+import com.witelokk.musicapp.repository.FavoritesRepositoryImpl
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
@@ -57,8 +63,10 @@ const val DEFAULT_BASE_URL = "https://music.witelokk.ru/"
 val appModule = module {
     includes(platformModule)
 
-    single {
-        Json
+    single<Json> {
+        Json {
+            ignoreUnknownKeys = true
+        }
     }
 
     single {
@@ -87,6 +95,10 @@ val appModule = module {
 
     single {
         MusicPlayer(get())
+    }
+
+    single<MusicAppDatabase> {
+        getRoomDatabase(get())
     }
 
     factory {
@@ -127,6 +139,14 @@ val appModule = module {
         val settingsRepository: SettingsRepository = get()
         val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
         FavoritesApi(baseUrl, get<HttpClient>())
+    }
+
+    factory<FavoritesCache> {
+        FavoritesCacheImpl(get(), get())
+    }
+
+    factory<FavoritesRepository> {
+        FavoritesRepositoryImpl(get(), get())
     }
 
     factory {

@@ -18,6 +18,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,7 +39,6 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
-import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import kotlinx.coroutines.delay
@@ -53,6 +54,9 @@ fun FavoritesScreen(
     viewModel: FavoritesScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val loadFailedMessage = stringResource(Res.string.favorite_songs_load_failed)
+    val connectionFailedMessage = stringResource(Res.string.favorite_songs_connection_failed)
 
     var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -70,6 +74,17 @@ fun FavoritesScreen(
             showLoadingIndicator = true
         } else {
             showLoadingIndicator = false
+        }
+    }
+
+    LaunchedEffect(state.snackbarEventId) {
+        if (state.snackbarEventId == 0L) {
+            return@LaunchedEffect
+        }
+
+        when {
+            state.isConnectionError -> snackbarHostState.showSnackbar(connectionFailedMessage)
+            state.isError -> snackbarHostState.showSnackbar(loadFailedMessage)
         }
     }
 
@@ -113,6 +128,7 @@ fun FavoritesScreen(
             songToAddToPlaylists = song
             showAddToPlaylistDialog = true
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         onChangeFavorite = { song, favorite ->
             viewModel.changeSongFavorite(song, favorite)
         },
@@ -127,14 +143,9 @@ fun FavoritesScreen(
             ) {
                 CircularProgressIndicator()
             }
-        } else if (state.isError) {
-            RequestFailedContent(
-                retry = { viewModel.loadFavorites() },
-                modifier = Modifier.padding(innerPadding),
-            )
         } else {
             AnimatedVisibility(
-                visible = !state.isLoading,
+                visible = !state.isLoading && state.hasObservedFavorites,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -147,40 +158,41 @@ fun FavoritesScreen(
                     ) {
                         Text(stringResource(Res.string.no_favorite_songs))
                     }
-                }
-                LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                    items(state.songs, key = { it.id }) { song ->
-                        SongListItem(
-                            song = song,
-                            isActive = state.playerState?.currentSong?.id == song.id,
-                            isPlaying = state.playerState?.playing ?: false,
-                            showFavorite = false,
-                            modifier = Modifier
-                                .clickable { viewModel.playSong(song) }
-                                .padding(horizontal = 20.dp, vertical = 8.dp)
-                                .animateItem()
-                        ) { menuExpanded ->
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.remove_from_favorite_songs)) },
-                                onClick = {
-                                    viewModel.changeSongFavorite(song, false)
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.add_to_playlist)) },
-                                onClick = {
-                                    menuExpanded.value = false
-                                    songToAddToPlaylists = song
-                                    showAddToPlaylistDialog = true
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.add_to_queue)) },
-                                onClick = {
-                                    viewModel.addSongToQueue(song)
-                                    menuExpanded.value = false
-                                }
-                            )
+                } else {
+                    LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
+                        items(state.songs, key = { it.id }) { song ->
+                            SongListItem(
+                                song = song,
+                                isActive = state.playerState?.currentSong?.id == song.id,
+                                isPlaying = state.playerState?.playing ?: false,
+                                showFavorite = false,
+                                modifier = Modifier
+                                    .clickable { viewModel.playSong(song) }
+                                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                                    .animateItem()
+                            ) { menuExpanded ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.remove_from_favorite_songs)) },
+                                    onClick = {
+                                        viewModel.changeSongFavorite(song, false)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.add_to_playlist)) },
+                                    onClick = {
+                                        menuExpanded.value = false
+                                        songToAddToPlaylists = song
+                                        showAddToPlaylistDialog = true
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.add_to_queue)) },
+                                    onClick = {
+                                        viewModel.addSongToQueue(song)
+                                        menuExpanded.value = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }

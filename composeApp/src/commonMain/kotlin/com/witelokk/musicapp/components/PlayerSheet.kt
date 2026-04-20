@@ -26,6 +26,8 @@ import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -66,6 +68,7 @@ fun PlayerSheetScaffold(
             initialValue = if (playerState == null) SheetValue.Hidden else SheetValue.PartiallyExpanded
         )
     ),
+    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
     topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -83,7 +86,9 @@ fun PlayerSheetScaffold(
         }
     }
 
-    BottomSheetScaffold(scaffoldState = scaffoldState, sheetPeekHeight = 150.dp, sheetContent = {
+    BottomSheetScaffold(scaffoldState = scaffoldState, sheetPeekHeight = 150.dp, snackbarHost = {
+        snackbarHost(it)
+    }, sheetContent = {
         if (playerState != null)
             SheetContent(
                 navController,
@@ -178,4 +183,3 @@ fun SheetContent(
         )
     }
 }
-

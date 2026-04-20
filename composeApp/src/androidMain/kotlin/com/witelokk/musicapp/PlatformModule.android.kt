@@ -2,6 +2,7 @@ package com.witelokk.musicapp
 
 import android.content.ComponentName
 import android.content.Context
+import androidx.room.RoomDatabase
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -9,6 +10,8 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
+import com.witelokk.musicapp.cache.MusicAppDatabase
+import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.dsl.module
@@ -22,6 +25,10 @@ actual val platformModule = module {
         createDataStore(
             producePath = { get<Context>().filesDir.resolve(DATASTORE_FILE_NAME).absolutePath }
         )
+    }
+
+    single<RoomDatabase.Builder<MusicAppDatabase>> {
+        getRoomDatabaseBuilder(get())
     }
 
     single {

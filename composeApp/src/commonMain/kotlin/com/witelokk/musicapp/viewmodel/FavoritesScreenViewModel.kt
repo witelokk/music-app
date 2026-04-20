@@ -7,21 +7,27 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.PlayerState
+import com.witelokk.musicapp.repository.ConnectionErrorException
+import com.witelokk.musicapp.repository.FavoritesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FavoritesScreenState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val hasObservedFavorites: Boolean = false,
+    val isConnectionError: Boolean = false,
     val isError: Boolean = false,
+    val snackbarEventId: Long = 0,
     val songs: List<Song> = listOf(),
     val playlists: List<PlaylistSummary> = listOf(),
     val playerState: PlayerState?,
 )
 
 class FavoritesScreenViewModel(
-    private val favoritesApi: FavoritesApi,
+    favoritesApi: FavoritesApi,
+    private val favoritesRepository: FavoritesRepository,
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi,
 ) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
@@ -30,6 +36,24 @@ class FavoritesScreenViewModel(
     val state = _state.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            var isInitialEmission = true
+
+            favoritesRepository.observeFavorites().collect { favorites ->
+                _state.update {
+                    it.copy(
+                        isLoading = isInitialEmission && favorites == null,
+                        hasObservedFavorites = true,
+                        isConnectionError = false,
+                        isError = false,
+                        songs = favorites ?: it.songs,
+                    )
+                }
+
+                isInitialEmission = false
+            }
+        }
+
         loadFavorites()
 
         viewModelScope.launch {
@@ -43,24 +67,16 @@ class FavoritesScreenViewModel(
 
     fun loadFavorites() {
         launchCatching(action = "load favorites", onError = {
-            _state.update { state -> state.copy(isError = true, isLoading = false) }
-        }) {
-            val response = favoritesApi.getFavorites()
-
-            if (response.logIfFailure("load favorites")) {
-                _state.update { it.copy(isError = true, isLoading = false) }
-                return@launchCatching
-            }
-
-            val favorites = response.body()
-
-            _state.update {
-                it.copy(
+            _state.update { state ->
+                state.copy(
                     isLoading = false,
-                    isError = false,
-                    songs = favorites.songs,
+                    hasObservedFavorites = true,
+                    isConnectionError = it is ConnectionErrorException,
+                    isError = it !is ConnectionErrorException,
                 )
             }
+        }) {
+            favoritesRepository.refreshFavorites()
         }
     }
 
@@ -71,20 +87,6 @@ class FavoritesScreenViewModel(
     fun playAllSongs() {
         musicPlayer.setQueueAndPlay(state.value.songs, 0)
     }
-
-//    fun removeSongFromFavorites(song: Song) {
-//        viewModelScope.launch {
-//            favoritesApi.favoritesDelete(RemoveFavoriteSongRequest(song.id))
-//
-//            _state.update { currentState ->
-//                currentState.copy(
-//                    songs = currentState.songs.filter { it != song }
-//                )
-//            }
-//
-//            musicPlayer.updateSong(song.copy(isFavorite = false))
-//        }
-//    }
 
     fun loadPlaylists() {
         launchCatching(action = "load playlists for favorites screen") {
@@ -101,12 +103,26 @@ class FavoritesScreenViewModel(
     }
 
     override fun changeSongFavorite(song: Song, favorite: Boolean) {
-        super.changeSongFavorite(song, favorite)
-        _state.update { currentState ->
-            currentState.copy(
-                songs = if (favorite) listOf(song.copy(isFavorite = true)).plus(currentState.songs)
-                else currentState.songs.filter { it != song }
-            )
+        launchCatching(
+            action = "change favorite for song ${song.id} on favorites screen",
+            onError = {
+                _state.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        hasObservedFavorites = true,
+                        isConnectionError = it is ConnectionErrorException,
+                        isError = it !is ConnectionErrorException,
+                        snackbarEventId = state.snackbarEventId + 1,
+                    )
+                }
+            }) {
+            if (favorite) {
+                favoritesRepository.addFavorite(song)
+            } else {
+                favoritesRepository.removeFavorite(song.id)
+            }
+
+            musicPlayer.updateSong(song.copy(isFavorite = favorite))
         }
     }
 }
