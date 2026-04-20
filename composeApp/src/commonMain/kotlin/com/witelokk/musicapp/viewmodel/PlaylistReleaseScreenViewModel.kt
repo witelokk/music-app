@@ -169,6 +169,24 @@ class PlaylistReleaseScreenViewModel(
         }
     }
 
+    fun removeSongFromPlaylist(song: Song) {
+        playlistId?.let { playlistId ->
+            launchCatching(action = "remove song ${song.id} from playlist $playlistId") {
+                val response = playlistsApi.removeSongFromPlaylist(playlistId, song.id)
+
+                if (response.logIfFailure("remove song ${song.id} from playlist $playlistId")) {
+                    return@launchCatching
+                }
+
+                _state.update { currentState ->
+                    currentState.copy(
+                        songs = currentState.songs.filterNot { it.id == song.id }
+                    )
+                }
+            }
+        }
+    }
+
     override fun changeSongFavorite(song: Song, favorite: Boolean) {
         super.changeSongFavorite(song, favorite)
         _state.update { currentState ->

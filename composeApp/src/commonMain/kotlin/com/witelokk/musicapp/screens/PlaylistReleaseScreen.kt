@@ -214,7 +214,7 @@ fun PlaylistReleaseScreen(
                     }
                 }
                 LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                    items(state.songs) { song ->
+                    items(state.songs, key = { it.id }) { song ->
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
@@ -241,6 +241,15 @@ fun PlaylistReleaseScreen(
                                     menuExpanded.value = false
                                 }
                             )
+                            if (route.type == "playlist") {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.remove_from_playlist)) },
+                                    onClick = {
+                                        viewModel.removeSongFromPlaylist(song)
+                                        menuExpanded.value = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
