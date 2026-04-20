@@ -4,8 +4,12 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,6 +18,7 @@ import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import com.witelokk.musicapp.auth.AuthStore
 import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.screens.ArtistScreenRoute
 import com.witelokk.musicapp.screens.FavoritesScreen
@@ -41,8 +46,10 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App(
     themeViewModel: ThemeViewModel = koinViewModel(),
     httpClient: HttpClient = koinInject(),
+    authStore: AuthStore = koinInject(),
 ) {
     val theme by themeViewModel.theme.collectAsState()
+    val authState by authStore.state.collectAsState()
 
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -53,6 +60,17 @@ fun App(
     }
 
     val navController = rememberNavController()
+    var wasAuthorized by remember { mutableStateOf(authState.isAuthorized) }
+
+    LaunchedEffect(authState.isAuthorized) {
+        if (wasAuthorized && !authState.isAuthorized) {
+            navController.navigate("welcome") {
+                popUpTo(0)
+            }
+        }
+        wasAuthorized = authState.isAuthorized
+    }
+
     MusicAppTheme(
         darkTheme = when (theme) {
             "light" -> false

@@ -11,16 +11,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.witelokk.musicapp.auth.AuthStore
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 @OptIn(UnstableApi::class)
 class AndroidPlaybackEngine(
     private val mediaControllerFuture: ListenableFuture<MediaController>,
-    private val settingsRepository: SettingsRepository,
+    private val authStore: AuthStore,
 ) : PlaybackEngine {
 
     private lateinit var controller: MediaController
@@ -107,7 +106,7 @@ class AndroidPlaybackEngine(
                     requestMethod = "GET"
                     connectTimeout = 5000
                     readTimeout = 5000
-                    val token = runBlocking { settingsRepository.accessToken.first() }
+                    val token = authStore.currentAccessToken
                     if (token.isNotBlank()) {
                         setRequestProperty("Authorization", "Bearer $token")
                     }

@@ -1,5 +1,10 @@
 package com.witelokk.musicapp
 
+import com.witelokk.musicapp.auth.AuthApiService
+import com.witelokk.musicapp.auth.AuthHttpHandler
+import com.witelokk.musicapp.auth.AuthSession
+import com.witelokk.musicapp.auth.AuthStore
+import com.witelokk.musicapp.auth.TokenRefresher
 import com.witelokk.musicapp.api.apis.ArtistsApi
 import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.CompatAuthApi
@@ -61,11 +66,27 @@ val appModule = module {
     }
 
     single {
-        MusicPlayer(get())
+        AuthStore(get())
     }
 
-    factory {
-        Auth(get(), get())
+    single {
+        AuthApiService(get())
+    }
+
+    single {
+        TokenRefresher(get(), get())
+    }
+
+    single {
+        AuthSession(get(), get())
+    }
+
+    single {
+        AuthHttpHandler(get(), get())
+    }
+
+    single {
+        MusicPlayer(get())
     }
 
     factory {
@@ -85,7 +106,7 @@ val appModule = module {
             }
         }
         client.plugin(HttpSend).intercept { request ->
-            handleAuth(request, ::execute, get(), get())
+            get<AuthHttpHandler>().executeWithAuth(request, ::execute)
         }
         client
     }

@@ -1,5 +1,6 @@
 package com.witelokk.musicapp
 
+import com.witelokk.musicapp.auth.AuthState
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -7,6 +8,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 private object PrefKeys {
@@ -43,6 +45,16 @@ class SettingsRepository(
     val serverUrl: Flow<String> =
         dataStore.data.map { prefs -> prefs[PrefKeys.SERVER_URL] ?: DEFAULT_BASE_URL }
 
+    val authState: Flow<AuthState> =
+        combine(accountName, accountEmail, accessToken, refreshToken) { accountName, accountEmail, accessToken, refreshToken ->
+            AuthState(
+                accountName = accountName,
+                accountEmail = accountEmail,
+                accessToken = accessToken,
+                refreshToken = refreshToken,
+            )
+        }
+
     suspend fun setAccountName(value: String) {
         dataStore.edit { prefs ->
             prefs[PrefKeys.ACCOUNT_NAME] = value
@@ -64,6 +76,20 @@ class SettingsRepository(
     suspend fun setRefreshToken(value: String) {
         dataStore.edit { prefs ->
             prefs[PrefKeys.REFRESH_TOKEN] = value
+        }
+    }
+
+    suspend fun updateAuthTokens(
+        accessToken: String,
+        refreshToken: String,
+        accountEmail: String? = null,
+    ) {
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.ACCESS_TOKEN] = accessToken
+            prefs[PrefKeys.REFRESH_TOKEN] = refreshToken
+            if (accountEmail != null) {
+                prefs[PrefKeys.ACCOUNT_EMAIL] = accountEmail
+            }
         }
     }
 
@@ -90,6 +116,15 @@ class SettingsRepository(
     suspend fun clear() {
         dataStore.edit { prefs ->
             prefs.clear()
+        }
+    }
+
+    suspend fun clearAuth() {
+        dataStore.edit { prefs ->
+            prefs.remove(PrefKeys.ACCOUNT_NAME)
+            prefs.remove(PrefKeys.ACCOUNT_EMAIL)
+            prefs.remove(PrefKeys.ACCESS_TOKEN)
+            prefs.remove(PrefKeys.REFRESH_TOKEN)
         }
     }
 }

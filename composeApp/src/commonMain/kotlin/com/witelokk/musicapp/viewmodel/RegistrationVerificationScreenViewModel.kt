@@ -2,7 +2,7 @@ package com.witelokk.musicapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.witelokk.musicapp.Auth
+import com.witelokk.musicapp.auth.AuthSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +17,7 @@ data class RegistrationVerificationScreenState(
 )
 
 class RegistrationVerificationScreenViewModel(
-    private val auth: Auth,
+    private val authSession: AuthSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegistrationVerificationScreenState())
 
@@ -28,15 +28,15 @@ class RegistrationVerificationScreenViewModel(
             _state.update { it.copy(isButtonEnabled = false) }
 
             try {
-                auth.createUserAndSignIn(name, email, code)
-            } catch (e: Auth.Errors.InvalidCode) {
+                authSession.createUserAndSignIn(name, email, code)
+            } catch (e: AuthSession.Errors.InvalidCode) {
                 return@launch _state.update {
                     it.copy(
                         isCodeInvalid = true,
                         isButtonEnabled = true
                     )
                 }
-            } catch (e: Auth.Errors.UserAlreadyExists) {
+            } catch (e: AuthSession.Errors.UserAlreadyExists) {
                 return@launch _state.update {
                     it.copy(
                         userAlreadyExists = true,
@@ -63,8 +63,8 @@ class RegistrationVerificationScreenViewModel(
             _state.update { it.copy(isButtonEnabled = false) }
 
             try {
-                auth.signIn(email, code)
-            } catch (e: Auth.Errors.InvalidCode) {
+                authSession.signIn(email, code)
+            } catch (e: AuthSession.Errors.InvalidCode) {
                 return@launch _state.update {
                     it.copy(
                         isCodeInvalid = true,

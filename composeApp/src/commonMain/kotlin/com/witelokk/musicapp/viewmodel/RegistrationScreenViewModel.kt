@@ -2,7 +2,7 @@ package com.witelokk.musicapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.witelokk.musicapp.Auth
+import com.witelokk.musicapp.auth.AuthSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +18,7 @@ data class RegistrationScreenState(
 )
 
 class RegistrationScreenViewModel(
-    private val auth: Auth,
+    private val authSession: AuthSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(RegistrationScreenState())
     val state = _state.asStateFlow()
@@ -26,8 +26,8 @@ class RegistrationScreenViewModel(
     fun registerAndSignIn(name: String, email: String, code: String) {
         viewModelScope.launch {
             try {
-                auth.createUserAndSignIn(name, email, code)
-            } catch (e: Auth.Errors.InvalidCode) {
+                authSession.createUserAndSignIn(name, email, code)
+            } catch (e: AuthSession.Errors.InvalidCode) {
                 return@launch _state.update { it.copy(isCodeInvalid = true) }
             } catch (e: Exception) {
                 return@launch _state.update {
@@ -52,7 +52,7 @@ class RegistrationScreenViewModel(
 
         viewModelScope.launch {
             try {
-                auth.verificationCodeRequestPost(email)
+                authSession.requestVerificationCode(email)
             } catch (e: Exception) {
                 _state.update { it.copy(verificationCodeRequestFailed = true) }
                 return@launch

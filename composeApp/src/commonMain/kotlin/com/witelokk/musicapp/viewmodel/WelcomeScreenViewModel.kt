@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.DEFAULT_BASE_URL
 import com.witelokk.musicapp.GoogleSignIn
 import com.witelokk.musicapp.SettingsRepository
-import com.witelokk.musicapp.api.apis.CompatAuthApi
-import com.witelokk.musicapp.api.models.GetTokensByGoogleTokenRequest
-import com.witelokk.musicapp.logd
+import com.witelokk.musicapp.auth.AuthSession
+import com.witelokk.musicapp.auth.AuthStore
 import com.witelokk.musicapp.loge
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,7 +24,8 @@ data class WelcomeScreenState(
 )
 
 class WelcomeScreenViewModel(
-    private val authApi: CompatAuthApi,
+    private val authSession: AuthSession,
+    private val authStore: AuthStore,
     private val settingsRepository: SettingsRepository,
     private val googleSignIn: GoogleSignIn,
 ) : ViewModel() {
@@ -34,19 +35,20 @@ class WelcomeScreenViewModel(
     private var logoTapCount: Int = 0
 
     init {
-        viewModelScope.launch { checkAuthorization() }
+        observeAuthorization()
         viewModelScope.launch { loadServerUrl() }
     }
 
-    private suspend fun checkAuthorization() {
-        val accessToken = settingsRepository.accessToken.first()
-        if (accessToken.isNotBlank()) {
-            _state.update {
-                it.copy(isAuthorized = true)
+    private fun observeAuthorization() {
+        viewModelScope.launch {
+            authStore.state.collect { authState ->
+                _state.update {
+                    it.copy(
+                        isAuthorized = authState.isAuthorized,
+                        isCheckingAuthorization = false
+                    )
+                }
             }
-        }
-        _state.update {
-            it.copy(isCheckingAuthorization = false)
         }
     }
 
@@ -87,29 +89,10 @@ class WelcomeScreenViewModel(
     }
 
     private suspend fun signIn(googleIdToken: String) {
-        val response = runApiCatching(tag = "GOOGLE_SIGN_IN", action = "request app tokens with Google token", onError = {
+        runApiCatching(tag = "GOOGLE_SIGN_IN", action = "request app tokens with Google token", onError = {
             _state.update { state -> state.copy(signInFailed = true) }
         }) {
-            authApi.generateTokens(
-                GetTokensByGoogleTokenRequest(
-                    grantType = GetTokensByGoogleTokenRequest.GrantType.google_token,
-                    googleToken = googleIdToken,
-                )
-            )
-        } ?: return
-
-        if (response.logIfFailure("request app tokens with Google token", tag = "GOOGLE_SIGN_IN")) {
-            _state.update {
-                it.copy(signInFailed = true)
-            }
-            return
-        }
-
-        settingsRepository.setAccessToken(response.body().accessToken)
-        settingsRepository.setRefreshToken(response.body().refreshToken)
-
-        _state.update {
-            it.copy(isAuthorized = true)
+            authSession.signInWithGoogle(googleIdToken)
         }
     }
 }

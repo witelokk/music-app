@@ -3,6 +3,7 @@ package com.witelokk.musicapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.SettingsRepository
+import com.witelokk.musicapp.auth.AuthSession
 import com.witelokk.musicapp.api.apis.CompatAuthApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ data class SettingsScreenState(
 class SettingsScreenViewModel(
     private val settingsRepository: SettingsRepository,
     private val authApi: CompatAuthApi,
+    private val authSession: AuthSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsScreenState())
     val state = _state.asStateFlow()
@@ -85,7 +87,7 @@ class SettingsScreenViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            settingsRepository.clear()
+            authSession.logout()
         }
         _state.update { it.copy(isLoggedOut = true) }
     }

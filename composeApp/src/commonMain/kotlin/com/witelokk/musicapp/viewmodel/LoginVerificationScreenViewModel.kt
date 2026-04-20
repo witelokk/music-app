@@ -2,7 +2,7 @@ package com.witelokk.musicapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.witelokk.musicapp.Auth
+import com.witelokk.musicapp.auth.AuthSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +17,7 @@ data class LoginVerificationScreenState(
 )
 
 class LoginVerificationScreenViewModel(
-    private val auth: Auth,
+    private val authSession: AuthSession,
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoginVerificationScreenState())
 
@@ -28,13 +28,13 @@ class LoginVerificationScreenViewModel(
             _state.update { it.copy(isButtonEnabled = false) }
 
             try {
-                auth.signIn(email, code)
+                authSession.signIn(email, code)
                 _state.update {
                     it.copy(isAuthorized = true)
                 }
-            } catch (e: Auth.Errors.InvalidCode) {
+            } catch (e: AuthSession.Errors.InvalidCode) {
                 _state.update { it.copy(isCodeInvalid = true, isButtonEnabled = true) }
-            } catch (e: Auth.Errors.InvalidUser) {
+            } catch (e: AuthSession.Errors.InvalidUser) {
                 _state.update { it.copy(isUserNotFound = true) }
             } catch (e: Exception) {
                 _state.update {

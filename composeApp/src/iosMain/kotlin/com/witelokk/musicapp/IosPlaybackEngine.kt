@@ -1,8 +1,7 @@
 package com.witelokk.musicapp
 
+import com.witelokk.musicapp.auth.AuthStore
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.setActive
@@ -42,7 +41,7 @@ import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
 class IosPlaybackEngine(
-    private val settingsRepository: SettingsRepository
+    private val authStore: AuthStore
 ) : PlaybackEngine {
     private var listener: PlaybackEngineListener? = null
 
@@ -130,11 +129,9 @@ class IosPlaybackEngine(
     }
 
     private fun createPlayerItem(url: NSURL): AVPlayerItem {
-        val token = runBlocking { settingsRepository.accessToken.first() }
+        val token = authStore.currentAccessToken
 
         if (token.isNotBlank()) {
-            logd("IOS_PLAYBACK_ENGINE", "ACCESS TOKEN is $token")
-
             val options: Map<Any?, Any> = mapOf(
                 "AVURLAssetHTTPHeaderFieldsKey" to mapOf(
                     "Authorization" to "Bearer $token"
@@ -268,7 +265,7 @@ class IosPlaybackEngine(
         if (artworkUrl.isNullOrBlank()) return null
 
         val nsUrl = NSURL.URLWithString(artworkUrl) ?: return null
-        val token = runBlocking { settingsRepository.accessToken.first() }
+        val token = authStore.currentAccessToken
         val request = NSMutableURLRequest.requestWithURL(nsUrl).apply {
             if (token.isNotBlank()) {
                 setValue("Bearer $token", forHTTPHeaderField = "Authorization")
