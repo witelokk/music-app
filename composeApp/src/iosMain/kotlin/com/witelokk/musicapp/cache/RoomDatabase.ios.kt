@@ -2,6 +2,7 @@ package com.witelokk.musicapp.cache
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
@@ -15,6 +16,7 @@ fun getRoomDatabaseBuilder(): RoomDatabase.Builder<MusicAppDatabase> {
     )
 }
 
+@OptIn(ExperimentalForeignApi::class)
 private fun cachesDirectory(): String {
     val cachesDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
         directory = NSCachesDirectory,

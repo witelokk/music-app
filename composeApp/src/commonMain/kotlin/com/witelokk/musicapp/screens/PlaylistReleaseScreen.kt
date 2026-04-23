@@ -68,6 +68,8 @@ fun PlaylistReleaseScreen(
     viewModel: PlaylistReleaseScreenViewModel = koinInject()
 ) {
     val state by viewModel.state.collectAsState()
+    val loadFailedMessage = stringResource(Res.string.load_failed)
+    val connectionFailedMessage = stringResource(Res.string.connection_failed)
 
     val scope = rememberCoroutineScope()
 
@@ -191,9 +193,9 @@ fun PlaylistReleaseScreen(
             ) {
                 CircularProgressIndicator()
             }
-        } else if (state.isError) {
+        } else if (state.isError && !state.hasCachedFeed) {
             RequestFailedContent(
-                message = stringResource(Res.string.load_failed),
+                message = if (state.isConnectionError) connectionFailedMessage else loadFailedMessage,
                 retry = {
                     if (route.type == "playlist") viewModel.loadPlaylist(route.id)
                     else viewModel.loadRelease(route.id)

@@ -19,11 +19,15 @@ import com.witelokk.musicapp.cache.FavoritesCacheImpl
 import com.witelokk.musicapp.cache.HomeCache
 import com.witelokk.musicapp.cache.HomeCacheImpl
 import com.witelokk.musicapp.cache.MusicAppDatabase
+import com.witelokk.musicapp.cache.PlaylistCache
+import com.witelokk.musicapp.cache.PlaylistCacheImpl
 import com.witelokk.musicapp.cache.getRoomDatabase
 import com.witelokk.musicapp.repository.FavoritesRepository
 import com.witelokk.musicapp.repository.FavoritesRepositoryImpl
 import com.witelokk.musicapp.repository.HomeRepository
 import com.witelokk.musicapp.repository.HomeRepositoryImpl
+import com.witelokk.musicapp.repository.PlaylistsRepository
+import com.witelokk.musicapp.repository.PlaylistsRepositoryImpl
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
@@ -159,6 +163,14 @@ val appModule = module {
 
     factory<HomeRepository> {
         HomeRepositoryImpl(get(), get())
+    }
+
+    factory<PlaylistCache> {
+        PlaylistCacheImpl(get(), get())
+    }
+
+    factory<PlaylistsRepository> {
+        PlaylistsRepositoryImpl(get(), get())
     }
 
     factory {
