@@ -1,5 +1,7 @@
 package com.witelokk.musicapp
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -9,21 +11,28 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
+import coil3.ImageLoader
+import coil3.toBitmap
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import com.witelokk.musicapp.auth.AuthStore
-import java.net.HttpURLConnection
-import java.net.URL
-import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 @OptIn(UnstableApi::class)
 class Media3PlaybackEngine(
+    private val context: Context,
     private val mediaControllerFuture: ListenableFuture<MediaController>,
-    private val authStore: AuthStore,
+    private val imageLoader: ImageLoader,
 ) : PlaybackEngine {
 
     private lateinit var controller: MediaController
     private var listener: PlaybackEngineListener? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Volatile
     private var artworkRequestId = 0
@@ -101,30 +110,24 @@ class Media3PlaybackEngine(
     private fun loadArtwork(item: PlaybackItem, requestId: Int) {
         val artworkUrl = item.artworkUrl ?: return
 
-        thread(name = "artwork-loader-${item.id}") {
+        scope.launch {
             val artworkBytes = runCatching {
-                val connection = (URL(artworkUrl).openConnection() as HttpURLConnection).apply {
-                    requestMethod = "GET"
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                    val token = authStore.currentAccessToken
-                    if (token.isNotBlank()) {
-                        setRequestProperty("Authorization", "Bearer $token")
-                    }
-                }
-
-                try {
-                    connection.inputStream.use { input -> input.readBytes() }
-                } finally {
-                    connection.disconnect()
-                }
+                val result = imageLoader.execute(
+                    ImageRequest.Builder(context)
+                        .data(artworkUrl)
+                        .build()
+                )
+                (result as? SuccessResult)
+                    ?.image
+                    ?.let { image -> image.toBitmap(image.width, image.height) }
+                    ?.toByteArray()
             }.getOrElse { error ->
                 loge(
                     "ANDROID_PLAYBACK_ENGINE",
                     "Failed to load artwork for $artworkUrl: ${error.message}"
                 )
                 null
-            } ?: return@thread
+            } ?: return@launch
 
             Handler(Looper.getMainLooper()).post {
                 if (!::controller.isInitialized || requestId != artworkRequestId) return@post
@@ -136,6 +139,13 @@ class Media3PlaybackEngine(
                     item.toMediaItem(artworkBytes)
                 )
             }
+        }
+    }
+
+    private fun Bitmap.toByteArray(): ByteArray {
+        return ByteArrayOutputStream().use { output ->
+            compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.toByteArray()
         }
     }
 

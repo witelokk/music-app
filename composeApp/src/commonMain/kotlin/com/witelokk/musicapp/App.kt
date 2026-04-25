@@ -17,7 +17,6 @@ import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.setSingletonImageLoaderFactory
-import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.witelokk.musicapp.auth.AuthStore
 import com.witelokk.musicapp.screens.ArtistScreen
 import com.witelokk.musicapp.screens.ArtistScreenRoute
@@ -37,7 +36,6 @@ import com.witelokk.musicapp.screens.SettingsScreen
 import com.witelokk.musicapp.screens.WelcomeScreen
 import com.witelokk.musicapp.ui.theme.MusicAppTheme
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
-import io.ktor.client.HttpClient
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -45,19 +43,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun App(
     themeViewModel: ThemeViewModel = koinViewModel(),
-    httpClient: HttpClient = koinInject(),
+    imageLoader: ImageLoader = koinInject(),
     authStore: AuthStore = koinInject(),
 ) {
     val theme by themeViewModel.theme.collectAsState()
     val authState by authStore.state.collectAsState()
 
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .components {
-                add(KtorNetworkFetcherFactory(httpClient))
-            }
-            .build()
-    }
+    setSingletonImageLoaderFactory { imageLoader }
 
     val navController = rememberNavController()
     var wasAuthorized by remember { mutableStateOf(authState.isAuthorized) }
