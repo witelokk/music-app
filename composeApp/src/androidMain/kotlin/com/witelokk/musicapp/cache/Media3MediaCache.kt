@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @UnstableApi
-class AndroidMediaCache(
+class Media3MediaCache(
     private val context: Context,
     private val downloadManager: DownloadManager,
 ) : MediaCache {

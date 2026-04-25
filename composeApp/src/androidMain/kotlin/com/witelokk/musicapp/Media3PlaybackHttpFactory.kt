@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
-class AndroidPlaybackHttpFactory(
+class Media3PlaybackHttpFactory(
     authStore: AuthStore,
 ) {
     val factory = DefaultHttpDataSource.Factory()

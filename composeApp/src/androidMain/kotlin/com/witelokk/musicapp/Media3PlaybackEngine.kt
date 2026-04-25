@@ -17,7 +17,7 @@ import java.net.URL
 import kotlin.concurrent.thread
 
 @OptIn(UnstableApi::class)
-class AndroidPlaybackEngine(
+class Media3PlaybackEngine(
     private val mediaControllerFuture: ListenableFuture<MediaController>,
     private val authStore: AuthStore,
 ) : PlaybackEngine {

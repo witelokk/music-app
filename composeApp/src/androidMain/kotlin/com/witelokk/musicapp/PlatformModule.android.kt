@@ -17,7 +17,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
-import com.witelokk.musicapp.cache.AndroidMediaCache
+import com.witelokk.musicapp.cache.Media3MediaCache
 import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.cache.MusicAppDatabase
 import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
@@ -50,7 +50,7 @@ actual val platformModule = module {
     }
 
     single {
-        AndroidPlaybackHttpFactory(get())
+        Media3PlaybackHttpFactory(get())
     }
 
     @UnstableApi
@@ -69,7 +69,7 @@ actual val platformModule = module {
             get(),
             StandaloneDatabaseProvider(get()),
             get(),
-            get<AndroidPlaybackHttpFactory>().factory,
+            get<Media3PlaybackHttpFactory>().factory,
             Executors.newFixedThreadPool(3)
         )
         downloadManager
@@ -79,7 +79,7 @@ actual val platformModule = module {
     single {
         val cacheDataSourceFactory = CacheDataSource.Factory()
             .setCache(get())
-            .setUpstreamDataSourceFactory(get<AndroidPlaybackHttpFactory>().factory)
+            .setUpstreamDataSourceFactory(get<Media3PlaybackHttpFactory>().factory)
             .setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
 
@@ -92,12 +92,12 @@ actual val platformModule = module {
     }
 
     single<PlaybackEngine> {
-        AndroidPlaybackEngine(get(), get())
+        Media3PlaybackEngine(get(), get())
     }
 
     @UnstableApi
     single<MediaCache> {
-        AndroidMediaCache(get(), get())
+        Media3MediaCache(get(), get())
     }
 
     single<GoogleSignIn> {

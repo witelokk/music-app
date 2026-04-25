@@ -40,7 +40,7 @@ import platform.UIKit.UIImage
 import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
-class IosPlaybackEngine(
+class AvPlayerPlaybackEngine(
     private val authStore: AuthStore
 ) : PlaybackEngine {
     private var listener: PlaybackEngineListener? = null
