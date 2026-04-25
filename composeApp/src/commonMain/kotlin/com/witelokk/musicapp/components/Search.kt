@@ -44,9 +44,12 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.SearchResultItem
+import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.data.Playlist
+import kotlinx.coroutines.flow.StateFlow
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -135,14 +138,20 @@ fun SearchResults(
     modifier: Modifier = Modifier,
     itemModifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
-    filter: String? = null
+    filter: String? = null,
+    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
 ) {
     LazyColumn(modifier = modifier) {
         items(results) {
             if (it.type == SearchResultItem.Type.song && (filter == "Songs" || filter == null)) {
+                val song = it.song!!
+                val isDownloaded by (songDownloadState?.invoke(song))?.collectAsStateWithLifecycle(false)
+                    ?: rememberSaveable(song.id) { mutableStateOf(false) }
+
                 SongListItem(
-                    it.song!!,
+                    song,
                     modifier = itemModifier.clickable { onResultClick(it) },
+                    isDownloaded = isDownloaded,
                 )
             } else if (it.type == SearchResultItem.Type.artist && (filter == "Artists" || filter == null)) {
                 ArtistListItem(
@@ -169,6 +178,7 @@ fun SearchSuccessfulContent(
     results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
+    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
 ) {
     val filters = listOf("Playlists", "Songs", "Artists")
     val selected = List(filters.size) { rememberSaveable { mutableStateOf(false) } }
@@ -211,7 +221,8 @@ fun SearchSuccessfulContent(
             results,
             filter = filter,
             itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            onResultClick = onResultClick
+            onResultClick = onResultClick,
+            songDownloadState = songDownloadState
         )
     }
 }
@@ -222,6 +233,7 @@ fun SearchHistoryContent(
     modifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
     onClearClick: () -> Unit = {},
+    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
 ) {
     if (results.isEmpty()) {
         return
@@ -232,7 +244,8 @@ fun SearchHistoryContent(
         SearchResults(
             results.reversed(),
             itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            onResultClick = onResultClick
+            onResultClick = onResultClick,
+            songDownloadState = songDownloadState
         )
         TextButton(onClearClick) {
             Text(stringResource(Res.string.clear), modifier = Modifier.padding(start = 8.dp))

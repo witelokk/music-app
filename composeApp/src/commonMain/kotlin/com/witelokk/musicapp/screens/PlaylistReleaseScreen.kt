@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
@@ -218,10 +219,13 @@ fun PlaylistReleaseScreen(
                 }
                 LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                     items(state.songs, key = { it.id }) { song ->
+                        val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
                             isPlaying = state.playerState?.playing ?: false,
+                            isDownloaded = isCached,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

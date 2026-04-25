@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
@@ -103,10 +104,13 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
             }
             LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                 itemsIndexed(state.songs, key = { _, song -> song.id }) { i, song ->
+                    val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+
                     SongListItem(
                         song = song,
                         isActive = i == 0,
                         isPlaying = state.playerState?.playing ?: false,
+                        isDownloaded = isCached,
                         onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }

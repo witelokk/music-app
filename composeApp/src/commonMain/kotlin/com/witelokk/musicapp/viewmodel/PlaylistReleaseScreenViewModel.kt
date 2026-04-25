@@ -7,6 +7,7 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.apis.ReleasesApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
 import com.witelokk.musicapp.repository.PlaylistsRepository
@@ -36,7 +37,8 @@ class PlaylistReleaseScreenViewModel(
     private val playlistsRepository: PlaylistsRepository,
     favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer,
-) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
+    private val mediaCache: MediaCache,
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
     private val _state =
         MutableStateFlow(PlaylistReleaseScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()

@@ -38,6 +38,7 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.DownloadDone
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -122,6 +123,7 @@ fun SongListItem(
     showDuration: Boolean = false,
     isActive: Boolean = false,
     isPlaying: Boolean = false,
+    isDownloaded: Boolean = false,
     onFavoriteClick: () -> Unit = {},
     dropdownMenuItems: @Composable (MutableState<Boolean>) -> Unit = {},
 ) {
@@ -181,6 +183,9 @@ fun SongListItem(
                 )
             }
         }
+
+        if (isDownloaded)
+            Icon(Icons.Default.DownloadDone, contentDescription = "Cached")
 
         IconButton(onClick = { menuExpanded = true }, modifier = Modifier.offset(x = 16.dp)) {
             Icon(Icons.Default.MoreVert, "More")

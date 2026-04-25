@@ -11,6 +11,7 @@ import com.witelokk.musicapp.api.models.FollowArtistRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,8 +43,9 @@ class ArtistScreenViewModel(
     private val playlistsApi: PlaylistsApi,
     private val followingsApi: FollowingsApi,
     private val musicPlayer: MusicPlayer,
+    private val mediaCache: MediaCache,
     favoritesApi: FavoritesApi,
-) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
     private val _state = MutableStateFlow(ArtistScreenState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
 

@@ -14,6 +14,7 @@ import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.PlaylistsSummary
 import com.witelokk.musicapp.api.models.SearchResponse
 import com.witelokk.musicapp.api.models.SearchResultItem
+import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
 import com.witelokk.musicapp.repository.HomeRepository
@@ -53,7 +54,8 @@ class HomeScreenViewModel(
     private val authApi: CompatAuthApi,
     favoritesApi: FavoritesApi,
     musicPlayer: MusicPlayer,
-) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
+    private val mediaCache: MediaCache,
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
     private val _state = MutableStateFlow(HomeViewModelState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
 

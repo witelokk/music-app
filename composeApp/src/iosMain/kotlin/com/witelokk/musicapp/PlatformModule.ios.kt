@@ -1,11 +1,14 @@
 package com.witelokk.musicapp
 
 import androidx.room.RoomDatabase
+import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.cache.MusicAppDatabase
 import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -39,6 +42,16 @@ actual val platformModule = module {
 
     single<PlaybackEngine> {
         IosPlaybackEngine(get())
+    }
+
+    single<MediaCache> {
+        object: MediaCache {
+            override fun cache(url: String) {}
+
+            override fun isCached(url: String): StateFlow<Boolean> {
+                return MutableStateFlow(false)
+            }
+        }
     }
 
     single<GoogleSignIn> {

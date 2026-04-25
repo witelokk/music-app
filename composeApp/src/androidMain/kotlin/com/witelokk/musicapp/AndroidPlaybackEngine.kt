@@ -24,6 +24,7 @@ class AndroidPlaybackEngine(
 
     private lateinit var controller: MediaController
     private var listener: PlaybackEngineListener? = null
+
     @Volatile
     private var artworkRequestId = 0
 
@@ -118,7 +119,10 @@ class AndroidPlaybackEngine(
                     connection.disconnect()
                 }
             }.getOrElse { error ->
-                loge("ANDROID_PLAYBACK_ENGINE", "Failed to load artwork for $artworkUrl: ${error.message}")
+                loge(
+                    "ANDROID_PLAYBACK_ENGINE",
+                    "Failed to load artwork for $artworkUrl: ${error.message}"
+                )
                 null
             } ?: return@thread
 

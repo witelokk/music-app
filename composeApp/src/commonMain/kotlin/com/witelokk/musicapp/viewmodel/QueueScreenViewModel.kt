@@ -7,6 +7,7 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.FavoriteSongRequest
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,8 @@ class QueueScreenViewModel(
     private val favoritesApi: FavoritesApi,
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi,
-) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi) {
+    private val mediaCache: MediaCache,
+) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
     private val _state =
         MutableStateFlow(
             QueueScreenState(

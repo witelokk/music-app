@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.witelokk.musicapp.add
@@ -219,6 +220,8 @@ fun ArtistScreen(
                     items(
                         state.artist?.popularSongs?.songs ?: listOf(),
                         span = { GridItemSpan(2) }) { song ->
+                        val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+
                         SongListItem(
                             song = song,
                             showDuration = true,
@@ -232,6 +235,7 @@ fun ArtistScreen(
                             },
                             isActive = (song.id == state.playerState?.currentSong?.id),
                             isPlaying = state.playerState?.playing ?: false,
+                            isDownloaded = isCached,
                         ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.add_to_playlist)) },

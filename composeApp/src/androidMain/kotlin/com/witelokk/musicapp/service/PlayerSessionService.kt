@@ -1,7 +1,6 @@
-package com.witelokk.musicapp
+package com.witelokk.musicapp.service
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -18,7 +17,6 @@ import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import org.koin.android.ext.android.inject
-
 
 class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
     companion object {
@@ -51,7 +49,7 @@ class PlayerSessionService : MediaSessionService(), MediaSession.Callback {
 
     override fun onCreate() {
         super.onCreate()
-        audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
         initializeSessionAndPlayer()
     }
 

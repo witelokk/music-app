@@ -404,9 +404,11 @@ private fun SearchContent(
             }
         }, onClearClick = {
             viewModel.clearSearchHistory()
-        })
+        }, songDownloadState = viewModel::isSongCached)
     } else {
-        SearchSuccessfulContent(state.searchResults?.results ?: listOf(), onResultClick = {
+        SearchSuccessfulContent(
+            state.searchResults?.results ?: listOf(),
+            onResultClick = {
             viewModel.addToSearchHistory(it)
             when (it.type) {
                 SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
@@ -425,6 +427,8 @@ private fun SearchContent(
                     )
                 )
             }
-        })
+        },
+            songDownloadState = viewModel::isSongCached
+        )
     }
 }
