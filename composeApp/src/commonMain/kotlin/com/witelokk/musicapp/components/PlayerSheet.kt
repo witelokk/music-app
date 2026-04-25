@@ -1,6 +1,5 @@
 package com.witelokk.musicapp.components
 
-//import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn

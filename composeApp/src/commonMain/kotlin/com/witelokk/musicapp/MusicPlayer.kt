@@ -43,6 +43,17 @@ class MusicPlayer(
                         _state.update { it?.copy(playing = false) }
                     }
                 }
+
+                override fun onCurrentItemChanged(index: Int) {
+                    if (index < 0) return
+
+                    val snapshot = queueManager.onCurrentItemChanged(index)
+                    publishState(
+                        snapshot = snapshot,
+                        playing = playbackEngine.isPlaying,
+                        currentPosition = playbackEngine.currentPositionMs.milliseconds
+                    )
+                }
             }
         )
     }
@@ -70,7 +81,10 @@ class MusicPlayer(
             return
         }
 
-        playbackEngine.load(currentSong.toPlaybackItem())
+        playbackEngine.loadQueue(
+            items = snapshot.queue.map { it.toPlaybackItem() },
+            startIndex = snapshot.currentSongIndex
+        )
         playbackEngine.play()
 
         publishState(
@@ -82,9 +96,9 @@ class MusicPlayer(
 
     fun playSongInQueue(index: Int) {
         val snapshot = queueManager.playAt(index)
-        val currentSong = snapshot.currentSong ?: return
+        snapshot.currentSong ?: return
 
-        playbackEngine.load(currentSong.toPlaybackItem())
+        playbackEngine.seekToQueueItem(snapshot.currentSongIndex)
         playbackEngine.play()
 
         publishState(
@@ -96,9 +110,9 @@ class MusicPlayer(
 
     fun seekToNext() {
         val snapshot = queueManager.moveToNext()
-        val currentSong = snapshot.currentSong ?: return
+        snapshot.currentSong ?: return
 
-        playbackEngine.load(currentSong.toPlaybackItem())
+        playbackEngine.seekToNextItem()
         playbackEngine.play()
 
         publishState(
@@ -110,9 +124,9 @@ class MusicPlayer(
 
     fun seekToPrevious() {
         val snapshot = queueManager.moveToPrevious()
-        val currentSong = snapshot.currentSong ?: return
+        snapshot.currentSong ?: return
 
-        playbackEngine.load(currentSong.toPlaybackItem())
+        playbackEngine.seekToPreviousItem()
         playbackEngine.play()
 
         publishState(
@@ -126,8 +140,11 @@ class MusicPlayer(
         val result = queueManager.addNext(song)
 
         if (result.shouldStartNewQueue) {
-            val currentSong = result.snapshot.currentSong ?: return
-            playbackEngine.load(currentSong.toPlaybackItem())
+            result.snapshot.currentSong ?: return
+            playbackEngine.loadQueue(
+                items = result.snapshot.queue.map { it.toPlaybackItem() },
+                startIndex = result.snapshot.currentSongIndex
+            )
 
             publishState(
                 snapshot = result.snapshot,
@@ -137,6 +154,11 @@ class MusicPlayer(
             return
         }
 
+        syncPlaybackQueue(
+            snapshot = result.snapshot,
+            playing = _state.value?.playing ?: false,
+            currentPosition = _state.value?.currentPosition ?: Duration.ZERO
+        )
         publishState(result.snapshot)
     }
 
@@ -155,18 +177,25 @@ class MusicPlayer(
         if (removingCurrent) {
             val currentSong = result.snapshot.currentSong
             if (currentSong != null) {
-                playbackEngine.load(currentSong.toPlaybackItem())
-                if (currentState?.playing == true) {
-                    playbackEngine.play()
-                }
+                syncPlaybackQueue(
+                    snapshot = result.snapshot,
+                    playing = currentState.playing,
+                    currentPosition = Duration.ZERO
+                )
                 publishState(
                     snapshot = result.snapshot,
-                    playing = currentState?.playing ?: false,
+                    playing = currentState.playing,
                     currentPosition = Duration.ZERO
                 )
                 return
             }
         }
+
+        syncPlaybackQueue(
+            snapshot = result.snapshot,
+            playing = currentState?.playing ?: false,
+            currentPosition = currentState?.currentPosition ?: Duration.ZERO
+        )
 
         publishState(
             snapshot = result.snapshot,
@@ -179,12 +208,11 @@ class MusicPlayer(
         val previous = _state.value
         val snapshot = queueManager.updateSong(song)
 
-        if (snapshot.currentSong?.id == song.id) {
-            playbackEngine.load(song.toPlaybackItem())
-            if (previous?.playing == true) {
-                playbackEngine.play()
-            }
-        }
+        syncPlaybackQueue(
+            snapshot = snapshot,
+            playing = previous?.playing ?: false,
+            currentPosition = previous?.currentPosition ?: Duration.ZERO
+        )
 
         publishState(
             snapshot = snapshot,
@@ -212,6 +240,24 @@ class MusicPlayer(
             nextTrackAvailable = snapshot.nextTrackAvailable,
             queue = snapshot.queue,
         )
+    }
+
+    private fun syncPlaybackQueue(
+        snapshot: QueueSnapshot,
+        playing: Boolean,
+        currentPosition: Duration,
+    ) {
+        if (snapshot.currentSong == null) return
+
+        playbackEngine.loadQueue(
+            items = snapshot.queue.map { it.toPlaybackItem() },
+            startIndex = snapshot.currentSongIndex,
+            startPositionMs = currentPosition.inWholeMilliseconds
+        )
+
+        if (playing) {
+            playbackEngine.play()
+        }
     }
 }
 

@@ -2,7 +2,6 @@ package com.witelokk.musicapp
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.OptIn
@@ -29,10 +28,10 @@ class Media3PlaybackEngine(
     private val mediaControllerFuture: ListenableFuture<MediaController>,
     private val imageLoader: ImageLoader,
 ) : PlaybackEngine {
-
     private lateinit var controller: MediaController
     private var listener: PlaybackEngineListener? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var playlistItems: List<PlaybackItem> = emptyList()
 
     @Volatile
     private var artworkRequestId = 0
@@ -64,6 +63,14 @@ class Media3PlaybackEngine(
                 listener?.onIsPlayingChanged(isPlaying)
             }
 
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                val currentIndex = controller.currentMediaItemIndex
+                if (currentIndex !in playlistItems.indices) return
+
+                loadArtwork(playlistItems[currentIndex], ++artworkRequestId)
+                listener?.onCurrentItemChanged(currentIndex)
+            }
+
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     listener?.onPlaybackEnded()
@@ -78,13 +85,21 @@ class Media3PlaybackEngine(
     override val currentPositionMs: Long
         get() = if (::controller.isInitialized) controller.currentPosition else 0L
 
-    override fun load(item: PlaybackItem) {
-        val requestId = ++artworkRequestId
-        controller.setMediaItem(item.toMediaItem())
-        controller.prepare()
-        controller.seekTo(0)
+    override fun loadQueue(items: List<PlaybackItem>, startIndex: Int, startPositionMs: Long) {
+        playlistItems = items
 
-        loadArtwork(item, requestId)
+        if (items.isEmpty()) {
+            controller.stop()
+            return
+        }
+
+        val safeIndex = startIndex.coerceIn(items.indices)
+        val requestId = ++artworkRequestId
+
+        controller.setMediaItems(items.map { it.toMediaItem() }, safeIndex, startPositionMs)
+        controller.prepare()
+
+        loadArtwork(items[safeIndex], requestId)
     }
 
     override fun play() {
@@ -101,6 +116,21 @@ class Media3PlaybackEngine(
 
     override fun seekTo(positionMs: Long) {
         controller.seekTo(positionMs)
+    }
+
+    override fun seekToQueueItem(index: Int, positionMs: Long) {
+        if (index !in playlistItems.indices) return
+        controller.seekTo(index, positionMs)
+    }
+
+    override fun seekToNextItem() {
+        if (!controller.hasNextMediaItem()) return
+        controller.seekToNextMediaItem()
+    }
+
+    override fun seekToPreviousItem() {
+        if (!controller.hasPreviousMediaItem()) return
+        controller.seekToPreviousMediaItem()
     }
 
     override fun setListener(listener: PlaybackEngineListener) {

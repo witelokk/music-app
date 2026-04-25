@@ -20,6 +20,7 @@ import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.setActive
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
+import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVURLAsset
 import platform.AVFoundation.addPeriodicTimeObserverForInterval
 import platform.AVFoundation.currentItem
@@ -27,10 +28,14 @@ import platform.AVFoundation.currentTime
 import platform.AVFoundation.duration
 import platform.AVFoundation.pause
 import platform.AVFoundation.play
+import platform.AVFoundation.replaceCurrentItemWithPlayerItem
 import platform.AVFoundation.removeTimeObserver
 import platform.AVFoundation.seekToTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
+import platform.Foundation.NSNotification
+import platform.Foundation.NSNotificationCenter
+import platform.Foundation.NSOperationQueue
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.MediaPlayer.MPChangePlaybackPositionCommandEvent
@@ -45,6 +50,7 @@ import platform.MediaPlayer.MPNowPlayingInfoPropertyPlaybackRate
 import platform.MediaPlayer.MPRemoteCommandCenter
 import platform.MediaPlayer.MPRemoteCommandEvent
 import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
+import platform.MediaPlayer.MPRemoteCommandHandlerStatusCommandFailed
 import platform.UIKit.UIImage
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
@@ -59,7 +65,10 @@ class AvPlayerPlaybackEngine(
     private var currentItem: PlaybackItem? = null
     private var player: AVPlayer? = null
     private var timeObserver: Any? = null
+    private var playbackEndObserver: Any? = null
     private var artwork: MPMediaItemArtwork? = null
+    private var playlistItems: List<PlaybackItem> = emptyList()
+    private var currentIndex: Int = -1
 
     private var playing = false
     private var positionMs = 0L
@@ -74,33 +83,24 @@ class AvPlayerPlaybackEngine(
     override val currentPositionMs: Long
         get() = positionMs
 
-    override fun load(item: PlaybackItem) {
-        currentItem = item
-        positionMs = 0L
-        playing = false
+    override fun loadQueue(items: List<PlaybackItem>, startIndex: Int, startPositionMs: Long) {
+        playlistItems = items
 
-        clearTimeObserver()
+        if (items.isEmpty()) {
+            stop()
+            currentIndex = -1
+            currentItem = null
+            updateRemoteCommandAvailability()
+            return
+        }
 
-        player?.pause()
-        player = null
-        artwork = null
-
-        configureAudioSession()
-        configureRemoteCommands()
-
-        val url = NSURL.URLWithString(item.url) ?: return
-        val playerItem = createPlayerItem(url)
-        val newPlayer = AVPlayer(playerItem)
-        player = newPlayer
-
-        val requestId = ++artworkRequestId
-        loadArtwork(item, requestId)
-
-        attachTimeObserver(newPlayer)
-        updateNowPlaying()
-
-        listener?.onPositionChanged(0L)
-        listener?.onIsPlayingChanged(false)
+        val safeIndex = startIndex.coerceIn(items.indices)
+        loadPlaylistItem(
+            index = safeIndex,
+            startPositionMs = startPositionMs,
+            autoplay = false,
+            notifyItemChanged = false
+        )
     }
 
     override fun play() {
@@ -137,6 +137,36 @@ class AvPlayerPlaybackEngine(
         seekInternal(positionMs)
         updateNowPlaying()
         listener?.onPositionChanged(this.positionMs)
+    }
+
+    override fun seekToQueueItem(index: Int, positionMs: Long) {
+        if (index !in playlistItems.indices) return
+        loadPlaylistItem(
+            index = index,
+            startPositionMs = positionMs,
+            autoplay = playing,
+            notifyItemChanged = true
+        )
+    }
+
+    override fun seekToNextItem() {
+        if (currentIndex !in 0 until playlistItems.lastIndex) return
+        loadPlaylistItem(
+            index = currentIndex + 1,
+            startPositionMs = 0L,
+            autoplay = true,
+            notifyItemChanged = true
+        )
+    }
+
+    override fun seekToPreviousItem() {
+        if (currentIndex <= 0) return
+        loadPlaylistItem(
+            index = currentIndex - 1,
+            startPositionMs = 0L,
+            autoplay = true,
+            notifyItemChanged = true
+        )
     }
 
     override fun setListener(listener: PlaybackEngineListener) {
@@ -213,6 +243,13 @@ class AvPlayerPlaybackEngine(
         timeObserver = null
     }
 
+    private fun clearPlaybackEndObserver() {
+        playbackEndObserver?.let { observer ->
+            NSNotificationCenter.defaultCenter.removeObserver(observer)
+        }
+        playbackEndObserver = null
+    }
+
     private fun configureAudioSession() {
         val session = AVAudioSession.sharedInstance()
         session.setCategory(AVAudioSessionCategoryPlayback, error = null)
@@ -235,12 +272,32 @@ class AvPlayerPlaybackEngine(
             MPRemoteCommandHandlerStatusSuccess
         }
 
+        center.nextTrackCommand.addTargetWithHandler { _: MPRemoteCommandEvent? ->
+            if (currentIndex in 0 until playlistItems.lastIndex) {
+                seekToNextItem()
+                MPRemoteCommandHandlerStatusSuccess
+            } else {
+                MPRemoteCommandHandlerStatusCommandFailed
+            }
+        }
+
+        center.previousTrackCommand.addTargetWithHandler { _: MPRemoteCommandEvent? ->
+            if (currentIndex > 0) {
+                seekToPreviousItem()
+                MPRemoteCommandHandlerStatusSuccess
+            } else {
+                MPRemoteCommandHandlerStatusCommandFailed
+            }
+        }
+
         center.changePlaybackPositionCommand.addTargetWithHandler { event: MPRemoteCommandEvent? ->
             val changeEvent = event as? MPChangePlaybackPositionCommandEvent
             val seconds = changeEvent?.positionTime ?: 0.0
             seekTo((seconds * 1000.0).toLong())
             MPRemoteCommandHandlerStatusSuccess
         }
+
+        updateRemoteCommandAvailability()
     }
 
     private fun updateNowPlaying() {
@@ -273,6 +330,88 @@ class AvPlayerPlaybackEngine(
         }
 
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = info
+    }
+
+    private fun updateRemoteCommandAvailability() {
+        val center = MPRemoteCommandCenter.sharedCommandCenter()
+        center.nextTrackCommand.enabled = currentIndex in 0 until playlistItems.lastIndex
+        center.previousTrackCommand.enabled = currentIndex > 0
+    }
+
+    private fun loadPlaylistItem(
+        index: Int,
+        startPositionMs: Long,
+        autoplay: Boolean,
+        notifyItemChanged: Boolean,
+    ) {
+        val item = playlistItems.getOrNull(index) ?: return
+
+        currentIndex = index
+        currentItem = item
+        positionMs = startPositionMs.coerceAtLeast(0L)
+        playing = autoplay
+        artwork = null
+
+        configureAudioSession()
+        configureRemoteCommands()
+
+        val url = NSURL.URLWithString(item.url) ?: return
+        val playerItem = createPlayerItem(url)
+
+        val activePlayer = player ?: AVPlayer(playerItem).also { newPlayer ->
+            player = newPlayer
+            attachTimeObserver(newPlayer)
+        }
+        activePlayer.pause()
+        activePlayer.replaceCurrentItemWithPlayerItem(playerItem)
+        observePlaybackEnd(playerItem)
+
+        seekInternal(positionMs)
+
+        if (autoplay) {
+            activePlayer.play()
+        }
+
+        val requestId = ++artworkRequestId
+        loadArtwork(item, requestId)
+        updateRemoteCommandAvailability()
+        updateNowPlaying()
+
+        listener?.onPositionChanged(positionMs)
+        listener?.onIsPlayingChanged(autoplay)
+        if (notifyItemChanged) {
+            listener?.onCurrentItemChanged(index)
+        }
+    }
+
+    private fun observePlaybackEnd(playerItem: AVPlayerItem) {
+        clearPlaybackEndObserver()
+        playbackEndObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+            name = AVPlayerItemDidPlayToEndTimeNotification,
+            `object` = playerItem,
+            queue = NSOperationQueue.mainQueue
+        ) { _: NSNotification? ->
+            handlePlaybackEnded()
+        }
+    }
+
+    private fun handlePlaybackEnded() {
+        if (currentIndex in 0 until playlistItems.lastIndex) {
+            loadPlaylistItem(
+                index = currentIndex + 1,
+                startPositionMs = 0L,
+                autoplay = true,
+                notifyItemChanged = true
+            )
+            return
+        }
+
+        playing = false
+        positionMs = 0L
+        seekInternal(0L)
+        updateNowPlaying()
+        listener?.onIsPlayingChanged(false)
+        listener?.onPositionChanged(0L)
     }
 
     private fun loadArtwork(item: PlaybackItem, requestId: Int) {

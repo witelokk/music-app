@@ -218,12 +218,16 @@ fun Player(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { onSeekToPrevious() }) {
+            IconButton(onClick = { onSeekToPrevious() }, enabled = playerState.previousTrackAvailable) {
                 Icon(
                     Icons.Default.SkipPrevious,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = if (playerState.previousTrackAvailable) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    }
                 )
             }
             Spacer(modifier = Modifier.width(24.dp))
@@ -238,12 +242,16 @@ fun Player(
                 )
             }
             Spacer(modifier = Modifier.width(24.dp))
-            IconButton(onClick = { onSeekToNext() }) {
+            IconButton(onClick = { onSeekToNext() }, enabled = playerState.nextTrackAvailable) {
                 Icon(
                     Icons.Default.SkipNext,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = if (playerState.nextTrackAvailable) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    }
                 )
             }
         }
