@@ -1,10 +1,15 @@
 package com.witelokk.musicapp
 
 import androidx.room.RoomDatabase
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.annotation.ExperimentalCoilApi
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.cache.MusicAppDatabase
 import com.witelokk.musicapp.cache.NoOpMediaCache
 import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -14,7 +19,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalCoilApi::class)
 actual val platformModule = module {
     single<HttpClientEngineFactory<*>> {
         Darwin
@@ -39,8 +44,16 @@ actual val platformModule = module {
         getRoomDatabaseBuilder()
     }
 
+    single<ImageLoader> {
+        ImageLoader.Builder(PlatformContext.INSTANCE)
+            .components {
+                add(KtorNetworkFetcherFactory(get<HttpClient>()))
+            }
+            .build()
+    }
+
     single<PlaybackEngine> {
-        AvPlayerPlaybackEngine(get())
+        AvPlayerPlaybackEngine(get(), get())
     }
 
     single<MediaCache> {

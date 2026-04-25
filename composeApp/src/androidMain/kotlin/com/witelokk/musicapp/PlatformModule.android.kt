@@ -8,7 +8,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
@@ -62,6 +61,7 @@ actual val platformModule = module {
         createImageLoader(get(), get())
     }
 
+    @UnstableApi
     single<Cache> {
         val cache = SimpleCache(
             File(get<Context>().filesDir, "media"),
@@ -103,6 +103,7 @@ actual val platformModule = module {
         Media3PlaybackEngine(get(), get(), get())
     }
 
+    @UnstableApi
     single<MediaCache> {
         Media3MediaCache(get(), get())
     }

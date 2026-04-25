@@ -1,7 +1,20 @@
 package com.witelokk.musicapp
 
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.toBitmap
 import com.witelokk.musicapp.auth.AuthStore
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.jetbrains.skia.EncodedImageFormat
+import org.jetbrains.skia.Image
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.setActive
@@ -18,12 +31,8 @@ import platform.AVFoundation.removeTimeObserver
 import platform.AVFoundation.seekToTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
-import platform.Foundation.NSData
-import platform.Foundation.NSMutableURLRequest
-import platform.Foundation.NSURLConnection
+import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
-import platform.Foundation.sendSynchronousRequest
-import platform.Foundation.setValue
 import platform.MediaPlayer.MPChangePlaybackPositionCommandEvent
 import platform.MediaPlayer.MPMediaItemArtwork
 import platform.MediaPlayer.MPMediaItemPropertyArtist
@@ -37,11 +46,13 @@ import platform.MediaPlayer.MPRemoteCommandCenter
 import platform.MediaPlayer.MPRemoteCommandEvent
 import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
 import platform.UIKit.UIImage
+import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 
 @OptIn(ExperimentalForeignApi::class)
 class AvPlayerPlaybackEngine(
-    private val authStore: AuthStore
+    private val authStore: AuthStore,
+    private val imageLoader: ImageLoader,
 ) : PlaybackEngine {
     private var listener: PlaybackEngineListener? = null
 
@@ -53,6 +64,9 @@ class AvPlayerPlaybackEngine(
     private var playing = false
     private var positionMs = 0L
     private var remoteCommandsConfigured = false
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private var artworkRequestId = 0
 
     override val isPlaying: Boolean
         get() = playing
@@ -79,7 +93,8 @@ class AvPlayerPlaybackEngine(
         val newPlayer = AVPlayer(playerItem)
         player = newPlayer
 
-        artwork = loadArtwork(item)
+        val requestId = ++artworkRequestId
+        loadArtwork(item, requestId)
 
         attachTimeObserver(newPlayer)
         updateNowPlaying()
@@ -260,33 +275,50 @@ class AvPlayerPlaybackEngine(
         MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = info
     }
 
-    private fun loadArtwork(item: PlaybackItem): MPMediaItemArtwork? {
+    private fun loadArtwork(item: PlaybackItem, requestId: Int) {
         val artworkUrl = item.artworkUrl
-        if (artworkUrl.isNullOrBlank()) return null
+        if (artworkUrl.isNullOrBlank()) return
 
-        val nsUrl = NSURL.URLWithString(artworkUrl) ?: return null
-        val token = authStore.currentAccessToken
-        val request = NSMutableURLRequest.requestWithURL(nsUrl).apply {
-            if (token.isNotBlank()) {
-                setValue("Bearer $token", forHTTPHeaderField = "Authorization")
+        scope.launch {
+            val artwork = runCatching {
+                val result = imageLoader.execute(
+                    ImageRequest.Builder(PlatformContext.INSTANCE)
+                        .data(artworkUrl)
+                        .build()
+                )
+                (result as? SuccessResult)
+                    ?.image
+                    ?.toUIImage(item.id)
+                    ?.let { image ->
+                        MPMediaItemArtwork(
+                            boundsSize = image.size,
+                            requestHandler = { _ -> image }
+                        )
+                    }
+            }.getOrElse { error ->
+                loge("IOS_PLAYBACK_ENGINE", "Failed to load artwork for $artworkUrl: ${error.message}")
+                null
+            } ?: return@launch
+
+            dispatch_async(dispatch_get_main_queue()) {
+                if (requestId != artworkRequestId || currentItem?.id != item.id) return@dispatch_async
+                this@AvPlayerPlaybackEngine.artwork = artwork
+                updateNowPlaying()
             }
         }
+    }
 
-        return runCatching {
-            val data = NSURLConnection.sendSynchronousRequest(
-                request = request,
-                returningResponse = null,
-                error = null
-            ) ?: return null
-            val image = UIImage(data = data) ?: return null
+    private fun coil3.Image.toUIImage(cacheKey: String): UIImage? {
+        val bitmap = toBitmap(width, height)
+        val encodedBytes = Image.makeFromBitmap(bitmap)
+            .encodeToData(EncodedImageFormat.PNG)
+            ?.bytes
+            ?: return null
 
-            MPMediaItemArtwork(
-                boundsSize = image.size,
-                requestHandler = { _ -> image }
-            )
-        }.getOrElse { error ->
-            loge("IOS_PLAYBACK_ENGINE", "Failed to load artwork for $artworkUrl: ${error.message}")
-            null
+        val filePath = "${NSTemporaryDirectory()}coil-artwork-$cacheKey.png"
+        FileSystem.SYSTEM.write(filePath.toPath()) {
+            write(encodedBytes)
         }
+        return UIImage.imageWithContentsOfFile(filePath)
     }
 }
