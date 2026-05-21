@@ -47,6 +47,7 @@ fun App(
     themeViewModel: ThemeViewModel = koinViewModel(),
     imageLoader: ImageLoader = koinInject(),
     authStore: AuthStore = koinInject(),
+    offlineLibrarySync: OfflineLibrarySync = koinInject(),
 ) {
     val theme by themeViewModel.theme.collectAsState()
     val authState by authStore.state.collectAsState()
@@ -61,6 +62,9 @@ fun App(
             navController.navigate("welcome") {
                 popUpTo(0)
             }
+        }
+        if (authState.isAuthorized) {
+            offlineLibrarySync.sync()
         }
         wasAuthorized = authState.isAuthorized
     }

@@ -7,7 +7,6 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCache
-import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
 import com.witelokk.musicapp.repository.FavoritesRepository
@@ -15,7 +14,6 @@ import com.witelokk.musicapp.repository.PlaylistsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -78,13 +76,6 @@ class FavoritesScreenViewModel(
                         isError = false,
                         songs = favorites ?: it.songs,
                     )
-                }
-
-                // cache favorite songs
-                favorites?.forEach { song ->
-                    if (mediaCache.getCacheState(song.streamUrl).first() == MediaCacheState.NOT_CACHED) {
-                        mediaCache.cache(song.streamUrl)
-                    }
                 }
 
                 isInitialEmission = false

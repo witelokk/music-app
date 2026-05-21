@@ -174,6 +174,10 @@ val appModule = module {
         PlaylistsRepositoryImpl(get(), get())
     }
 
+    single {
+        OfflineLibrarySync(get(), get(), get())
+    }
+
     factory {
         val settingsRepository: SettingsRepository = get()
         val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
