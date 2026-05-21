@@ -109,9 +109,9 @@ fun Player(
         pagerState.animateScrollToPage(playerState.currentSongIndex)
     }
 
-    LaunchedEffect(pagerState.targetPage) {
-        if (playerState.currentSongIndex != pagerState.targetPage) {
-            onPlaySongInQueue(pagerState.targetPage)
+    LaunchedEffect(pagerState.currentPage) {
+        if (playerState.currentSongIndex != pagerState.currentPage) {
+            onPlaySongInQueue(pagerState.currentPage)
         }
     }
 
