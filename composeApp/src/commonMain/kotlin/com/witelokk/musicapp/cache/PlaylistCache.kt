@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PlaylistCache {
     fun observePlaylist(id: String): Flow<Playlist?>
+    suspend fun getPlaylists(): List<Playlist>
     suspend fun cache(playlist: Playlist)
     suspend fun deletePlaylist(id: String)
     suspend fun updatePlaylistName(id: String, name: String)

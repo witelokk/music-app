@@ -14,6 +14,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlist_cache WHERE id = :id")
     suspend fun getPlaylist(id: String): PlaylistEntity?
 
+    @Query("SELECT * FROM playlist_cache")
+    suspend fun getPlaylists(): List<PlaylistEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlaylist(playlist: PlaylistEntity)
 

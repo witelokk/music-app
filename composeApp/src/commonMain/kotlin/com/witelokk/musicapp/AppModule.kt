@@ -27,6 +27,8 @@ import com.witelokk.musicapp.repository.HomeRepository
 import com.witelokk.musicapp.repository.HomeRepositoryImpl
 import com.witelokk.musicapp.repository.PlaylistsRepository
 import com.witelokk.musicapp.repository.PlaylistsRepositoryImpl
+import com.witelokk.musicapp.repository.SearchRepository
+import com.witelokk.musicapp.repository.SearchRepositoryImpl
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
@@ -37,6 +39,7 @@ import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
 import com.witelokk.musicapp.viewmodel.ReleaseScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
+import com.witelokk.musicapp.viewmodel.SearchViewModel
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
@@ -174,6 +177,10 @@ val appModule = module {
         PlaylistsRepositoryImpl(get(), get())
     }
 
+    factory<SearchRepository> {
+        SearchRepositoryImpl(get(), get(), get())
+    }
+
     single {
         OfflineLibrarySync(get(), get(), get())
     }
@@ -214,6 +221,7 @@ val appModule = module {
     viewModelOf(::LoginVerificationScreenViewModel)
     viewModelOf(::RegistrationVerificationScreenViewModel)
     viewModelOf(::HomeScreenViewModel)
+    viewModelOf(::SearchViewModel)
     viewModelOf(::SettingsScreenViewModel)
     viewModelOf(::ArtistScreenViewModel)
     viewModelOf(::FavoritesScreenViewModel)

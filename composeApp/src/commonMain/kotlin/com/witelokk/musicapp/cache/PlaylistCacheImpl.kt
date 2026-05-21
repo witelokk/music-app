@@ -19,6 +19,12 @@ class PlaylistCacheImpl(
         }
     }
 
+    override suspend fun getPlaylists(): List<Playlist> {
+        return playlistDao.getPlaylists().map { entity ->
+            json.decodeFromString<Playlist>(entity.playlistJson)
+        }
+    }
+
     override suspend fun cache(playlist: Playlist) {
         playlistDao.insertPlaylist(
             PlaylistEntity(

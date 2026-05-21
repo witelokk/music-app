@@ -19,6 +19,12 @@ class FavoritesCacheImpl(
         }
     }
 
+    override suspend fun getFavorites(): List<Song> {
+        return favoritesDao.getFavorites().map { favorite ->
+            json.decodeFromString<Song>(favorite.songJson)
+        }
+    }
+
     override suspend fun cache(songs: List<Song>) {
         favoritesDao.replaceFavorites(songs.toEntities())
     }

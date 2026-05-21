@@ -34,17 +34,16 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.ReleaseType
+import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.Song
-import com.witelokk.musicapp.components.CreatePlaylistCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.components.Card
+import com.witelokk.musicapp.components.CreatePlaylistCard
 import com.witelokk.musicapp.components.CreatePlaylistDialog
 import com.witelokk.musicapp.components.FavoriteCard
 import com.witelokk.musicapp.components.LoadingContainer
@@ -58,15 +57,15 @@ import com.witelokk.musicapp.components.SearchHistoryContent
 import com.witelokk.musicapp.components.SearchLoadingContent
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeViewModelState
+import com.witelokk.musicapp.viewmodel.SearchViewModel
+import com.witelokk.musicapp.viewmodel.SearchViewModelState
 import com.witelokk.musicapp.withoutBottom
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.launch
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration.Companion.seconds
@@ -75,9 +74,11 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: HomeScreenViewModel = koinViewModel()
+    viewModel: HomeScreenViewModel = koinViewModel(),
+    searchViewModel: SearchViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val searchState by searchViewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val loadFailedMessage = stringResource(Res.string.load_failed)
     val connectionFailedMessage = stringResource(Res.string.connection_failed)
@@ -105,13 +106,11 @@ fun HomeScreen(
         )
     )
     val searchExpanded = rememberSaveable { mutableStateOf(false) }
-    var searchQuery = remember { MutableStateFlow("") }
+    val searchQuery = remember { MutableStateFlow("") }
 
     LaunchedEffect(Unit) {
-        viewModel.viewModelScope.launch {
-            searchQuery.debounce(2.seconds).collectLatest {
-                viewModel.search(it)
-            }
+        searchQuery.debounce(1.seconds).collectLatest {
+            searchViewModel.search(it)
         }
     }
 
@@ -163,7 +162,7 @@ fun HomeScreen(
 
     LaunchedEffect(searchExpanded.value) {
         if (!searchExpanded.value) {
-            viewModel.clearSearchState()
+            searchViewModel.clearSearchState()
             if (state.playerState != null)
                 scaffoldState.bottomSheetState.partialExpand()
         } else {
@@ -195,7 +194,9 @@ fun HomeScreen(
             searchExpanded,
             searchQuery,
             state,
+            searchState,
             viewModel,
+            searchViewModel,
             showCreatePlaylistDialog,
             loadFailedMessage,
             connectionFailedMessage,
@@ -210,7 +211,9 @@ private fun HomeScreenScaffoldContent(
     searchExpanded: MutableState<Boolean>,
     searchQuery: MutableStateFlow<String>,
     state: HomeViewModelState,
+    searchState: SearchViewModelState,
     viewModel: HomeScreenViewModel,
+    searchViewModel: SearchViewModel,
     showCreatePlaylistDialog: MutableState<Boolean>,
     loadFailedMessage: String,
     connectionFailedMessage: String,
@@ -236,7 +239,7 @@ private fun HomeScreenScaffoldContent(
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            SearchContent(state, viewModel, searchQuery, navController)
+            SearchContent(searchState, searchViewModel, viewModel, searchQuery, navController)
         }
 
         LoadingContainer(state.isLoading) {
@@ -366,21 +369,22 @@ private fun PlaylistCard(
 
 @Composable
 private fun SearchContent(
-    state: HomeViewModelState,
+    state: SearchViewModelState,
+    searchViewModel: SearchViewModel,
     viewModel: HomeScreenViewModel,
     searchQuery: MutableStateFlow<String>,
     navController: NavController
 ) {
-    if (state.isSearchLoading) {
+    if (state.isLoading) {
         SearchLoadingContent()
-    } else if (state.isSearchFailure) {
+    } else if (state.isFailure) {
         SearchFailedContent({
-            viewModel.search(searchQuery.value)
+            searchViewModel.search(searchQuery.value)
         })
-    } else if (state.searchResults?.results?.isEmpty() == true) {
+    } else if (state.results?.results?.isEmpty() == true) {
         SearchEmptyContent()
     } else if (searchQuery.collectAsState().value.isBlank()) {
-        SearchHistoryContent(state.searchHistory, onResultClick = {
+        SearchHistoryContent(state.history, onResultClick = {
             when (it.type) {
                 SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                 SearchResultItem.Type.release -> navController.navigate(
@@ -393,25 +397,25 @@ private fun SearchContent(
                 )
             }
         }, onClearClick = {
-            viewModel.clearSearchHistory()
+            searchViewModel.clearSearchHistory()
         }, songDownloadState = viewModel::songCacheState)
     } else {
         SearchSuccessfulContent(
-            state.searchResults?.results ?: listOf(),
+            state.results?.results ?: listOf(),
             onResultClick = {
-            viewModel.addToSearchHistory(it)
-            when (it.type) {
-                SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
-                SearchResultItem.Type.release -> navController.navigate(
-                    ReleaseScreenRoute(it.release!!.id)
-                )
+                searchViewModel.addToSearchHistory(it)
+                when (it.type) {
+                    SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
+                    SearchResultItem.Type.release -> navController.navigate(
+                        ReleaseScreenRoute(it.release!!.id)
+                    )
 
-                SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
-                SearchResultItem.Type.playlist -> navController.navigate(
-                    PlaylistScreenRoute(it.playlist!!.id)
-                )
-            }
-        },
+                    SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
+                    SearchResultItem.Type.playlist -> navController.navigate(
+                        PlaylistScreenRoute(it.playlist!!.id)
+                    )
+                }
+            },
             songDownloadState = viewModel::songCacheState
         )
     }
