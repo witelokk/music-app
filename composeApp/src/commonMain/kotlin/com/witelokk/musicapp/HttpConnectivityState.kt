@@ -25,7 +25,7 @@ fun rememberHttpConnectivityState(
         val url = Url(serverUrl)
         Connectivity(scope = scope, httpClient = httpClient) {
             autoStart = true
-            url(url.protocol.name + "://" + url.host)
+            url("$serverUrl/health")
             port = when {
                 url.port > 0 -> url.port
                 url.protocol == URLProtocol.HTTPS -> 443
