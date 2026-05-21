@@ -25,9 +25,11 @@ import com.witelokk.musicapp.screens.HomeScreen
 import com.witelokk.musicapp.screens.LoginScreen
 import com.witelokk.musicapp.screens.LoginVerification
 import com.witelokk.musicapp.screens.LoginVerificationScreen
-import com.witelokk.musicapp.screens.PlaylistReleaseScreen
-import com.witelokk.musicapp.screens.PlaylistReleaseScreenRoute
+import com.witelokk.musicapp.screens.PlaylistScreen
+import com.witelokk.musicapp.screens.PlaylistScreenRoute
 import com.witelokk.musicapp.screens.QueueScreen
+import com.witelokk.musicapp.screens.ReleaseScreen
+import com.witelokk.musicapp.screens.ReleaseScreenRoute
 import com.witelokk.musicapp.screens.Registration
 import com.witelokk.musicapp.screens.RegistrationScreen
 import com.witelokk.musicapp.screens.RegistrationVerification
@@ -98,9 +100,13 @@ fun App(
             composable("home") {
                 HomeScreen(navController)
             }
-            composable<PlaylistReleaseScreenRoute> {
-                val route = it.toRoute<PlaylistReleaseScreenRoute>()
-                PlaylistReleaseScreen(navController, route)
+            composable<PlaylistScreenRoute> {
+                val route = it.toRoute<PlaylistScreenRoute>()
+                PlaylistScreen(navController, route)
+            }
+            composable<ReleaseScreenRoute> {
+                val route = it.toRoute<ReleaseScreenRoute>()
+                ReleaseScreen(navController, route)
             }
             composable("favorites") {
                 FavoritesScreen(navController)

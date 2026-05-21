@@ -11,22 +11,24 @@ import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
 import com.witelokk.musicapp.repository.FavoritesRepository
+import com.witelokk.musicapp.repository.PlaylistsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FavoritesScreenState(
-    val isLoading: Boolean = false,
+    override val isLoading: Boolean = false,
     val hasObservedFavorites: Boolean = false,
-    val isConnectionError: Boolean = false,
-    val isError: Boolean = false,
+    override val isConnectionError: Boolean = false,
+    override val isError: Boolean = false,
     val snackbarEventId: Long = 0,
-    val songs: List<Song> = listOf(),
-    val playlists: List<PlaylistSummary> = listOf(),
-    val playerState: PlayerState?,
-)
+    override val songs: List<Song> = listOf(),
+    override val playlists: List<PlaylistSummary> = listOf(),
+    override val playerState: PlayerState?,
+) : SongListScreenState
 
 class FavoritesScreenViewModel(
     favoritesApi: FavoritesApi,
@@ -34,10 +36,34 @@ class FavoritesScreenViewModel(
     private val musicPlayer: MusicPlayer,
     private val playlistsApi: PlaylistsApi,
     private val mediaCache: MediaCache,
-) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
+    playlistsRepository: PlaylistsRepository,
+) : SongListViewModel<FavoritesScreenState>(
+    musicPlayer,
+    favoritesApi,
+    playlistsApi,
+    mediaCache,
+    playlistsRepository
+) {
     private val _state =
         MutableStateFlow(FavoritesScreenState(playerState = musicPlayer.state.value))
-    val state = _state.asStateFlow()
+    override val state: StateFlow<FavoritesScreenState> = _state.asStateFlow()
+
+    override fun MutableStateFlowAccessor(): MutableStateFlow<FavoritesScreenState> = _state
+
+    override fun copyWithPlayerState(
+        state: FavoritesScreenState,
+        playerState: PlayerState?
+    ) = state.copy(playerState = playerState)
+
+    override fun copyWithPlaylists(
+        state: FavoritesScreenState,
+        playlists: List<PlaylistSummary>
+    ) = state.copy(playlists = playlists)
+
+    override fun copyWithSongs(
+        state: FavoritesScreenState,
+        songs: List<Song>
+    ) = state.copy(songs = songs)
 
     init {
         viewModelScope.launch {
@@ -66,14 +92,7 @@ class FavoritesScreenViewModel(
         }
 
         loadFavorites()
-
-        viewModelScope.launch {
-            musicPlayer.state.collect { newPlayerState ->
-                _state.update { currentState ->
-                    currentState.copy(playerState = newPlayerState)
-                }
-            }
-        }
+        bindPlayerState()
     }
 
     fun loadFavorites() {
@@ -88,28 +107,6 @@ class FavoritesScreenViewModel(
             }
         }) {
             favoritesRepository.refreshFavorites()
-        }
-    }
-
-    fun playSong(song: Song) {
-        musicPlayer.setQueueAndPlay(state.value.songs, state.value.songs.indexOf(song))
-    }
-
-    fun playAllSongs() {
-        musicPlayer.setQueueAndPlay(state.value.songs, 0)
-    }
-
-    fun loadPlaylists() {
-        launchCatching(action = "load playlists for favorites screen") {
-            val response = playlistsApi.getPlaylists()
-
-            if (response.logIfFailure("load playlists for favorites screen")) {
-                return@launchCatching
-            }
-
-            _state.update {
-                it.copy(playlists = response.body().playlists)
-            }
         }
     }
 
@@ -133,7 +130,7 @@ class FavoritesScreenViewModel(
                 favoritesRepository.removeFavorite(song.id)
             }
 
-            musicPlayer.updateSong(song.copy(isFavorite = favorite))
+            updatePlayerSong(song.copy(isFavorite = favorite))
         }
     }
 }

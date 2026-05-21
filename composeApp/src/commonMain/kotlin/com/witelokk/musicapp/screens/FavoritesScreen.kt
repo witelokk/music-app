@@ -1,86 +1,30 @@
 package com.witelokk.musicapp.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.witelokk.musicapp.api.models.Song
-import com.witelokk.musicapp.cache.MediaCacheState
-import com.witelokk.musicapp.components.AddToPlaylistsDialog
-import com.witelokk.musicapp.components.PlayerSheetScaffold
-import com.witelokk.musicapp.components.SongListItem
-import com.witelokk.musicapp.rememberHttpConnectivityState
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
-import dev.jordond.connectivity.Connectivity
-import kotlinx.coroutines.delay
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
     navController: NavController,
     viewModel: FavoritesScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val connectivityState = rememberHttpConnectivityState()
     val snackbarHostState = remember { SnackbarHostState() }
     val loadFailedMessage = stringResource(Res.string.favorite_songs_load_failed)
     val connectionFailedMessage = stringResource(Res.string.favorite_songs_connection_failed)
-
-    var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
-    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(showAddToPlaylistDialog) {
-        if (showAddToPlaylistDialog) {
-            viewModel.loadPlaylists()
-        }
-    }
-
-    var showLoadingIndicator by remember { mutableStateOf(false) }
-    LaunchedEffect(state.isLoading) {
-        if (state.isLoading) {
-            delay(1000) // delay for 1 second
-            showLoadingIndicator = true
-        } else {
-            showLoadingIndicator = false
-        }
-    }
 
     LaunchedEffect(state.snackbarEventId) {
         if (state.snackbarEventId == 0L) {
@@ -93,121 +37,34 @@ fun FavoritesScreen(
         }
     }
 
-    if (showAddToPlaylistDialog) {
-        AddToPlaylistsDialog(
-            showDialog = showAddToPlaylistDialog,
-            playlists = state.playlists,
-            onDismissRequest = { showAddToPlaylistDialog = false },
-            onAddRequest = { playlists ->
-                viewModel.addSongToPlaylists(
-                    songToAddToPlaylists!!,
-                    playlists
-                )
-                showAddToPlaylistDialog = false
-            },
-        )
-    }
-
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    PlayerSheetScaffold(
-        navController,
-        topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.favorite_songs)) }, navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
-                }
-            }, actions = {
-                IconButton(onClick = { viewModel.playAllSongs() }) {
-                    Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play))
-                }
-            }, scrollBehavior = scrollBehavior)
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    SongListScreen(
+        navController = navController,
+        title = stringResource(Res.string.favorite_songs),
+        songs = state.songs,
+        playlists = state.playlists,
         playerState = state.playerState,
-        onSeek = { viewModel.seekPlayer(it) },
-        onSeekToPrevious = { viewModel.seekPlayerToPrevious() },
-        onSeekToNext = { viewModel.seekPlayerToNext() },
-        onPlayPause = { viewModel.playPausePlayer() },
-        onAddToPlaylist = { song ->
-            songToAddToPlaylists = song
-            showAddToPlaylistDialog = true
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        onChangeFavorite = { song, favorite ->
-            viewModel.changeSongFavorite(song, favorite)
-        },
-        onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
-    ) { innerPadding ->
-        if (showLoadingIndicator) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            AnimatedVisibility(
-                visible = !state.isLoading && state.hasObservedFavorites,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                if (state.songs.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(stringResource(Res.string.no_favorite_songs))
-                    }
-                } else {
-                    LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                        items(state.songs, key = { it.id }) { song ->
-                            val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
-                            val isAvailable = connectivityState.status is Connectivity.Status.Connected ||
-                                cacheState == MediaCacheState.CACHED
-
-                            SongListItem(
-                                song = song,
-                                isActive = state.playerState?.currentSong?.id == song.id,
-                                isPlaying = state.playerState?.playing ?: false,
-                                showFavorite = false,
-                                isAvailable = isAvailable,
-                                cacheState = cacheState,
-                                modifier = Modifier
-                                    .clickable(enabled = isAvailable) { viewModel.playSong(song) }
-                                    .padding(horizontal = 20.dp, vertical = 8.dp)
-                                    .animateItem()
-                            ) { menuExpanded ->
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.remove_from_favorite_songs)) },
-                                    onClick = {
-                                        viewModel.changeSongFavorite(song, false)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.add_to_playlist)) },
-                                    onClick = {
-                                        menuExpanded.value = false
-                                        songToAddToPlaylists = song
-                                        showAddToPlaylistDialog = true
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.add_to_queue)) },
-                                    onClick = {
-                                        viewModel.addSongToQueue(song)
-                                        menuExpanded.value = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+        isLoading = state.isLoading,
+        showContent = !state.isLoading && state.hasObservedFavorites,
+        emptyMessage = stringResource(Res.string.no_favorite_songs),
+        showFavorite = false,
+        songCacheState = viewModel::songCacheState,
+        onLoadPlaylists = viewModel::loadPlaylists,
+        onPlayAllSongs = viewModel::playAllSongs,
+        onSongClick = viewModel::playSong,
+        onChangeFavorite = viewModel::changeSongFavorite,
+        onAddSongToPlaylists = viewModel::addSongToPlaylists,
+        onAddToQueue = viewModel::addSongToQueue,
+        onPlaySongInQueue = viewModel::playSongInQueue,
+        onSeek = viewModel::seekPlayer,
+        onSeekToPrevious = viewModel::seekPlayerToPrevious,
+        onSeekToNext = viewModel::seekPlayerToNext,
+        onPlayPause = viewModel::playPausePlayer,
+        snackbarHost = { _ -> SnackbarHost(snackbarHostState) },
+        extraSongMenuItems = { song, _ ->
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.remove_from_favorite_songs)) },
+                onClick = { viewModel.changeSongFavorite(song, false) }
+            )
         }
-    }
+    )
 }

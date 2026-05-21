@@ -273,10 +273,7 @@ private fun HomeScreenScaffoldContent(
                             items(state.feed.playlists.playlists) { playlist ->
                                 PlaylistCard(playlist, modifier = Modifier.clickable {
                                     navController.navigate(
-                                        PlaylistReleaseScreenRoute(
-                                            "playlist",
-                                            playlist.id
-                                        )
+                                        PlaylistScreenRoute(playlist.id)
                                     )
                                 })
                             }
@@ -341,10 +338,7 @@ private fun HomeScreenScaffoldContent(
                                         .width(155.dp)
                                         .clickable {
                                             navController.navigate(
-                                                PlaylistReleaseScreenRoute(
-                                                    "release",
-                                                    release.id
-                                                )
+                                                ReleaseScreenRoute(release.id)
                                             )
                                         })
                             }
@@ -388,18 +382,12 @@ private fun SearchContent(
             when (it.type) {
                 SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                 SearchResultItem.Type.release -> navController.navigate(
-                    PlaylistReleaseScreenRoute(
-                        "release",
-                        it.release!!.id
-                    )
+                    ReleaseScreenRoute(it.release!!.id)
                 )
 
                 SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
                 SearchResultItem.Type.playlist -> navController.navigate(
-                    PlaylistReleaseScreenRoute(
-                        "playlist",
-                        it.playlist!!.id
-                    )
+                    PlaylistScreenRoute(it.playlist!!.id)
                 )
             }
         }, onClearClick = {
@@ -413,18 +401,12 @@ private fun SearchContent(
             when (it.type) {
                 SearchResultItem.Type.song -> viewModel.setPlayerQueueAndPlay(listOf(it.song!!), 0)
                 SearchResultItem.Type.release -> navController.navigate(
-                    PlaylistReleaseScreenRoute(
-                        "release",
-                        it.release!!.id
-                    )
+                    ReleaseScreenRoute(it.release!!.id)
                 )
 
                 SearchResultItem.Type.artist -> navController.navigate(ArtistScreenRoute(it.artist!!.id))
                 SearchResultItem.Type.playlist -> navController.navigate(
-                    PlaylistReleaseScreenRoute(
-                        "playlist",
-                        it.playlist!!.id
-                    )
+                    PlaylistScreenRoute(it.playlist!!.id)
                 )
             }
         },

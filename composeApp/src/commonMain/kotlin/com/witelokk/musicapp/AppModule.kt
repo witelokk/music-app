@@ -32,8 +32,9 @@ import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import com.witelokk.musicapp.viewmodel.HomeScreenViewModel
 import com.witelokk.musicapp.viewmodel.LoginScreenViewModel
 import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
-import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
+import com.witelokk.musicapp.viewmodel.PlaylistScreenViewModel
 import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
+import com.witelokk.musicapp.viewmodel.ReleaseScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
@@ -212,7 +213,8 @@ val appModule = module {
     viewModelOf(::SettingsScreenViewModel)
     viewModelOf(::ArtistScreenViewModel)
     viewModelOf(::FavoritesScreenViewModel)
-    viewModelOf(::PlaylistReleaseScreenViewModel)
+    viewModelOf(::PlaylistScreenViewModel)
+    viewModelOf(::ReleaseScreenViewModel)
     viewModelOf(::QueueScreenViewModel)
 
     single {

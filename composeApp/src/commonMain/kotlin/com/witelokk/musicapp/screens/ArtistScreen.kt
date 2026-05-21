@@ -316,10 +316,7 @@ fun ArtistScreen(
                                 .animateItem()
                                 .clickable {
                                     navController.navigate(
-                                        PlaylistReleaseScreenRoute(
-                                            "release",
-                                            release.id
-                                        )
+                                        ReleaseScreenRoute(release.id)
                                     )
                                 })
                     }

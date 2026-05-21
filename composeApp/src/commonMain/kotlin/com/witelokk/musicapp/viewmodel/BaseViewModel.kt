@@ -46,6 +46,17 @@ abstract class BaseViewModel(
         musicPlayer.addToQueue(song)
     }
 
+    protected fun playCollection(songs: List<Song>, startIndex: Int = 0) {
+        musicPlayer.setQueueAndPlay(songs, startIndex)
+    }
+
+    protected fun playSongFromCollection(song: Song, songs: List<Song>) {
+        val songIndex = songs.indexOfFirst { it.id == song.id }
+        if (songIndex != -1) {
+            playCollection(songs, songIndex)
+        }
+    }
+
     fun setPlayerQueueAndPlay(songs: List<Song>, index: Int) {
         musicPlayer.setQueueAndPlay(songs, index)
     }
@@ -71,6 +82,10 @@ abstract class BaseViewModel(
 
     fun playSongInQueue(index: Int) {
         musicPlayer.playSongInQueue(index)
+    }
+
+    protected fun updatePlayerSong(song: Song) {
+        musicPlayer.updateSong(song)
     }
 
     fun songCacheState(song: Song): StateFlow<MediaCacheState> {
