@@ -7,6 +7,7 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCache
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
 import com.witelokk.musicapp.repository.FavoritesRepository
@@ -55,7 +56,7 @@ class FavoritesScreenViewModel(
 
                 // cache favorite songs
                 favorites?.forEach { song ->
-                    if (!mediaCache.isCached(song.streamUrl).first()) {
+                    if (mediaCache.getCacheState(song.streamUrl).first() == MediaCacheState.NOT_CACHED) {
                         mediaCache.cache(song.streamUrl)
                     }
                 }

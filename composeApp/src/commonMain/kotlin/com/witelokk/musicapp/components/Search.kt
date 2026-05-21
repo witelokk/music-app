@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.Playlist
 import kotlinx.coroutines.flow.StateFlow
 import musicapp.composeapp.generated.resources.Res
@@ -139,19 +140,20 @@ fun SearchResults(
     itemModifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
     filter: String? = null,
-    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
+    songDownloadState: ((Song) -> StateFlow<MediaCacheState>)? = null,
 ) {
     LazyColumn(modifier = modifier) {
         items(results) {
             if (it.type == SearchResultItem.Type.song && (filter == "Songs" || filter == null)) {
                 val song = it.song!!
-                val isDownloaded by (songDownloadState?.invoke(song))?.collectAsStateWithLifecycle(false)
-                    ?: rememberSaveable(song.id) { mutableStateOf(false) }
+                val cacheState by (songDownloadState?.invoke(song))
+                    ?.collectAsStateWithLifecycle(MediaCacheState.NOT_CACHED)
+                    ?: rememberSaveable(song.id) { mutableStateOf(MediaCacheState.NOT_CACHED) }
 
                 SongListItem(
                     song,
                     modifier = itemModifier.clickable { onResultClick(it) },
-                    isDownloaded = isDownloaded,
+                    cacheState = cacheState,
                 )
             } else if (it.type == SearchResultItem.Type.artist && (filter == "Artists" || filter == null)) {
                 ArtistListItem(
@@ -178,7 +180,7 @@ fun SearchSuccessfulContent(
     results: List<SearchResultItem>,
     modifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
-    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
+    songDownloadState: ((Song) -> StateFlow<MediaCacheState>)? = null,
 ) {
     val filters = listOf("Playlists", "Songs", "Artists")
     val selected = List(filters.size) { rememberSaveable { mutableStateOf(false) } }
@@ -233,7 +235,7 @@ fun SearchHistoryContent(
     modifier: Modifier = Modifier,
     onResultClick: (SearchResultItem) -> Unit = {},
     onClearClick: () -> Unit = {},
-    songDownloadState: ((Song) -> StateFlow<Boolean>)? = null,
+    songDownloadState: ((Song) -> StateFlow<MediaCacheState>)? = null,
 ) {
     if (results.isEmpty()) {
         return

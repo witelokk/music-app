@@ -404,7 +404,7 @@ private fun SearchContent(
             }
         }, onClearClick = {
             viewModel.clearSearchHistory()
-        }, songDownloadState = viewModel::isSongCached)
+        }, songDownloadState = viewModel::songCacheState)
     } else {
         SearchSuccessfulContent(
             state.searchResults?.results ?: listOf(),
@@ -428,7 +428,7 @@ private fun SearchContent(
                 )
             }
         },
-            songDownloadState = viewModel::isSongCached
+            songDownloadState = viewModel::songCacheState
         )
     }
 }

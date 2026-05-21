@@ -219,13 +219,13 @@ fun PlaylistReleaseScreen(
                 }
                 LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                     items(state.songs, key = { it.id }) { song ->
-                        val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+                        val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
 
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
                             isPlaying = state.playerState?.playing ?: false,
-                            isDownloaded = isCached,
+                            cacheState = cacheState,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
                                 .clickable { viewModel.playSong(song) }

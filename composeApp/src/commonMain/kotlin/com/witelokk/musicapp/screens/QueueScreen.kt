@@ -104,13 +104,13 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
             }
             LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                 itemsIndexed(state.songs, key = { _, song -> song.id }) { i, song ->
-                    val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+                    val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
 
                     SongListItem(
                         song = song,
                         isActive = i == 0,
                         isPlaying = state.playerState?.playing ?: false,
-                        isDownloaded = isCached,
+                        cacheState = cacheState,
                         onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                         modifier = Modifier
                             .clickable { viewModel.playSong(song) }

@@ -17,7 +17,7 @@ class Media3MediaCache(
     private val context: Context,
     private val downloadManager: DownloadManager,
 ) : MediaCache {
-    private val cacheStates = mutableMapOf<String, MutableStateFlow<Boolean>>()
+    private val cacheStates = mutableMapOf<String, MutableStateFlow<MediaCacheState>>()
 
     private val listener = object : DownloadManager.Listener {
         override fun onDownloadChanged(
@@ -26,9 +26,7 @@ class Media3MediaCache(
             finalException: Exception?
         ) {
             val url = download.request.id
-            val isCached = download.state == Download.STATE_COMPLETED
-
-            cacheStates[url]?.value = isCached
+            cacheStates[url]?.value = download.toCacheState()
         }
     }
 
@@ -37,6 +35,11 @@ class Media3MediaCache(
     }
 
     override fun cache(url: String) {
+        val existingState = cacheStates[url]?.value ?: checkInitialState(url)
+        if (existingState != MediaCacheState.CACHED) {
+            cacheStates.getOrPut(url) { MutableStateFlow(existingState) }.value = MediaCacheState.IN_PROGRESS
+        }
+
         val request = DownloadRequest.Builder(url, url.toUri())
             .setMimeType(MimeTypes.APPLICATION_M3U8)
             .build()
@@ -49,14 +52,27 @@ class Media3MediaCache(
         )
     }
 
-    override fun isCached(url: String): StateFlow<Boolean> {
+    override fun getCacheState(url: String): StateFlow<MediaCacheState> {
         return cacheStates.getOrPut(url) {
             MutableStateFlow(checkInitialState(url))
         }
     }
 
-    private fun checkInitialState(url: String): Boolean {
+    private fun checkInitialState(url: String): MediaCacheState {
         val download = downloadManager.downloadIndex.getDownload(url)
-        return download != null && download.state == Download.STATE_COMPLETED
+        return download?.toCacheState() ?: MediaCacheState.NOT_CACHED
+    }
+
+    private fun Download.toCacheState(): MediaCacheState {
+        return when (state) {
+            Download.STATE_COMPLETED -> MediaCacheState.CACHED
+            Download.STATE_FAILED -> MediaCacheState.FAILED
+            Download.STATE_QUEUED,
+            Download.STATE_STOPPED,
+            Download.STATE_DOWNLOADING,
+            Download.STATE_RESTARTING -> MediaCacheState.IN_PROGRESS
+            Download.STATE_REMOVING -> MediaCacheState.NOT_CACHED
+            else -> MediaCacheState.NOT_CACHED
+        }
     }
 }

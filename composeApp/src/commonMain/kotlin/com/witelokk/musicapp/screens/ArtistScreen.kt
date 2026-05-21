@@ -220,7 +220,7 @@ fun ArtistScreen(
                     items(
                         state.artist?.popularSongs?.songs ?: listOf(),
                         span = { GridItemSpan(2) }) { song ->
-                        val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+                        val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
 
                         SongListItem(
                             song = song,
@@ -235,7 +235,7 @@ fun ArtistScreen(
                             },
                             isActive = (song.id == state.playerState?.currentSong?.id),
                             isPlaying = state.playerState?.playing ?: false,
-                            isDownloaded = isCached,
+                            cacheState = cacheState,
                         ) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.add_to_playlist)) },

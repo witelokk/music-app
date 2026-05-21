@@ -9,6 +9,7 @@ import com.witelokk.musicapp.api.models.AddSongToPlaylistRequest
 import com.witelokk.musicapp.api.models.FavoriteSongRequest
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCache
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.PlayerState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -72,13 +73,13 @@ abstract class BaseViewModel(
         musicPlayer.playSongInQueue(index)
     }
 
-    fun isSongCached(song: Song): StateFlow<Boolean> {
+    fun songCacheState(song: Song): StateFlow<MediaCacheState> {
         return mediaCache
-            .isCached(song.streamUrl)
+            .getCacheState(song.streamUrl)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),
-                false
+                MediaCacheState.NOT_CACHED
             )
     }
 

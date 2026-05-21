@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 class NoOpMediaCache : MediaCache {
     override fun cache(url: String) {}
 
-    override fun isCached(url: String): StateFlow<Boolean> {
-        return MutableStateFlow(false)
+    override fun getCacheState(url: String): StateFlow<MediaCacheState> {
+        return MutableStateFlow(MediaCacheState.NOT_CACHED)
     }
 }

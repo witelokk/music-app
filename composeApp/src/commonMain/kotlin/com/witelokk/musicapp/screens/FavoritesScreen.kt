@@ -162,14 +162,14 @@ fun FavoritesScreen(
                 } else {
                     LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                         items(state.songs, key = { it.id }) { song ->
-                            val isCached by viewModel.isSongCached(song).collectAsStateWithLifecycle()
+                            val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
 
                             SongListItem(
                                 song = song,
                                 isActive = state.playerState?.currentSong?.id == song.id,
                                 isPlaying = state.playerState?.playing ?: false,
                                 showFavorite = false,
-                                isDownloaded = isCached,
+                                cacheState = cacheState,
                                 modifier = Modifier
                                     .clickable { viewModel.playSong(song) }
                                     .padding(horizontal = 20.dp, vertical = 8.dp)
