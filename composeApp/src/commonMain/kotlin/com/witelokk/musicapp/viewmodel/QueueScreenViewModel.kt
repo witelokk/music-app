@@ -81,7 +81,7 @@ class QueueScreenViewModel(
         }
     }
 
-    override fun playSong(song: Song) {
+    override fun playSong(song: Song, offline: Boolean) {
         musicPlayer.state.value?.queue?.let { musicPlayer.playSongInQueue(it.indexOf(song)) }
     }
 

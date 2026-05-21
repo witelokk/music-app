@@ -1,8 +1,8 @@
 package com.witelokk.musicapp.screens
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +47,7 @@ fun PlaylistScreen(
 
     var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var playlistMenuExpanded by rememberSaveable { mutableStateOf(false) }
     var newName by remember { mutableStateOf(state.name) }
 
     LaunchedEffect(Unit) {
@@ -90,8 +91,9 @@ fun PlaylistScreen(
         showContent = !state.isLoading,
         songCacheState = viewModel::songCacheState,
         onLoadPlaylists = viewModel::loadPlaylists,
-        onPlayAllSongs = viewModel::playAllSongs,
-        onSongClick = viewModel::playSong,
+        onPlayAllSongs = { offline -> viewModel.playAllSongs(offline) },
+        onShufflePlayAllSongs = { offline -> viewModel.shufflePlayAllSongs(offline) },
+        onSongClick = { song, offline -> viewModel.playSong(song, offline) },
         onFavoriteClick = viewModel::toggleSongFavorite,
         onChangeFavorite = viewModel::changeSongFavorite,
         onAddSongToPlaylists = viewModel::addSongToPlaylists,
@@ -102,11 +104,27 @@ fun PlaylistScreen(
         onSeekToNext = viewModel::seekPlayerToNext,
         onPlayPause = viewModel::playPausePlayer,
         topBarActions = {
-            IconButton(onClick = { showEditPlaylistDialog = true }) {
-                Icon(Icons.Outlined.Edit, stringResource(Res.string.edit))
+            IconButton(onClick = { playlistMenuExpanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = null)
             }
-            IconButton(onClick = { showDeletePlaylistDialog = true }) {
-                Icon(Icons.Outlined.Delete, stringResource(Res.string.delete))
+            DropdownMenu(
+                expanded = playlistMenuExpanded,
+                onDismissRequest = { playlistMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.edit)) },
+                    onClick = {
+                        playlistMenuExpanded = false
+                        showEditPlaylistDialog = true
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.delete)) },
+                    onClick = {
+                        playlistMenuExpanded = false
+                        showDeletePlaylistDialog = true
+                    }
+                )
             }
         },
         failureContent = if (state.isError && !state.hasCachedFeed) { modifier ->

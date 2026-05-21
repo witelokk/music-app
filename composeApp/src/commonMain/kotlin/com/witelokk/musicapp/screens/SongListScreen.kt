@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Shuffle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongCollectionList
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.rememberHttpConnectivityState
+import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -46,6 +48,7 @@ import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.back
 import musicapp.composeapp.generated.resources.play
 import musicapp.composeapp.generated.resources.playlist_is_empty
+import musicapp.composeapp.generated.resources.shuffle_play
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,8 +69,9 @@ internal fun SongListScreen(
     failureContent: @Composable ((Modifier) -> Unit)? = null,
     songCacheState: (Song) -> StateFlow<MediaCacheState>,
     onLoadPlaylists: () -> Unit,
-    onPlayAllSongs: () -> Unit,
-    onSongClick: (Song) -> Unit,
+    onPlayAllSongs: (Boolean) -> Unit,
+    onShufflePlayAllSongs: (Boolean) -> Unit,
+    onSongClick: (Song, Boolean) -> Unit,
     onFavoriteClick: (Song) -> Unit = {},
     onChangeFavorite: (Song, Boolean) -> Unit,
     onAddSongToPlaylists: (Song, List<String>) -> Unit,
@@ -84,6 +88,7 @@ internal fun SongListScreen(
 ) {
     val scope = rememberCoroutineScope()
     val connectivityState = rememberHttpConnectivityState()
+    val isOffline = connectivityState.status !is Connectivity.Status.Connected
 
     var addToPlaylistDialogSong by rememberSaveable { mutableStateOf<Song?>(null) }
 
@@ -126,12 +131,15 @@ internal fun SongListScreen(
                     }
                 },
                 actions = {
-                    topBarActions()
                     if (showPlayAllAction) {
-                        IconButton(onClick = onPlayAllSongs) {
+                        IconButton(onClick = { onShufflePlayAllSongs(isOffline) }) {
+                            Icon(Icons.Outlined.Shuffle, stringResource(Res.string.shuffle_play))
+                        }
+                        IconButton(onClick = { onPlayAllSongs(isOffline) }) {
                             Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play))
                         }
                     }
+                    topBarActions()
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -178,7 +186,7 @@ internal fun SongListScreen(
                     showFavorite = showFavorite,
                     showAddToQueueMenuItem = showAddToQueueMenuItem,
                     songCacheState = songCacheState,
-                    onSongClick = onSongClick,
+                    onSongClick = { song -> onSongClick(song, isOffline) },
                     onFavoriteClick = onFavoriteClick,
                     onAddToPlaylist = { song ->
                         scope.launch {

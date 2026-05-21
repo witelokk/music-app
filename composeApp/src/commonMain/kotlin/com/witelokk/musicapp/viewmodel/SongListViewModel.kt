@@ -7,8 +7,10 @@ import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCache
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.PlaylistsRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,7 +19,7 @@ abstract class SongListViewModel<S : SongListScreenState>(
     musicPlayer: MusicPlayer,
     favoritesApi: FavoritesApi,
     playlistsApi: PlaylistsApi,
-    mediaCache: MediaCache,
+    private val mediaCache: MediaCache,
     private val playlistsRepository: PlaylistsRepository,
 ) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
 
@@ -59,12 +61,16 @@ abstract class SongListViewModel<S : SongListScreenState>(
         }
     }
 
-    open fun playSong(song: Song) {
-        playSongFromCollection(song, state.value.songs)
+    open fun playSong(song: Song, offline: Boolean = false) {
+        playAvailableCollection(startSong = song, offline = offline)
     }
 
-    open fun playAllSongs() {
-        playCollection(state.value.songs)
+    open fun playAllSongs(offline: Boolean = false) {
+        playAvailableCollection(offline = offline)
+    }
+
+    open fun shufflePlayAllSongs(offline: Boolean = false) {
+        playAvailableCollection(offline = offline, shuffle = true)
     }
 
     open fun toggleSongFavorite(song: Song) {
@@ -83,5 +89,41 @@ abstract class SongListViewModel<S : SongListScreenState>(
     override fun changeSongFavorite(song: Song, favorite: Boolean) {
         super.changeSongFavorite(song, favorite)
         updateSongFavoriteInState(song, favorite)
+    }
+
+    private fun playAvailableCollection(
+        startSong: Song? = null,
+        offline: Boolean,
+        shuffle: Boolean = false,
+    ) {
+        if (!offline) {
+            val playbackSongs = if (shuffle) state.value.songs.shuffled() else state.value.songs
+            if (startSong != null) {
+                playSongFromCollection(startSong, playbackSongs)
+            } else {
+                playCollection(playbackSongs)
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            val availableSongs = state.value.songs.filter { song ->
+                mediaCache.getCacheState(song.streamUrl).first() == MediaCacheState.CACHED
+            }
+            val playbackSongs = if (shuffle) availableSongs.shuffled() else availableSongs
+
+            if (playbackSongs.isEmpty()) {
+                return@launch
+            }
+
+            if (startSong != null) {
+                val songIndex = playbackSongs.indexOfFirst { it.id == startSong.id }
+                if (songIndex != -1) {
+                    playCollection(playbackSongs, songIndex)
+                }
+            } else {
+                playCollection(playbackSongs)
+            }
+        }
     }
 }

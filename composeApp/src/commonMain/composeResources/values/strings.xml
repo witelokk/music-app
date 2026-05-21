@@ -7,6 +7,7 @@
     <string name="singles_and_eps">Singles and EPs</string>
     <string name="back">Back</string>
     <string name="play">Play</string>
+    <string name="shuffle_play">Shuffle play</string>
     <string name="artist">Artist</string>
     <string name="playlists">Playlists</string>
     <string name="verification_request_error_toast">Failed to send verification code</string>

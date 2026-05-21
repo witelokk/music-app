@@ -6,6 +6,7 @@
     <string name="singles_and_eps">Синглы и мини-альбомы</string>
     <string name="back">Назад</string>
     <string name="play">Воспроизвести</string>
+    <string name="shuffle_play">Перемешать и воспроизвести</string>
     <string name="artist">Исполнитель</string>
     <string name="playlists">Плейлисты</string>
     <string name="verification_request_error_toast">Не удалось отправить код подтверждения</string>
