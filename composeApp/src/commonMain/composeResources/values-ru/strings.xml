@@ -1,6 +1,7 @@
 <resources>
     <string name="single">Сингл</string>
     <string name="album">Альбом</string>
+    <string name="ep">Мини-альбом</string>
     <string name="releases">Релизы</string>
     <string name="albums">Альбомы</string>
     <string name="singles_and_eps">Синглы и мини-альбомы</string>

@@ -2,6 +2,7 @@ package com.witelokk.musicapp.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +46,7 @@ fun Card(
             }
             AsyncImage(
                 pictureUrl,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                 contentScale = ContentScale.FillWidth,
                 onSuccess = { isImageLoading = false },
                 onError = { isImageLoading = false },

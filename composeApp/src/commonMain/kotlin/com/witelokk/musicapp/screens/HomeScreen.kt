@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.PlaylistSummary
+import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.CreatePlaylistCard
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
@@ -65,6 +66,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration.Companion.seconds
@@ -332,7 +334,7 @@ private fun HomeScreenScaffoldContent(
                             items(section.releases.releases) { release ->
                                 Card(
                                     title = release.name,
-                                    subtitle = release.type.value,
+                                    subtitle = release.type.toLocalizedString(),
                                     pictureUrl = release.coverUrl,
                                     modifier = Modifier
                                         .width(155.dp)
@@ -412,5 +414,14 @@ private fun SearchContent(
         },
             songDownloadState = viewModel::songCacheState
         )
+    }
+}
+
+@Composable
+fun ReleaseType.toLocalizedString(): String {
+    return when(this) {
+        ReleaseType.single -> stringResource(Res.string.single)
+        ReleaseType.album -> stringResource(Res.string.album)
+        ReleaseType.ep -> stringResource(Res.string.ep)
     }
 }
