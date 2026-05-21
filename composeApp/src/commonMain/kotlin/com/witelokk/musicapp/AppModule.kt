@@ -113,7 +113,7 @@ val appModule = module {
     factory {
         val settingsRepository: SettingsRepository = get()
         val baseUrl = runBlocking { settingsRepository.serverUrl.first() }
-        CompatAuthApi(baseUrl, httpClientConfig = {})
+        CompatAuthApi(baseUrl, get<HttpClient>())
     }
 
     single {

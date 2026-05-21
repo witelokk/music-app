@@ -34,6 +34,10 @@ class AuthStore(
         )
     }
 
+    suspend fun saveAccountName(accountName: String) {
+        settingsRepository.setAccountName(accountName)
+    }
+
     suspend fun clearAuth() {
         settingsRepository.clearAuth()
     }

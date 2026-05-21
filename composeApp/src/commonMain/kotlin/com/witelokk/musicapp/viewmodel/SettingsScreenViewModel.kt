@@ -7,6 +7,7 @@ import com.witelokk.musicapp.auth.AuthSession
 import com.witelokk.musicapp.api.apis.CompatAuthApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -53,26 +54,18 @@ class SettingsScreenViewModel(
     }
 
     private fun loadSettings() = viewModelScope.launch {
-        settingsRepository.theme.collect { theme ->
+        combine(
+            settingsRepository.theme,
+            settingsRepository.accountEmail,
+            settingsRepository.accountName,
+        ) { theme, accountEmail, accountName ->
+            Triple(theme, accountEmail, accountName)
+        }.collect { (theme, accountEmail, accountName) ->
             _state.update {
                 it.copy(
-                    theme = theme
-                )
-            }
-        }
-
-        settingsRepository.accountEmail.collect { accountEmail ->
-            _state.update {
-                it.copy(
-                    accountEmail = accountEmail
-                )
-            }
-        }
-
-        settingsRepository.accountName.collect { accountName ->
-            _state.update {
-                it.copy(
-                    accountName = accountName
+                    theme = theme,
+                    accountEmail = accountEmail,
+                    accountName = accountName,
                 )
             }
         }

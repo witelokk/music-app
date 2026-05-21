@@ -65,6 +65,7 @@ class AuthSession(
         }
 
         signIn(email, code)
+        authStore.saveAccountName(name)
     }
 
     suspend fun requestVerificationCode(email: String) {
