@@ -15,8 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.load_failed
-import musicapp.composeapp.generated.resources.retry
+import musicapp.composeapp.generated.resources.retry_action
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -32,9 +31,9 @@ fun RequestFailedContent(
     ) {
         Text(message)
         Button(onClick = retry) {
-            Icon(Icons.Default.Replay, contentDescription = stringResource(Res.string.retry))
+            Icon(Icons.Default.Replay, contentDescription = stringResource(Res.string.retry_action))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(Res.string.retry))
+            Text(stringResource(Res.string.retry_action))
         }
     }
 }

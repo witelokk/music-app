@@ -22,14 +22,14 @@ actual fun EditPlaylistNameDialog(
         if (!showDialog) return@LaunchedEffect
 
         val title = getString(Res.string.edit_playlist_name_dialog_title)
-        val cancelTitle = getString(Res.string.cancel)
-        val yesTitle = getString(Res.string.yes)
+        val cancelTitle = getString(Res.string.cancel_action)
+        val saveTitle = getString(Res.string.save_action)
 
         val newName = showEditPlaylistAlert(
             currentName = currentName,
             title = title,
             cancelTitle = cancelTitle,
-            yesTitle = yesTitle,
+            saveTitle = saveTitle,
         )
         if (!newName.isNullOrBlank() && newName != currentName) {
             onNameChange(newName)
@@ -44,7 +44,7 @@ private suspend fun showEditPlaylistAlert(
     currentName: String,
     title: String,
     cancelTitle: String,
-    yesTitle: String,
+    saveTitle: String,
 ): String? =
     suspendCancellableCoroutine { continuation ->
         val controller = topViewController()
@@ -72,7 +72,7 @@ private suspend fun showEditPlaylistAlert(
             }
 
             val save = UIAlertAction.actionWithTitle(
-                title = yesTitle,
+                title = saveTitle,
                 style = UIAlertActionStyleDefault
             ) { _ ->
                 val textField = alert.textFields?.first() as? UITextField

@@ -18,17 +18,16 @@ actual fun DeletePlaylistDialog(
     if (!showDialog) return
 
     AlertDialog(
-        title = { Text(stringResource(Res.string.delete_playlists_dialog_title)) },
+        title = { Text(stringResource(Res.string.delete_playlist_dialog_title)) },
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(stringResource(Res.string.cancel))
+                Text(stringResource(Res.string.cancel_action))
             }
             TextButton(onClick = onConfirmDelete) {
-                Text(stringResource(Res.string.yes))
+                Text(stringResource(Res.string.delete_menu_item))
             }
         },
-        text = { Text(stringResource(Res.string.delete_playlists_dialog_text, playlistName)) },
+        text = { Text(stringResource(Res.string.delete_playlist_dialog_text, playlistName)) },
     )
 }
-

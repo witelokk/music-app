@@ -18,13 +18,13 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
 
     SongListScreen(
         navController,
-        title = stringResource(Res.string.queue),
+        title = stringResource(Res.string.queue_screen_title),
         songs = state.songs,
         playlists = state.playlists,
         playerState = state.playerState,
         isLoading = state.isLoading,
         showContent = true,
-        emptyMessage = stringResource(Res.string.queue_is_empty),
+        emptyMessage = stringResource(Res.string.queue_empty_message),
         showPlayAllAction = false,
         showAddToQueueMenuItem = false,
         songCacheState = viewModel::songCacheState,
@@ -44,7 +44,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         extraSongMenuItems = { song, menuExpanded ->
             val index = state.songs.indexOfFirst { it.id == song.id }
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.remove_from_queue)) },
+                text = { Text(stringResource(Res.string.remove_from_queue_menu_item)) },
                 onClick = {
                     if (index != -1) {
                         viewModel.removeSongFromQueue(index)

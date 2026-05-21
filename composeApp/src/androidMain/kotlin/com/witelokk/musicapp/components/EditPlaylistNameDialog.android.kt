@@ -23,10 +23,10 @@ actual fun EditPlaylistNameDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(stringResource(Res.string.cancel))
+                Text(stringResource(Res.string.cancel_action))
             }
             TextButton(onClick = onConfirm) {
-                Text(stringResource(Res.string.yes))
+                Text(stringResource(Res.string.save_action))
             }
         },
         text = {
@@ -37,4 +37,3 @@ actual fun EditPlaylistNameDialog(
         },
     )
 }
-

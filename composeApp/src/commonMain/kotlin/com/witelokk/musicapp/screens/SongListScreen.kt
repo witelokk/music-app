@@ -45,10 +45,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.back
-import musicapp.composeapp.generated.resources.play
-import musicapp.composeapp.generated.resources.playlist_is_empty
-import musicapp.composeapp.generated.resources.shuffle_play
+import musicapp.composeapp.generated.resources.navigate_back_content_description
+import musicapp.composeapp.generated.resources.play_content_description
+import musicapp.composeapp.generated.resources.playlist_empty_message
+import musicapp.composeapp.generated.resources.shuffle_play_content_description
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +61,7 @@ internal fun SongListScreen(
     playerState: PlayerState?,
     isLoading: Boolean,
     showContent: Boolean,
-    emptyMessage: String = stringResource(Res.string.playlist_is_empty),
+    emptyMessage: String = stringResource(Res.string.playlist_empty_message),
     showFavorite: Boolean = true,
     showPlayAllAction: Boolean = true,
     showAddToQueueMenuItem: Boolean = true,
@@ -127,16 +127,16 @@ internal fun SongListScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                     }
                 },
                 actions = {
                     if (showPlayAllAction) {
                         IconButton(onClick = { onShufflePlayAllSongs(isOffline) }) {
-                            Icon(Icons.Outlined.Shuffle, stringResource(Res.string.shuffle_play))
+                            Icon(Icons.Outlined.Shuffle, stringResource(Res.string.shuffle_play_content_description))
                         }
                         IconButton(onClick = { onPlayAllSongs(isOffline) }) {
-                            Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play))
+                            Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play_content_description))
                         }
                     }
                     topBarActions()

@@ -33,9 +33,9 @@ actual fun ArtistsDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(Res.string.artists)) },
+        title = { Text(stringResource(Res.string.artists_dialog_title)) },
         confirmButton = {
-            TextButton(onClick = onDismissRequest) { Text(stringResource(Res.string.close)) }
+            TextButton(onClick = onDismissRequest) { Text(stringResource(Res.string.close_action)) }
         },
         text = {
             LazyColumn {

@@ -114,9 +114,9 @@ fun RegistrationScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.sign_up_title)) }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(Res.string.registration_screen_title)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                 }
             })
         }) { innerPadding ->
@@ -133,7 +133,7 @@ fun RegistrationScreen(
             OutlinedTextField(
                 name,
                 { name = it },
-                placeholder = { Text(stringResource(Res.string.name)) },
+                placeholder = { Text(stringResource(Res.string.name_field_placeholder)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
@@ -144,7 +144,7 @@ fun RegistrationScreen(
             OutlinedTextField(
                 email,
                 { email = it },
-                placeholder = { Text(stringResource(Res.string.email)) },
+                placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 enabled = registration.email == null,
                 isError = isEmailFieldError,
@@ -165,7 +165,7 @@ fun RegistrationScreen(
                 },
                 enabled = name.isNotEmpty() && email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(Res.string.register)) }
+            ) { Text(stringResource(Res.string.register_action)) }
 
             TextButton(
                 onClick = {
@@ -174,7 +174,7 @@ fun RegistrationScreen(
                 enabled = name.isNotEmpty() && email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(Res.string.i_already_have_a_code))
+                Text(stringResource(Res.string.already_have_code_action))
             }
 
         }

@@ -16,7 +16,7 @@ class MediaDownloadService(
     FOREGROUND_NOTIFICATION_ID,
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
     "download_channel",
-    R.string.download_channel_name,
+    R.string.downloads_notification_channel_name,
     0
 ) {
     private val _downloadManager by inject<DownloadManager>()

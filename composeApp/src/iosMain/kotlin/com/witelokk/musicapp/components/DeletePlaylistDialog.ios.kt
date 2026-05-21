@@ -20,10 +20,10 @@ actual fun DeletePlaylistDialog(
     LaunchedEffect(showDialog, playlistName) {
         if (!showDialog) return@LaunchedEffect
 
-        val title = getString(Res.string.delete_playlists_dialog_title)
-        val message = getString(Res.string.delete_playlists_dialog_text, playlistName)
-        val cancelTitle = getString(Res.string.cancel)
-        val deleteTitle = getString(Res.string.delete)
+        val title = getString(Res.string.delete_playlist_dialog_title)
+        val message = getString(Res.string.delete_playlist_dialog_text, playlistName)
+        val cancelTitle = getString(Res.string.cancel_action)
+        val deleteTitle = getString(Res.string.delete_menu_item)
 
         val confirmed = showDeletePlaylistAlert(
             title = title,

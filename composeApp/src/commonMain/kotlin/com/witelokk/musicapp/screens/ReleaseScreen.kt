@@ -8,8 +8,8 @@ import androidx.navigation.NavController
 import com.witelokk.musicapp.components.RequestFailedContent
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.connection_failed
-import musicapp.composeapp.generated.resources.load_failed
+import musicapp.composeapp.generated.resources.connection_failed_message
+import musicapp.composeapp.generated.resources.load_failed_message
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import com.witelokk.musicapp.viewmodel.ReleaseScreenViewModel
@@ -26,8 +26,8 @@ fun ReleaseScreen(
     viewModel: ReleaseScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val loadFailedMessage = stringResource(Res.string.load_failed)
-    val connectionFailedMessage = stringResource(Res.string.connection_failed)
+    val loadFailedMessage = stringResource(Res.string.load_failed_message)
+    val connectionFailedMessage = stringResource(Res.string.connection_failed_message)
 
     LaunchedEffect(Unit) {
         viewModel.loadRelease(route.id)

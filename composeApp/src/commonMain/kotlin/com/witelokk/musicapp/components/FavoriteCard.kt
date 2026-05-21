@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.favorite_songs
+import musicapp.composeapp.generated.resources.favorite_songs_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,7 +39,7 @@ fun FavoriteCard(modifier: Modifier = Modifier) {
             }
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    stringResource(Res.string.favorite_songs),
+                    stringResource(Res.string.favorite_songs_title),
                     style = MaterialTheme.typography.titleMedium
                 )
             }

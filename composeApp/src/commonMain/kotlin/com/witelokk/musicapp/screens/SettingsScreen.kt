@@ -60,16 +60,16 @@ fun SettingsScreen(
         }
     }
     Scaffold(topBar = {
-        TopAppBar(title = { Text(stringResource(Res.string.settings)) }, navigationIcon = {
+        TopAppBar(title = { Text(stringResource(Res.string.settings_screen_title)) }, navigationIcon = {
             IconButton(onClick = { navController.navigateUp() }) {
-                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
             }
         })
     }) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
                 Text(
-                    stringResource(Res.string.account),
+                    stringResource(Res.string.settings_account_section_title),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -87,9 +87,9 @@ fun SettingsScreen(
                         ), radius = 100f, fontSize = 32.sp, modifier = Modifier.size(100.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(Res.string.name_label, state.accountName ?: ""))
+                        Text(stringResource(Res.string.settings_name_label, state.accountName ?: ""))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(stringResource(Res.string.email_label, state.accountEmail ?: ""))
+                        Text(stringResource(Res.string.settings_email_label, state.accountEmail ?: ""))
                     }
                     IconButton(onClick = {
                         viewModel.logout()
@@ -101,7 +101,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    stringResource(Res.string.app),
+                    stringResource(Res.string.settings_app_section_title),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -115,15 +115,15 @@ fun SettingsScreen(
                         .height(66.dp)
                         .padding(horizontal = 16.dp)
                 ) {
-                    Text(stringResource(Res.string.theme), modifier = Modifier.weight(1f))
+                    Text(stringResource(Res.string.settings_theme_label), modifier = Modifier.weight(1f))
 
                     ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
                         OutlinedTextField(
                             when (state.theme) {
-                                "system" -> stringResource(Res.string.system)
-                                "light" -> stringResource(Res.string.light)
-                                "dark" -> stringResource(Res.string.dark)
-                                else -> stringResource(Res.string.system)
+                                "system" -> stringResource(Res.string.settings_theme_system_option)
+                                "light" -> stringResource(Res.string.settings_theme_light_option)
+                                "dark" -> stringResource(Res.string.settings_theme_dark_option)
+                                else -> stringResource(Res.string.settings_theme_system_option)
                             },
                             onValueChange = {},
                             readOnly = true,
@@ -136,7 +136,7 @@ fun SettingsScreen(
                         )
                         ExposedDropdownMenu(expanded, { expanded = false }) {
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.system)) },
+                                text = { Text(stringResource(Res.string.settings_theme_system_option)) },
                                 onClick = {
                                     viewModel.setTheme("system")
                                     themeViewModel.setTheme("system")
@@ -144,7 +144,7 @@ fun SettingsScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.light)) },
+                                text = { Text(stringResource(Res.string.settings_theme_light_option)) },
                                 onClick = {
                                     viewModel.setTheme("light")
                                     themeViewModel.setTheme("light")
@@ -152,7 +152,7 @@ fun SettingsScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.dark)) },
+                                text = { Text(stringResource(Res.string.settings_theme_dark_option)) },
                                 onClick = {
                                     viewModel.setTheme("dark")
                                     themeViewModel.setTheme("dark")

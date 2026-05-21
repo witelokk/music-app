@@ -90,7 +90,7 @@ fun Search(
             onExpandedChange = { expanded = it },
             placeholder = {
                 Text(
-                    stringResource(Res.string.search_placeholder),
+                    stringResource(Res.string.search_field_placeholder),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -249,7 +249,7 @@ fun SearchHistoryContent(
     }
 
     Column(modifier = modifier) {
-        Text(stringResource(Res.string.recent_searches), modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold)
+        Text(stringResource(Res.string.recent_searches_title), modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold)
         SearchResults(
             results.reversed(),
             itemModifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -257,7 +257,7 @@ fun SearchHistoryContent(
             songDownloadState = songDownloadState
         )
         TextButton(onClearClick) {
-            Text(stringResource(Res.string.clear), modifier = Modifier.padding(start = 8.dp))
+            Text(stringResource(Res.string.clear_action), modifier = Modifier.padding(start = 8.dp))
         }
     }
 }
@@ -265,7 +265,7 @@ fun SearchHistoryContent(
 @Composable
 fun SearchEmptyContent(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(stringResource(Res.string.no_results), modifier = Modifier.padding(16.dp))
+        Text(stringResource(Res.string.search_no_results_message), modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -276,11 +276,11 @@ fun SearchFailedContent(retry: () -> Unit, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(stringResource(Res.string.search_failed), modifier = Modifier.padding(16.dp))
+        Text(stringResource(Res.string.search_failed_message), modifier = Modifier.padding(16.dp))
         Button(onClick = { retry() }) {
-            Icon(Icons.Default.Replay, stringResource(Res.string.retry))
+            Icon(Icons.Default.Replay, stringResource(Res.string.retry_action))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(Res.string.retry))
+            Text(stringResource(Res.string.retry_action))
         }
     }
 }

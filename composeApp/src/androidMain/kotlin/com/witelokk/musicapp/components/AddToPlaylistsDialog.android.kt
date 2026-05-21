@@ -39,7 +39,7 @@ actual fun AddToPlaylistsDialog(
             TextButton(
                 enabled = (playlists.isNotEmpty() && selectedPlaylists.value.isNotEmpty()),
                 onClick = { onAddRequest(selectedPlaylists.value.toList()) }
-            ) { Text(stringResource(Res.string.add)) }
+            ) { Text(stringResource(Res.string.add_action)) }
         },
         text = {
             Column {

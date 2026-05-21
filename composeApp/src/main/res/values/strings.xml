@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="artists">Artists</string>
+    <string name="artists_dialog_title">Artists</string>
 </resources>

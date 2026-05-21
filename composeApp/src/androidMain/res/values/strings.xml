@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">MusicApp</string>
-    <string name="download_channel_name">Download</string>
+    <string name="downloads_notification_channel_name">Download</string>
 </resources>

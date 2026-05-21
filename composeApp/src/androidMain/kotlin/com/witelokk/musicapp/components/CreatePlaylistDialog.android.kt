@@ -20,12 +20,12 @@ actual fun CreatePlaylistDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(Res.string.create_playlist)) },
+        title = { Text(stringResource(Res.string.create_playlist_dialog_title)) },
         confirmButton = {
             TextButton(
                 onClick = onCreate,
                 enabled = playlistName.isNotEmpty()
-            ) { Text(stringResource(Res.string.create)) }
+            ) { Text(stringResource(Res.string.create_action)) }
         },
         text = {
             androidx.compose.material3.OutlinedTextField(

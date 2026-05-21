@@ -21,8 +21,8 @@ actual fun ArtistsDialog(
     LaunchedEffect(showDialog, song) {
         if (!showDialog) return@LaunchedEffect
 
-        val title = getString(Res.string.artists)
-        val closeTitle = getString(Res.string.close)
+        val title = getString(Res.string.artists_dialog_title)
+        val closeTitle = getString(Res.string.close_action)
 
         showArtistsAlert(
             song = song,

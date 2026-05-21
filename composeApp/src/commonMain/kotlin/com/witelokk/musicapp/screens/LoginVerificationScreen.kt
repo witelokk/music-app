@@ -84,7 +84,7 @@ fun LoginVerificationScreen(
             snackHostState.showSnackbar(
                 getString(Res.string.not_registered_error_toast),
                 getString(
-                    Res.string.sign_up
+                    Res.string.sign_up_action
                 )
             ).run {
                 navController.navigate(Registration(loginVerification.email, code))
@@ -102,10 +102,10 @@ fun LoginVerificationScreen(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.confirm_your_login)) },
+                title = { Text(stringResource(Res.string.login_verification_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                     }
                 })
         }, modifier = Modifier.imePadding()
@@ -119,7 +119,7 @@ fun LoginVerificationScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                stringResource(Res.string.code_prompt),
+                stringResource(Res.string.verification_code_prompt),
                 textAlign = TextAlign.Center
             )
 
@@ -147,7 +147,7 @@ fun LoginVerificationScreen(
                 viewModel.signIn(loginVerification.email, code)
                 viewModel.clearState()
             }, enabled = isButtonEnabled, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.sign_in))
+                Text(stringResource(Res.string.sign_in_action))
             }
         }
     }

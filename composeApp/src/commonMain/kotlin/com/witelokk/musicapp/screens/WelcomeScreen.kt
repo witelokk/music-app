@@ -92,7 +92,7 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    stringResource(Res.string.welcome_message),
+                    stringResource(Res.string.welcome_message_text),
                     textAlign = TextAlign.Center
                 )
 
@@ -107,7 +107,7 @@ fun WelcomeScreen(
                     },
                     modifier = Modifier.requiredWidth(284.dp)
                 ) {
-                        Text(stringResource(Res.string.sign_in))
+                        Text(stringResource(Res.string.sign_in_action))
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -121,12 +121,12 @@ fun WelcomeScreen(
                     },
                     modifier = Modifier.requiredWidth(284.dp)
                 ) {
-                        Text(stringResource(Res.string.sign_up))
+                        Text(stringResource(Res.string.sign_up_action))
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(stringResource(Res.string.sign_in_with))
+                Text(stringResource(Res.string.sign_in_with_label))
 
                 Spacer(modifier = Modifier.height(4.dp))
 

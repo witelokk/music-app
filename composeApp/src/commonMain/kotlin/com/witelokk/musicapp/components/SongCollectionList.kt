@@ -22,8 +22,8 @@ import com.witelokk.musicapp.data.PlayerState
 import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.flow.StateFlow
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.add_to_playlist
-import musicapp.composeapp.generated.resources.add_to_queue
+import musicapp.composeapp.generated.resources.add_to_playlist_menu_item
+import musicapp.composeapp.generated.resources.add_to_queue_menu_item
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -76,7 +76,7 @@ fun SongCollectionList(
                     .animateItem()
             ) { menuExpanded ->
                 DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.add_to_playlist)) },
+                    text = { Text(stringResource(Res.string.add_to_playlist_menu_item)) },
                     onClick = {
                         menuExpanded.value = false
                         onAddToPlaylist(song)
@@ -84,7 +84,7 @@ fun SongCollectionList(
                 )
                 if (showAddToQueueMenuItem) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.add_to_queue)) },
+                        text = { Text(stringResource(Res.string.add_to_queue_menu_item)) },
                         onClick = {
                             onAddToQueue(song)
                             menuExpanded.value = false

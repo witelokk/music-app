@@ -80,8 +80,8 @@ fun HomeScreen(
     val state by viewModel.state.collectAsState()
     val searchState by searchViewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val loadFailedMessage = stringResource(Res.string.load_failed)
-    val connectionFailedMessage = stringResource(Res.string.connection_failed)
+    val loadFailedMessage = stringResource(Res.string.load_failed_message)
+    val connectionFailedMessage = stringResource(Res.string.connection_failed_message)
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val lifecycleOwner = navBackStackEntry?.lifecycle
@@ -258,7 +258,7 @@ private fun HomeScreenScaffoldContent(
                 item {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            stringResource(Res.string.playlists),
+                            stringResource(Res.string.playlists_section_title),
                             style = MaterialTheme.typography.labelLarge,
                             modifier = Modifier.padding(24.dp)
                         )
@@ -296,7 +296,7 @@ private fun HomeScreenScaffoldContent(
                     item {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                stringResource(Res.string.followed_artists),
+                                stringResource(Res.string.followed_artists_section_title),
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(24.dp)
                             )
@@ -309,7 +309,7 @@ private fun HomeScreenScaffoldContent(
                                 items(state.feed.followedArtists.artists) { artist ->
                                     Card(
                                         title = artist.name,
-                                        subtitle = stringResource(Res.string.artist),
+                                        subtitle = stringResource(Res.string.artist_card_subtitle),
                                         pictureUrl = artist.avatarUrl,
                                         modifier = Modifier.clickable {
                                             navController.navigate(
@@ -424,8 +424,8 @@ private fun SearchContent(
 @Composable
 fun ReleaseType.toLocalizedString(): String {
     return when(this) {
-        ReleaseType.single -> stringResource(Res.string.single)
-        ReleaseType.album -> stringResource(Res.string.album)
-        ReleaseType.ep -> stringResource(Res.string.ep)
+        ReleaseType.single -> stringResource(Res.string.release_type_single)
+        ReleaseType.album -> stringResource(Res.string.release_type_album)
+        ReleaseType.ep -> stringResource(Res.string.release_type_ep)
     }
 }

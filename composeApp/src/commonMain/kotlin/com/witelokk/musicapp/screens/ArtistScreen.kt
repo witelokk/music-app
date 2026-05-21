@@ -153,7 +153,7 @@ fun ArtistScreen(
             }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
-                        Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back)
+                        Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description)
                     )
                 }
             }, actions = {
@@ -167,7 +167,7 @@ fun ArtistScreen(
                 IconButton(onClick = {
                     viewModel.playAllSongs()
                 }) {
-                    Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play))
+                    Icon(Icons.Outlined.PlayArrow, stringResource(Res.string.play_content_description))
                 }
             }, scrollBehavior = scrollBehavior)
         }) { innerPadding ->
@@ -182,7 +182,7 @@ fun ArtistScreen(
             }
         } else if (state.isError) {
             RequestFailedContent(
-                message = stringResource(Res.string.load_failed),
+                message = stringResource(Res.string.load_failed_message),
                 retry = { viewModel.loadArtist(artist.id) },
                 modifier = Modifier.padding(innerPadding),
             )
@@ -214,7 +214,7 @@ fun ArtistScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                stringResource(Res.string.popular),
+                                stringResource(Res.string.artist_popular_section_title),
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
                             )
@@ -245,7 +245,7 @@ fun ArtistScreen(
                             cacheState = cacheState,
                         ) { menuExpanded ->
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.add_to_playlist)) },
+                                text = { Text(stringResource(Res.string.add_to_playlist_menu_item)) },
                                 onClick = {
                                     menuExpanded.value = false
                                     songToAddToPlaylists = song
@@ -253,7 +253,7 @@ fun ArtistScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.add_to_queue)) },
+                                text = { Text(stringResource(Res.string.add_to_queue_menu_item)) },
                                 onClick = {
                                     viewModel.addSongToQueue(song)
                                     menuExpanded.value = false
@@ -265,7 +265,7 @@ fun ArtistScreen(
                     item(span = { GridItemSpan(2) }) {
                         Column {
                             Text(
-                                stringResource(Res.string.releases),
+                                stringResource(Res.string.artist_releases_section_title),
                                 style = MaterialTheme.typography.labelLarge,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
                             )
@@ -282,7 +282,7 @@ fun ArtistScreen(
                                             viewModel.filterReleases(null)
                                         }
                                     },
-                                    { Text(stringResource(Res.string.albums)) })
+                                    { Text(stringResource(Res.string.artist_albums_filter_label)) })
                                 FilterChip(singlesEPFilter,
                                     onClick = {
                                         singlesEPFilter = !singlesEPFilter; albumsFilter = false;
@@ -293,7 +293,7 @@ fun ArtistScreen(
                                             viewModel.filterReleases(null)
                                         }
                                     },
-                                    { Text(stringResource(Res.string.singles_and_eps)) })
+                                    { Text(stringResource(Res.string.artist_singles_and_eps_filter_label)) })
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
@@ -306,9 +306,9 @@ fun ArtistScreen(
                         Card(
                             title = release.name,
                             subtitle = when (release.type) {
-                                ReleaseType.single -> stringResource(Res.string.single)
-                                ReleaseType.album -> stringResource(Res.string.album)
-                                ReleaseType.ep -> stringResource(Res.string.singles_and_eps)
+                                ReleaseType.single -> stringResource(Res.string.release_type_single)
+                                ReleaseType.album -> stringResource(Res.string.release_type_album)
+                                ReleaseType.ep -> stringResource(Res.string.release_type_ep)
                             } + ", " + release.releasedAt.substring(0, 4),
                             pictureUrl = release.coverUrl,
                             modifier = Modifier

@@ -21,11 +21,11 @@ import com.witelokk.musicapp.components.EditPlaylistNameDialog
 import com.witelokk.musicapp.components.RequestFailedContent
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
-import musicapp.composeapp.generated.resources.connection_failed
-import musicapp.composeapp.generated.resources.delete
-import musicapp.composeapp.generated.resources.edit
-import musicapp.composeapp.generated.resources.load_failed
-import musicapp.composeapp.generated.resources.remove_from_playlist
+import musicapp.composeapp.generated.resources.connection_failed_message
+import musicapp.composeapp.generated.resources.delete_menu_item
+import musicapp.composeapp.generated.resources.edit_menu_item
+import musicapp.composeapp.generated.resources.load_failed_message
+import musicapp.composeapp.generated.resources.remove_from_playlist_menu_item
 import org.jetbrains.compose.resources.stringResource
 import com.witelokk.musicapp.viewmodel.PlaylistScreenViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -42,8 +42,8 @@ fun PlaylistScreen(
     viewModel: PlaylistScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val loadFailedMessage = stringResource(Res.string.load_failed)
-    val connectionFailedMessage = stringResource(Res.string.connection_failed)
+    val loadFailedMessage = stringResource(Res.string.load_failed_message)
+    val connectionFailedMessage = stringResource(Res.string.connection_failed_message)
 
     var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -112,14 +112,14 @@ fun PlaylistScreen(
                 onDismissRequest = { playlistMenuExpanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.edit)) },
+                    text = { Text(stringResource(Res.string.edit_menu_item)) },
                     onClick = {
                         playlistMenuExpanded = false
                         showEditPlaylistDialog = true
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(Res.string.delete)) },
+                    text = { Text(stringResource(Res.string.delete_menu_item)) },
                     onClick = {
                         playlistMenuExpanded = false
                         showDeletePlaylistDialog = true
@@ -136,7 +136,7 @@ fun PlaylistScreen(
         } else null,
         extraSongMenuItems = { song, menuExpanded ->
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.remove_from_playlist)) },
+                text = { Text(stringResource(Res.string.remove_from_playlist_menu_item)) },
                 onClick = {
                     viewModel.removeSongFromPlaylist(song)
                     menuExpanded.value = false

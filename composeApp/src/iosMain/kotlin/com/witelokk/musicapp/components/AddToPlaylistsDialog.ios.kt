@@ -23,7 +23,7 @@ actual fun AddToPlaylistsDialog(
         if (!showDialog || playlists.isEmpty()) return@LaunchedEffect
 
         val title = getString(Res.string.add_to_playlists_dialog_title)
-        val cancelTitle = getString(Res.string.cancel)
+        val cancelTitle = getString(Res.string.cancel_action)
 
         val selected = showAddToPlaylistsAlert(
             playlists = playlists,

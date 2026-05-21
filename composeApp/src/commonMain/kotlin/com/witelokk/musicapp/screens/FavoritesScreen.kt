@@ -39,13 +39,13 @@ fun FavoritesScreen(
 
     SongListScreen(
         navController = navController,
-        title = stringResource(Res.string.favorite_songs),
+        title = stringResource(Res.string.favorite_songs_title),
         songs = state.songs,
         playlists = state.playlists,
         playerState = state.playerState,
         isLoading = state.isLoading,
         showContent = !state.isLoading && state.hasObservedFavorites,
-        emptyMessage = stringResource(Res.string.no_favorite_songs),
+        emptyMessage = stringResource(Res.string.no_favorite_songs_message),
         showFavorite = false,
         songCacheState = viewModel::songCacheState,
         onLoadPlaylists = viewModel::loadPlaylists,
@@ -63,7 +63,7 @@ fun FavoritesScreen(
         snackbarHost = { _ -> SnackbarHost(snackbarHostState) },
         extraSongMenuItems = { song, _ ->
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.remove_from_favorite_songs)) },
+                text = { Text(stringResource(Res.string.remove_from_favorite_songs_menu_item)) },
                 onClick = { viewModel.changeSongFavorite(song, false) }
             )
         }

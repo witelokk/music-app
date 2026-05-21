@@ -80,9 +80,9 @@ fun LoginScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.login_title)) }, navigationIcon = {
+            TopAppBar(title = { Text(stringResource(Res.string.login_screen_title)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                    Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                 }
             })
         }
@@ -102,7 +102,7 @@ fun LoginScreen(
                     email = it
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                placeholder = { Text(stringResource(Res.string.email)) },
+                placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },
                 isError = isEmailFieldError, // todo: fix
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +115,7 @@ fun LoginScreen(
                 onClick = { viewModel.sendVerificationCode(email) },
                 enabled = email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(Res.string.send_verification_code)) }
+            ) { Text(stringResource(Res.string.send_verification_code_action)) }
 
             TextButton(
                 onClick = {
@@ -124,7 +124,7 @@ fun LoginScreen(
                 enabled = email.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(Res.string.i_already_have_a_code))
+                Text(stringResource(Res.string.already_have_code_action))
             }
         }
     }

@@ -21,10 +21,10 @@ actual fun CreatePlaylistDialog(
     LaunchedEffect(showDialog) {
         if (!showDialog) return@LaunchedEffect
 
-        val title = getString(Res.string.create_playlist)
-        val placeholder = getString(Res.string.name)
-        val cancelTitle = getString(Res.string.cancel)
-        val createTitle = getString(Res.string.create)
+        val title = getString(Res.string.create_playlist_dialog_title)
+        val placeholder = getString(Res.string.name_field_placeholder)
+        val cancelTitle = getString(Res.string.cancel_action)
+        val createTitle = getString(Res.string.create_action)
 
         val name = showCreatePlaylistAlert(
             title = title,

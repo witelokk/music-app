@@ -86,7 +86,7 @@ fun RegistrationVerificationScreen(
         if (state.userAlreadyExists) {
             snackHostState.showSnackbar(
                 getString(Res.string.already_registered_toast),
-                getString(Res.string.sign_in)
+                getString(Res.string.sign_in_action)
             ).run {
                 viewModel.singIn(registrationVerification.email, code)
             }
@@ -103,10 +103,10 @@ fun RegistrationVerificationScreen(
         snackbarHost = { SnackbarHost(snackHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.confirm_registration)) },
+                title = { Text(stringResource(Res.string.registration_verification_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.back))
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                     }
                 })
         },
@@ -121,7 +121,7 @@ fun RegistrationVerificationScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                stringResource(Res.string.code_prompt),
+                stringResource(Res.string.verification_code_prompt),
                 textAlign = TextAlign.Center
             )
 
@@ -152,7 +152,7 @@ fun RegistrationVerificationScreen(
                     code
                 )
             }, enabled = isButtonEnabled, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.sign_up))
+                Text(stringResource(Res.string.sign_up_action))
             }
         }
     }
