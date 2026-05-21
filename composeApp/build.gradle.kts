@@ -79,6 +79,9 @@ kotlin {
             implementation(libs.datastore)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.connectivity.core)
+            implementation(libs.connectivity.http)
+            implementation(libs.connectivity.compose.device)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

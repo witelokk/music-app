@@ -84,6 +84,7 @@ fun SongListItem(
         )
 
         SongActions(
+            isAvailable = isAvailable,
             showFavorite = showFavorite,
             isFavorite = song.isFavorite,
             menuExpanded = menuExpanded,
@@ -255,6 +256,7 @@ private fun CacheStateIndicator(cacheState: MediaCacheState) {
 
 @Composable
 private fun SongActions(
+    isAvailable: Boolean,
     showFavorite: Boolean,
     isFavorite: Boolean,
     menuExpanded: Boolean,
@@ -264,17 +266,31 @@ private fun SongActions(
     onMenuClick: () -> Unit,
     onMenuDismiss: () -> Unit,
 ) {
+    LaunchedEffect(isAvailable) {
+        if (!isAvailable && menuExpanded) {
+            onMenuDismiss()
+        }
+    }
+
     if (showFavorite) {
-        IconButton(onClick = onFavoriteClick, modifier = Modifier.offset(x = 16.dp)) {
+        IconButton(
+            onClick = onFavoriteClick,
+            enabled = isAvailable,
+            modifier = Modifier.offset(x = 16.dp)
+        ) {
             Icon(
                 if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = null,
-                tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
         }
     }
 
-    IconButton(onClick = onMenuClick, modifier = Modifier.offset(x = 16.dp)) {
+    IconButton(
+        onClick = onMenuClick,
+        enabled = isAvailable,
+        modifier = Modifier.offset(x = 16.dp)
+    ) {
         Icon(Icons.Default.MoreVert, "More")
         DropdownMenu(menuExpanded, onDismissRequest = onMenuDismiss) {
             dropdownMenuItems(menuExpandedState)

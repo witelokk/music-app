@@ -38,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongListItem
+import com.witelokk.musicapp.rememberHttpConnectivityState
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
+import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.delay
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
@@ -55,6 +58,7 @@ fun FavoritesScreen(
     viewModel: FavoritesScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val connectivityState = rememberHttpConnectivityState()
     val snackbarHostState = remember { SnackbarHostState() }
     val loadFailedMessage = stringResource(Res.string.favorite_songs_load_failed)
     val connectionFailedMessage = stringResource(Res.string.favorite_songs_connection_failed)
@@ -163,15 +167,18 @@ fun FavoritesScreen(
                     LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                         items(state.songs, key = { it.id }) { song ->
                             val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
+                            val isAvailable = connectivityState.status is Connectivity.Status.Connected ||
+                                cacheState == MediaCacheState.CACHED
 
                             SongListItem(
                                 song = song,
                                 isActive = state.playerState?.currentSong?.id == song.id,
                                 isPlaying = state.playerState?.playing ?: false,
                                 showFavorite = false,
+                                isAvailable = isAvailable,
                                 cacheState = cacheState,
                                 modifier = Modifier
-                                    .clickable { viewModel.playSong(song) }
+                                    .clickable(enabled = isAvailable) { viewModel.playSong(song) }
                                     .padding(horizontal = 20.dp, vertical = 8.dp)
                                     .animateItem()
                             ) { menuExpanded ->

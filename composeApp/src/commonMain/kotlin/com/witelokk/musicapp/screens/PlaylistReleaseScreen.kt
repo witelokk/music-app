@@ -39,13 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.DeletePlaylistDialog
 import com.witelokk.musicapp.components.EditPlaylistNameDialog
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
+import com.witelokk.musicapp.rememberHttpConnectivityState
 import com.witelokk.musicapp.viewmodel.PlaylistReleaseScreenViewModel
+import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -73,6 +76,8 @@ fun PlaylistReleaseScreen(
     val connectionFailedMessage = stringResource(Res.string.connection_failed)
 
     val scope = rememberCoroutineScope()
+
+    val connectivityState = rememberHttpConnectivityState()
 
     var addToPlaylistDialogSong by rememberSaveable { mutableStateOf<Song?>(null) }
     var showDeletePlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -219,16 +224,20 @@ fun PlaylistReleaseScreen(
                 }
                 LazyColumn(contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
                     items(state.songs, key = { it.id }) { song ->
-                        val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
+                        val cacheState by viewModel.songCacheState(song)
+                            .collectAsStateWithLifecycle()
+                        val isAvailable = connectivityState.status is Connectivity.Status.Connected ||
+                            cacheState == MediaCacheState.CACHED
 
                         SongListItem(
                             song = song,
                             isActive = state.playerState?.currentSong?.id == song.id,
                             isPlaying = state.playerState?.playing ?: false,
+                            isAvailable = isAvailable,
                             cacheState = cacheState,
                             onFavoriteClick = { viewModel.toggleSongFavorite(song) },
                             modifier = Modifier
-                                .clickable { viewModel.playSong(song) }
+                                .clickable(enabled = isAvailable) { viewModel.playSong(song) }
                                 .padding(horizontal = 20.dp, vertical = 8.dp)) { menuExpanded ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.add_to_playlist)) },

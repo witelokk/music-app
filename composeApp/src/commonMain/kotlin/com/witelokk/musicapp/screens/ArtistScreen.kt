@@ -54,13 +54,16 @@ import coil3.compose.AsyncImage
 import com.witelokk.musicapp.add
 import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
+import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
 import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.RequestFailedContent
 import com.witelokk.musicapp.components.SongListItem
+import com.witelokk.musicapp.rememberHttpConnectivityState
 import com.witelokk.musicapp.viewmodel.ArtistScreenViewModel
 import com.witelokk.musicapp.withoutBottom
+import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
@@ -81,6 +84,7 @@ fun ArtistScreen(
     viewModel: ArtistScreenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val connectivityState = rememberHttpConnectivityState()
 
     var showLoadingIndicator by remember { mutableStateOf(false) }
     LaunchedEffect(state.isLoading) {
@@ -221,12 +225,15 @@ fun ArtistScreen(
                         state.artist?.popularSongs?.songs ?: listOf(),
                         span = { GridItemSpan(2) }) { song ->
                         val cacheState by viewModel.songCacheState(song).collectAsStateWithLifecycle()
+                        val isAvailable = connectivityState.status is Connectivity.Status.Connected ||
+                            cacheState == MediaCacheState.CACHED
 
                         SongListItem(
                             song = song,
                             showDuration = true,
+                            isAvailable = isAvailable,
                             modifier = Modifier
-                                .clickable {
+                                .clickable(enabled = isAvailable) {
                                     viewModel.playPopularSong(song)
                                 }
                                 .padding(horizontal = 4.dp, vertical = 8.dp),

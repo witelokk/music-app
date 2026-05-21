@@ -46,10 +46,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.witelokk.musicapp.rememberHttpConnectivityState
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.data.Playlist
+import dev.jordond.connectivity.Connectivity
 import kotlinx.coroutines.flow.StateFlow
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
@@ -142,6 +144,8 @@ fun SearchResults(
     filter: String? = null,
     songDownloadState: ((Song) -> StateFlow<MediaCacheState>)? = null,
 ) {
+    val connectivityState = rememberHttpConnectivityState()
+
     LazyColumn(modifier = modifier) {
         items(results) {
             if (it.type == SearchResultItem.Type.song && (filter == "Songs" || filter == null)) {
@@ -149,10 +153,13 @@ fun SearchResults(
                 val cacheState by (songDownloadState?.invoke(song))
                     ?.collectAsStateWithLifecycle(MediaCacheState.NOT_CACHED)
                     ?: rememberSaveable(song.id) { mutableStateOf(MediaCacheState.NOT_CACHED) }
+                val isAvailable = connectivityState.status is Connectivity.Status.Connected ||
+                    cacheState == MediaCacheState.CACHED
 
                 SongListItem(
                     song,
-                    modifier = itemModifier.clickable { onResultClick(it) },
+                    modifier = itemModifier.clickable(enabled = isAvailable) { onResultClick(it) },
+                    isAvailable = isAvailable,
                     cacheState = cacheState,
                 )
             } else if (it.type == SearchResultItem.Type.artist && (filter == "Artists" || filter == null)) {

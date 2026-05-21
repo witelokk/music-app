@@ -6,7 +6,6 @@ import com.witelokk.musicapp.auth.AuthSession
 import com.witelokk.musicapp.auth.AuthStore
 import com.witelokk.musicapp.auth.TokenRefresher
 import com.witelokk.musicapp.api.apis.ArtistsApi
-import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.apis.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.FollowingsApi
@@ -40,6 +39,7 @@ import com.witelokk.musicapp.viewmodel.RegistrationVerificationScreenViewModel
 import com.witelokk.musicapp.viewmodel.SettingsScreenViewModel
 import com.witelokk.musicapp.viewmodel.ThemeViewModel
 import com.witelokk.musicapp.viewmodel.WelcomeScreenViewModel
+import dev.jordond.connectivity.Connectivity
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.HttpSend
