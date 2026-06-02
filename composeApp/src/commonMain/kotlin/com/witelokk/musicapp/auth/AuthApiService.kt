@@ -1,7 +1,7 @@
 package com.witelokk.musicapp.auth
 
 import com.witelokk.musicapp.SettingsRepository
-import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.CompatAuthApi
 import com.witelokk.musicapp.api.infrastructure.HttpResponse
 import com.witelokk.musicapp.api.models.CreateUserRequest
 import com.witelokk.musicapp.api.models.GetTokensByCodeRequest

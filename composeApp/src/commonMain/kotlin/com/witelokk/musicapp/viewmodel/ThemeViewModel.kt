@@ -13,8 +13,24 @@ class ThemeViewModel(private val settingsRepository: SettingsRepository) : ViewM
     private val _theme = MutableStateFlow("system")
     val theme = _theme.asStateFlow()
 
+    private val _dynamicColor = MutableStateFlow(true)
+    val dynamicColor = _dynamicColor.asStateFlow()
+
     init {
-        runBlocking { _theme.value = settingsRepository.theme.first() }
+        runBlocking {
+            _theme.value = settingsRepository.theme.first()
+            _dynamicColor.value = settingsRepository.useDynamicColors.first()
+        }
+        viewModelScope.launch {
+            settingsRepository.theme.collect { theme ->
+                _theme.value = theme
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.useDynamicColors.collect { enabled ->
+                _dynamicColor.value = enabled
+            }
+        }
     }
 
     fun setTheme(theme: String) {
@@ -22,5 +38,12 @@ class ThemeViewModel(private val settingsRepository: SettingsRepository) : ViewM
             settingsRepository.setTheme(theme)
         }
         _theme.value = theme
+    }
+
+    fun setDynamicColor(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setUseDynamicColors(enabled)
+        }
+        _dynamicColor.value = enabled
     }
 }

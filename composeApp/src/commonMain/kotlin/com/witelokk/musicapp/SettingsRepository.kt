@@ -19,6 +19,10 @@ private object PrefKeys {
     val SEARCH_HISTORY = stringPreferencesKey("search_history")
     val THEME = stringPreferencesKey("theme")
     val SERVER_URL = stringPreferencesKey("server_url")
+    val AUTO_DOWNLOAD_FAVORITES = booleanPreferencesKey("auto_download_favorites")
+    val AUTO_DOWNLOAD_PLAYLISTS = booleanPreferencesKey("auto_download_playlists")
+    val DOWNLOAD_ONLY_ON_WIFI = booleanPreferencesKey("download_only_on_wifi")
+    val USE_DYNAMIC_COLORS = booleanPreferencesKey("use_dynamic_colors")
 }
 
 class SettingsRepository(
@@ -44,6 +48,18 @@ class SettingsRepository(
 
     val serverUrl: Flow<String> =
         dataStore.data.map { prefs -> prefs[PrefKeys.SERVER_URL] ?: DEFAULT_BASE_URL }
+
+    val autoDownloadFavorites: Flow<Boolean> =
+        dataStore.data.map { prefs -> prefs[PrefKeys.AUTO_DOWNLOAD_FAVORITES] ?: true }
+
+    val autoDownloadPlaylists: Flow<Boolean> =
+        dataStore.data.map { prefs -> prefs[PrefKeys.AUTO_DOWNLOAD_PLAYLISTS] ?: true }
+
+    val downloadOnlyOnWifi: Flow<Boolean> =
+        dataStore.data.map { prefs -> prefs[PrefKeys.DOWNLOAD_ONLY_ON_WIFI] ?: true }
+
+    val useDynamicColors: Flow<Boolean> =
+        dataStore.data.map { prefs -> prefs[PrefKeys.USE_DYNAMIC_COLORS] ?: true }
 
     val authState: Flow<AuthState> =
         combine(accountName, accountEmail, accessToken, refreshToken) { accountName, accountEmail, accessToken, refreshToken ->
@@ -110,6 +126,30 @@ class SettingsRepository(
         val normalized = if (value.isBlank()) DEFAULT_BASE_URL else value
         dataStore.edit { prefs ->
             prefs[PrefKeys.SERVER_URL] = normalized
+        }
+    }
+
+    suspend fun setAutoDownloadFavorites(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.AUTO_DOWNLOAD_FAVORITES] = value
+        }
+    }
+
+    suspend fun setAutoDownloadPlaylists(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.AUTO_DOWNLOAD_PLAYLISTS] = value
+        }
+    }
+
+    suspend fun setDownloadOnlyOnWifi(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.DOWNLOAD_ONLY_ON_WIFI] = value
+        }
+    }
+
+    suspend fun setUseDynamicColors(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[PrefKeys.USE_DYNAMIC_COLORS] = value
         }
     }
 

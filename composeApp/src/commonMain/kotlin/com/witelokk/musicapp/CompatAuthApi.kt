@@ -1,6 +1,6 @@
-package com.witelokk.musicapp.api.apis
+package com.witelokk.musicapp
 
-import com.witelokk.musicapp.api.infrastructure.ApiClient
+import com.witelokk.musicapp.api.apis.AuthApi
 import com.witelokk.musicapp.api.infrastructure.HttpResponse
 import com.witelokk.musicapp.api.infrastructure.RequestConfig
 import com.witelokk.musicapp.api.infrastructure.RequestMethod
@@ -17,10 +17,10 @@ import kotlinx.serialization.json.Json
 class CompatAuthApi : AuthApi {
 
     constructor(
-        baseUrl: String = ApiClient.BASE_URL,
+        baseUrl: String = BASE_URL,
         httpClientEngine: HttpClientEngine? = null,
         httpClientConfig: ((HttpClientConfig<*>) -> Unit)? = null,
-        jsonSerializer: Json = ApiClient.JSON_DEFAULT
+        jsonSerializer: Json = JSON_DEFAULT
     ) : super(
         baseUrl = baseUrl,
         httpClientEngine = httpClientEngine,

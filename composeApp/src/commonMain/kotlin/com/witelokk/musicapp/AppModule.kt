@@ -6,7 +6,7 @@ import com.witelokk.musicapp.auth.AuthSession
 import com.witelokk.musicapp.auth.AuthStore
 import com.witelokk.musicapp.auth.TokenRefresher
 import com.witelokk.musicapp.api.apis.ArtistsApi
-import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.FollowingsApi
 import com.witelokk.musicapp.api.apis.HomeApi
@@ -182,7 +182,7 @@ val appModule = module {
     }
 
     single {
-        OfflineLibrarySync(get(), get(), get())
+        OfflineLibrarySync(get(), get(), get(), get())
     }
 
     factory {

@@ -3,7 +3,7 @@ package com.witelokk.musicapp.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.witelokk.musicapp.MusicPlayer
 import com.witelokk.musicapp.SettingsRepository
-import com.witelokk.musicapp.api.apis.CompatAuthApi
+import com.witelokk.musicapp.CompatAuthApi
 import com.witelokk.musicapp.api.apis.FavoritesApi
 import com.witelokk.musicapp.api.apis.PlaylistsApi
 import com.witelokk.musicapp.api.models.ArtistList

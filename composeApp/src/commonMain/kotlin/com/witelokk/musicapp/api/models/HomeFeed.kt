@@ -15,7 +15,13 @@
 
 package com.witelokk.musicapp.api.models
 
+import com.witelokk.musicapp.api.models.ArtistList
+import com.witelokk.musicapp.api.models.HomeScreenSection
+import com.witelokk.musicapp.api.models.PlaylistsSummary
+
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
 /**
  * 

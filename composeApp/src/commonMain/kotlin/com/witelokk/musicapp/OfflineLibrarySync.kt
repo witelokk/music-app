@@ -11,11 +11,20 @@ class OfflineLibrarySync(
     private val favoritesRepository: FavoritesRepository,
     private val playlistsRepository: PlaylistsRepository,
     private val mediaCache: MediaCache,
+    private val settingsRepository: SettingsRepository,
 ) {
     suspend fun sync() {
+        if (settingsRepository.downloadOnlyOnWifi.first() && isActiveNetworkMetered()) {
+            return
+        }
+
         val songsToCache = buildList {
-            addAll(loadFavoriteSongs())
-            addAll(loadPlaylistSongs())
+            if (settingsRepository.autoDownloadFavorites.first()) {
+                addAll(loadFavoriteSongs())
+            }
+            if (settingsRepository.autoDownloadPlaylists.first()) {
+                addAll(loadPlaylistSongs())
+            }
         }
 
         songsToCache

@@ -50,6 +50,7 @@ fun App(
     offlineLibrarySync: OfflineLibrarySync = koinInject(),
 ) {
     val theme by themeViewModel.theme.collectAsState()
+    val dynamicColor by themeViewModel.dynamicColor.collectAsState()
     val authState by authStore.state.collectAsState()
 
     setSingletonImageLoaderFactory { imageLoader }
@@ -76,7 +77,8 @@ fun App(
             else -> {
                 isSystemInDarkTheme()
             }
-        }
+        },
+        dynamicColor = dynamicColor
     ) {
         NavHost(navController, startDestination = "welcome", enterTransition = {
             EnterTransition.None

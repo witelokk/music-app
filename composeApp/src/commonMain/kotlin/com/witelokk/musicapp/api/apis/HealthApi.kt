@@ -15,8 +15,6 @@
 
 package com.witelokk.musicapp.api.apis
 
-import com.witelokk.musicapp.api.models.Error
-import com.witelokk.musicapp.api.models.HomeFeed
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -33,7 +31,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 
-open class HomeApi : ApiClient {
+open class HealthApi : ApiClient {
 
     constructor(
         baseUrl: String = ApiClient.BASE_URL,
@@ -48,14 +46,13 @@ open class HomeApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
-     * Get home screen layout
+     * Get service health
      * 
-     * @return HomeFeed
+     * @return void
      */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun getHomeFeed(): HttpResponse<HomeFeed> {
+    open suspend fun getHealth(): HttpResponse<Unit> {
 
-        val localVariableAuthNames = listOf<String>("bearerAuth")
+        val localVariableAuthNames = listOf<String>()
 
         val localVariableBody = 
             io.ktor.client.utils.EmptyContent
@@ -65,10 +62,10 @@ open class HomeApi : ApiClient {
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
             RequestMethod.GET,
-            "/home-feed",
+            "/health",
             query = localVariableQuery,
             headers = localVariableHeaders,
-            requiresAuthentication = true,
+            requiresAuthentication = false,
         )
 
         return request(

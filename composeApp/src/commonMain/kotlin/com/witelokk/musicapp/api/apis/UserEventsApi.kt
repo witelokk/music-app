@@ -15,8 +15,8 @@
 
 package com.witelokk.musicapp.api.apis
 
+import com.witelokk.musicapp.api.models.CreateUserEventRequest
 import com.witelokk.musicapp.api.models.Error
-import com.witelokk.musicapp.api.models.HomeFeed
 
 import com.witelokk.musicapp.api.infrastructure.*
 import io.ktor.client.HttpClient
@@ -33,7 +33,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 
-open class HomeApi : ApiClient {
+open class UserEventsApi : ApiClient {
 
     constructor(
         baseUrl: String = ApiClient.BASE_URL,
@@ -48,35 +48,35 @@ open class HomeApi : ApiClient {
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
     /**
-     * Get home screen layout
+     * Record a user playback event
      * 
-     * @return HomeFeed
+     * @param createUserEventRequest 
+     * @return void
      */
-    @Suppress("UNCHECKED_CAST")
-    open suspend fun getHomeFeed(): HttpResponse<HomeFeed> {
+    open suspend fun recordUserEvent(createUserEventRequest: CreateUserEventRequest): HttpResponse<Unit> {
 
         val localVariableAuthNames = listOf<String>("bearerAuth")
 
-        val localVariableBody = 
-            io.ktor.client.utils.EmptyContent
+        val localVariableBody = createUserEventRequest
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()
 
         val localVariableConfig = RequestConfig<kotlin.Any?>(
-            RequestMethod.GET,
-            "/home-feed",
+            RequestMethod.POST,
+            "/user-events",
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = true,
         )
 
-        return request(
+        return jsonRequest(
             localVariableConfig,
             localVariableBody,
             localVariableAuthNames
         ).wrap()
     }
+
 
 
 }
