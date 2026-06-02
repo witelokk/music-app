@@ -50,7 +50,6 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var email by rememberSaveable { mutableStateOf("") }
-    var isEmailFieldError = false
     val focusRequester = remember { FocusRequester() }
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -65,15 +64,17 @@ fun LoginScreen(
         viewModel.clearState()
     }
 
-    LaunchedEffect(state.isEmailInvalid) {
-        if (state.isEmailInvalid) {
-            isEmailFieldError = true
-        }
-    }
-
     LaunchedEffect(state.verificationCodeRequestFailed) {
         if (state.verificationCodeRequestFailed) {
             snackbarHostState.showSnackbar(getString(Res.string.verification_request_error_toast))
+            viewModel.clearState()
+        }
+    }
+
+    LaunchedEffect(state.verificationCodeRequestRateLimited) {
+        if (state.verificationCodeRequestRateLimited) {
+            snackbarHostState.showSnackbar(getString(Res.string.verification_request_rate_limited_toast))
+            viewModel.clearState()
         }
     }
 
@@ -103,7 +104,7 @@ fun LoginScreen(
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },
-                isError = isEmailFieldError, // todo: fix
+                isError = state.isEmailInvalid,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)

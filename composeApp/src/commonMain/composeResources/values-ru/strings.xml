@@ -11,6 +11,7 @@
     <string name="artist_card_subtitle">Исполнитель</string>
     <string name="playlists_section_title">Плейлисты</string>
     <string name="verification_request_error_toast">Не удалось отправить код подтверждения</string>
+    <string name="verification_request_rate_limited_toast">Слишком много попыток. Попробуйте позже</string>
     <string name="email_field_placeholder">Электронная почта</string>
     <string name="send_verification_code_action">Отправить код подтверждения</string>
     <string name="sign_in_error_toast">Не удалось войти</string>

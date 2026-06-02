@@ -12,6 +12,7 @@ data class RegistrationScreenState(
     var isEmailInvalid: Boolean = false,
     var isVerificationCodeSent: Boolean = false,
     var verificationCodeRequestFailed: Boolean = false,
+    var verificationCodeRequestRateLimited: Boolean = false,
     var registrationFailed: Boolean = false,
     var isAuthorized: Boolean = false,
     var isCodeInvalid: Boolean = false,
@@ -50,9 +51,14 @@ class RegistrationScreenViewModel(
             return
         }
 
+        _state.update { it.copy(isEmailInvalid = false) }
+
         viewModelScope.launch {
             try {
                 authSession.requestVerificationCode(email)
+            } catch (e: AuthSession.Errors.TooManyVerificationRequests) {
+                _state.update { it.copy(verificationCodeRequestRateLimited = true) }
+                return@launch
             } catch (e: Exception) {
                 _state.update { it.copy(verificationCodeRequestFailed = true) }
                 return@launch
@@ -63,7 +69,7 @@ class RegistrationScreenViewModel(
     }
 
     private fun validateEmail(email: String): Boolean {
-        return Regex("\"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$\"").matches(email)
+        return Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$").matches(email)
     }
 
     fun clearState() {

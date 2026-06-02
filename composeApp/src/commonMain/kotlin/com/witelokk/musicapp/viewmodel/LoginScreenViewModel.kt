@@ -10,6 +10,7 @@ data class LoginScreenState(
     var isEmailInvalid: Boolean = false,
     var isVerificationCodeSent: Boolean = false,
     var verificationCodeRequestFailed: Boolean = false,
+    var verificationCodeRequestRateLimited: Boolean = false,
 )
 
 class LoginScreenViewModel(private val authSession: AuthSession) : ViewModel() {
@@ -22,8 +23,14 @@ class LoginScreenViewModel(private val authSession: AuthSession) : ViewModel() {
             return
         }
 
-        launchCatching(action = "send verification code for $email", onError = {
-            _state.update { state -> state.copy(verificationCodeRequestFailed = true) }
+        _state.update { it.copy(isEmailInvalid = false) }
+
+        launchCatching(action = "send verification code for $email", onError = { error ->
+            if (error is AuthSession.Errors.TooManyVerificationRequests) {
+                _state.update { state -> state.copy(verificationCodeRequestRateLimited = true) }
+            } else {
+                _state.update { state -> state.copy(verificationCodeRequestFailed = true) }
+            }
         }) {
             authSession.requestVerificationCode(email)
             _state.update { it.copy(isVerificationCodeSent = true) }
@@ -31,7 +38,7 @@ class LoginScreenViewModel(private val authSession: AuthSession) : ViewModel() {
     }
 
     private fun validateEmail(email: String): Boolean {
-        return Regex("\"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$\"").matches(email)
+        return Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$").matches(email)
     }
 
     fun clearState() {

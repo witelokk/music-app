@@ -12,6 +12,7 @@
     <string name="artist_card_subtitle">Artist</string>
     <string name="playlists_section_title">Playlists</string>
     <string name="verification_request_error_toast">Failed to send verification code</string>
+    <string name="verification_request_rate_limited_toast">Too many attempts. Try again later</string>
     <string name="email_field_placeholder">Email</string>
     <string name="send_verification_code_action">Send verification code</string>
     <string name="sign_in_error_toast">Failed to sign in</string>

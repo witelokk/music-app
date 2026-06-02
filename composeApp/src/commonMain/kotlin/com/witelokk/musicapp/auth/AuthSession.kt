@@ -12,6 +12,7 @@ class AuthSession(
         class InvalidCode : Exception("Invalid code")
         class InvalidUser : Exception("Invalid user")
         class UserAlreadyExists : Exception("User already exists")
+        class TooManyVerificationRequests : Exception("Too many verification requests")
     }
 
     suspend fun signIn(email: String, code: String) {
@@ -71,7 +72,11 @@ class AuthSession(
     suspend fun requestVerificationCode(email: String) {
         val response = authApiService.requestVerificationCode(email)
 
-        if (!response.success && response.status != HttpStatusCode.TooManyRequests.value) {
+        if (response.status == HttpStatusCode.TooManyRequests.value) {
+            throw TooManyVerificationRequests()
+        }
+
+        if (!response.success) {
             error(response)
         }
     }

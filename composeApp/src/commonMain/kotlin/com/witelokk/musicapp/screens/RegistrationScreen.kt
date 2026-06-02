@@ -60,7 +60,6 @@ fun RegistrationScreen(
     val state by viewModel.state.collectAsState()
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf(registration.email ?: "") }
-    var isEmailFieldError = false
     val focusRequester = remember { FocusRequester() }
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -75,15 +74,17 @@ fun RegistrationScreen(
         viewModel.clearState()
     }
 
-    LaunchedEffect(state.isEmailInvalid) {
-        if (state.isEmailInvalid) {
-            isEmailFieldError = true
-        }
-    }
-
     LaunchedEffect(state.verificationCodeRequestFailed) {
         if (state.verificationCodeRequestFailed) {
             snackbarHostState.showSnackbar(getString(Res.string.verification_request_error_toast))
+            viewModel.clearState()
+        }
+    }
+
+    LaunchedEffect(state.verificationCodeRequestRateLimited) {
+        if (state.verificationCodeRequestRateLimited) {
+            snackbarHostState.showSnackbar(getString(Res.string.verification_request_rate_limited_toast))
+            viewModel.clearState()
         }
     }
 
@@ -147,7 +148,7 @@ fun RegistrationScreen(
                 placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 enabled = registration.email == null,
-                isError = isEmailFieldError,
+                isError = state.isEmailInvalid,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -159,8 +160,6 @@ fun RegistrationScreen(
                         viewModel.registerAndSignIn(name, email, registration.code)
                     } else {
                         viewModel.sendVerificationCode(email)
-                        viewModel.clearState()
-                        navController.navigate(RegistrationVerification(name, email))
                     }
                 },
                 enabled = name.isNotEmpty() && email.isNotEmpty(),
