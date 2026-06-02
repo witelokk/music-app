@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -75,7 +74,7 @@ fun SongCollectionList(
                     .padding(horizontal = 20.dp, vertical = 8.dp)
                     .animateItem()
             ) { menuExpanded ->
-                DropdownMenuItem(
+                BottomSheetMenuItem(
                     text = { Text(stringResource(Res.string.add_to_playlist_menu_item)) },
                     onClick = {
                         menuExpanded.value = false
@@ -83,7 +82,7 @@ fun SongCollectionList(
                     }
                 )
                 if (showAddToQueueMenuItem) {
-                    DropdownMenuItem(
+                    BottomSheetMenuItem(
                         text = { Text(stringResource(Res.string.add_to_queue_menu_item)) },
                         onClick = {
                             onAddToQueue(song)

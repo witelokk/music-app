@@ -2,8 +2,6 @@ package com.witelokk.musicapp.screens
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -16,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
+import com.witelokk.musicapp.components.BottomSheetMenu
+import com.witelokk.musicapp.components.BottomSheetMenuItem
 import com.witelokk.musicapp.components.DeletePlaylistDialog
 import com.witelokk.musicapp.components.EditPlaylistNameDialog
 import com.witelokk.musicapp.components.RequestFailedContent
@@ -107,18 +107,18 @@ fun PlaylistScreen(
             IconButton(onClick = { playlistMenuExpanded = true }) {
                 Icon(Icons.Default.MoreVert, contentDescription = null)
             }
-            DropdownMenu(
+            BottomSheetMenu(
                 expanded = playlistMenuExpanded,
                 onDismissRequest = { playlistMenuExpanded = false }
             ) {
-                DropdownMenuItem(
+                BottomSheetMenuItem(
                     text = { Text(stringResource(Res.string.edit_menu_item)) },
                     onClick = {
                         playlistMenuExpanded = false
                         showEditPlaylistDialog = true
                     }
                 )
-                DropdownMenuItem(
+                BottomSheetMenuItem(
                     text = { Text(stringResource(Res.string.delete_menu_item)) },
                     onClick = {
                         playlistMenuExpanded = false
@@ -135,7 +135,7 @@ fun PlaylistScreen(
             )
         } else null,
         extraSongMenuItems = { song, menuExpanded ->
-            DropdownMenuItem(
+            BottomSheetMenuItem(
                 text = { Text(stringResource(Res.string.remove_from_playlist_menu_item)) },
                 onClick = {
                     viewModel.removeSongFromPlaylist(song)

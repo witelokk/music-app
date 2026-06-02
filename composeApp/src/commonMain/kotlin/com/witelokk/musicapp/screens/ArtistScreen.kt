@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -56,6 +55,7 @@ import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
+import com.witelokk.musicapp.components.BottomSheetMenuItem
 import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.RequestFailedContent
@@ -244,7 +244,7 @@ fun ArtistScreen(
                             isPlaying = state.playerState?.playing ?: false,
                             cacheState = cacheState,
                         ) { menuExpanded ->
-                            DropdownMenuItem(
+                            BottomSheetMenuItem(
                                 text = { Text(stringResource(Res.string.add_to_playlist_menu_item)) },
                                 onClick = {
                                     menuExpanded.value = false
@@ -252,7 +252,7 @@ fun ArtistScreen(
                                     showAddToPlaylistDialog = true
                                 }
                             )
-                            DropdownMenuItem(
+                            BottomSheetMenuItem(
                                 text = { Text(stringResource(Res.string.add_to_queue_menu_item)) },
                                 onClick = {
                                     viewModel.addSongToQueue(song)

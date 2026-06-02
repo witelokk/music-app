@@ -1,11 +1,11 @@
 package com.witelokk.musicapp.screens
 
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
+import com.witelokk.musicapp.components.BottomSheetMenuItem
 import com.witelokk.musicapp.viewmodel.QueueScreenViewModel
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
@@ -43,7 +43,7 @@ fun QueueScreen(navController: NavController, viewModel: QueueScreenViewModel = 
         onPlayPause = viewModel::playPausePlayer,
         extraSongMenuItems = { song, menuExpanded ->
             val index = state.songs.indexOfFirst { it.id == song.id }
-            DropdownMenuItem(
+            BottomSheetMenuItem(
                 text = { Text(stringResource(Res.string.remove_from_queue_menu_item)) },
                 onClick = {
                     if (index != -1) {

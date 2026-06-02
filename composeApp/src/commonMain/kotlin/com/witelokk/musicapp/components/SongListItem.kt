@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -292,8 +291,9 @@ private fun SongActions(
         modifier = Modifier.offset(x = 16.dp)
     ) {
         Icon(Icons.Default.MoreVert, "More")
-        DropdownMenu(menuExpanded, onDismissRequest = onMenuDismiss) {
-            dropdownMenuItems(menuExpandedState)
-        }
+    }
+
+    BottomSheetMenu(menuExpanded, onDismissRequest = onMenuDismiss) {
+        dropdownMenuItems(menuExpandedState)
     }
 }
