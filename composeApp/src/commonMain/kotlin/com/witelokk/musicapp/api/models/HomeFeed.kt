@@ -18,6 +18,7 @@ package com.witelokk.musicapp.api.models
 import com.witelokk.musicapp.api.models.ArtistList
 import com.witelokk.musicapp.api.models.HomeScreenSection
 import com.witelokk.musicapp.api.models.PlaylistsSummary
+import com.witelokk.musicapp.api.models.SongList
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -26,6 +27,7 @@ import kotlinx.serialization.encoding.*
 /**
  * 
  *
+ * @param favoriteSongs 
  * @param playlists 
  * @param followedArtists 
  * @param sections 
@@ -33,6 +35,8 @@ import kotlinx.serialization.encoding.*
 @Serializable
 
 data class HomeFeed (
+
+    @SerialName(value = "favoriteSongs") @Required val favoriteSongs: SongList,
 
     @SerialName(value = "playlists") @Required val playlists: PlaylistsSummary,
 

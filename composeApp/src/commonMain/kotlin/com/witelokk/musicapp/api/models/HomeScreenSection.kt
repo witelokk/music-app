@@ -15,7 +15,7 @@
 
 package com.witelokk.musicapp.api.models
 
-import com.witelokk.musicapp.api.models.ReleaseSummaryList
+import com.witelokk.musicapp.api.models.HomeFeedItem
 
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -25,7 +25,7 @@ import kotlinx.serialization.encoding.*
  * 
  *
  * @param titles 
- * @param releases 
+ * @param items 
  */
 @Serializable
 
@@ -33,7 +33,7 @@ data class HomeScreenSection (
 
     @SerialName(value = "titles") @Required val titles: kotlin.collections.Map<kotlin.String, kotlin.String>,
 
-    @SerialName(value = "releases") @Required val releases: ReleaseSummaryList
+    @SerialName(value = "items") @Required val items: kotlin.collections.List<HomeFeedItem>
 
 ) {
 

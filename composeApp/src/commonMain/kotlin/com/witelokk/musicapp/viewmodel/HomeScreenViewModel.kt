@@ -11,6 +11,7 @@ import com.witelokk.musicapp.api.models.CreatePlaylistRequest
 import com.witelokk.musicapp.api.models.HomeFeed
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.PlaylistsSummary
+import com.witelokk.musicapp.api.models.SongList
 import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.data.PlayerState
 import com.witelokk.musicapp.repository.ConnectionErrorException
@@ -22,9 +23,10 @@ import kotlinx.coroutines.launch
 
 data class HomeViewModelState(
     val feed: HomeFeed = HomeFeed(
-        PlaylistsSummary(0, listOf()),
-        ArtistList(0, listOf(), ""),
-        listOf()
+        favoriteSongs = SongList(0, listOf()),
+        playlists = PlaylistsSummary(0, listOf()),
+        followedArtists = ArtistList(0, listOf(), ""),
+        sections = listOf(),
     ),
     val isLoading: Boolean = true,
     val hasObservedFeed: Boolean = false,
@@ -49,6 +51,7 @@ class HomeScreenViewModel(
 ) : BaseViewModel(musicPlayer, favoritesApi, playlistsApi, mediaCache) {
     private val _state = MutableStateFlow(HomeViewModelState(playerState = musicPlayer.state.value))
     val state = _state.asStateFlow()
+    private var hasHandledInitialResume = false
 
     init {
         viewModelScope.launch {
@@ -86,6 +89,15 @@ class HomeScreenViewModel(
                 _state.update { it.copy(accountName = accountName) }
             }
         }
+    }
+
+    fun refreshOnResume() {
+        if (!hasHandledInitialResume) {
+            hasHandledInitialResume = true
+            return
+        }
+
+        loadHomeFeed()
     }
 
     fun loadHomeFeed() {
@@ -175,14 +187,9 @@ class HomeScreenViewModel(
             _state.update {
                 it.copy(
                     playlists = listOf(newPlaylist) + it.playlists,
-                    feed = it.feed.copy(
-                        playlists = it.feed.playlists.copy(
-                            count = it.feed.playlists.count + 1,
-                            listOf(newPlaylist) + it.feed.playlists.playlists
-                        )
-                    )
                 )
             }
+            loadHomeFeed()
         }
     }
 }

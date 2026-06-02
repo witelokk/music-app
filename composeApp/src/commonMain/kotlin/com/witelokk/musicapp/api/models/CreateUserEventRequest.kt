@@ -25,13 +25,13 @@ import kotlinx.serialization.encoding.*
  *
  * @param eventType 
  * @param songId 
+ * @param clientEventId 
  * @param positionSeconds 
  * @param durationSeconds 
  * @param percentPlayed 
  * @param source 
  * @param contextType 
  * @param contextId 
- * @param clientEventId 
  */
 @Serializable
 
@@ -41,6 +41,8 @@ data class CreateUserEventRequest (
 
     @SerialName(value = "song_id") @Required val songId: kotlin.String,
 
+    @SerialName(value = "client_event_id") @Required val clientEventId: kotlin.String,
+
     @SerialName(value = "position_seconds") val positionSeconds: kotlin.Int? = null,
 
     @SerialName(value = "duration_seconds") val durationSeconds: kotlin.Int? = null,
@@ -49,11 +51,9 @@ data class CreateUserEventRequest (
 
     @SerialName(value = "source") val source: kotlin.String? = null,
 
-    @SerialName(value = "context_type") val contextType: kotlin.String? = null,
+    @SerialName(value = "context_type") val contextType: CreateUserEventRequest.ContextType? = null,
 
-    @SerialName(value = "context_id") val contextId: kotlin.String? = null,
-
-    @SerialName(value = "client_event_id") val clientEventId: kotlin.String? = null
+    @SerialName(value = "context_id") val contextId: kotlin.String? = null
 
 ) {
 
@@ -67,6 +67,19 @@ data class CreateUserEventRequest (
         @SerialName(value = "song_play") song_play("song_play"),
         @SerialName(value = "song_skip") song_skip("song_skip"),
         @SerialName(value = "song_complete") song_complete("song_complete");
+    }
+    /**
+     * 
+     *
+     * Values: playlist,release,artist,queue,recommendations
+     */
+    @Serializable
+    enum class ContextType(val value: kotlin.String) {
+        @SerialName(value = "playlist") playlist("playlist"),
+        @SerialName(value = "release") release("release"),
+        @SerialName(value = "artist") artist("artist"),
+        @SerialName(value = "queue") queue("queue"),
+        @SerialName(value = "recommendations") recommendations("recommendations");
     }
 
 }

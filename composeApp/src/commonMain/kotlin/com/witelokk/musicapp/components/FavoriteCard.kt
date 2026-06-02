@@ -4,8 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
@@ -22,11 +23,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FavoriteCard(modifier: Modifier = Modifier) {
-    OutlinedCard(modifier = modifier.width(165.dp)) {
+    OutlinedCard(modifier = modifier.requiredWidth(165.dp)) {
         Column {
             Box(
                 modifier = Modifier
-                    .size(165.dp)
+                    .requiredSize(165.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -33,8 +32,9 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.witelokk.musicapp.api.models.HomeFeedItem
 import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.SearchResultItem
@@ -83,20 +83,16 @@ fun HomeScreen(
     val loadFailedMessage = stringResource(Res.string.load_failed_message)
     val connectionFailedMessage = stringResource(Res.string.connection_failed_message)
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val lifecycleOwner = navBackStackEntry?.lifecycle
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.loadHomeFeed()
-                viewModel.loadPlaylists()
+                viewModel.refreshOnResume()
             }
         }
-        lifecycleOwner?.addObserver(observer)
-        onDispose { lifecycleOwner?.removeObserver(observer) }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-
-    var showCreatePlaylistDialog = remember { mutableStateOf(false) }
 
     val scaffoldState = rememberBottomSheetScaffoldState(
         rememberStandardBottomSheetState(
@@ -116,6 +112,8 @@ fun HomeScreen(
 
     var songToAddToPlaylists by remember { mutableStateOf<Song?>(null) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var playlistName by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(showAddToPlaylistDialog) {
         if (showAddToPlaylistDialog) {
@@ -146,17 +144,15 @@ fun HomeScreen(
         },
     )
 
-    var playlistName by rememberSaveable { mutableStateOf("") }
-
     CreatePlaylistDialog(
-        showDialog = showCreatePlaylistDialog.value,
+        showDialog = showCreatePlaylistDialog,
         playlistName = playlistName,
         onNameChange = { playlistName = it },
-        onDismissRequest = { showCreatePlaylistDialog.value = false },
+        onDismissRequest = { showCreatePlaylistDialog = false },
         onCreate = {
             viewModel.createPlaylist(playlistName)
             playlistName = ""
-            showCreatePlaylistDialog.value = false
+            showCreatePlaylistDialog = false
         },
     )
 
@@ -197,7 +193,7 @@ fun HomeScreen(
             searchState,
             viewModel,
             searchViewModel,
-            showCreatePlaylistDialog,
+            onCreatePlaylistClick = { showCreatePlaylistDialog = true },
             loadFailedMessage,
             connectionFailedMessage,
         )
@@ -214,7 +210,7 @@ private fun HomeScreenScaffoldContent(
     searchState: SearchViewModelState,
     viewModel: HomeScreenViewModel,
     searchViewModel: SearchViewModel,
-    showCreatePlaylistDialog: MutableState<Boolean>,
+    onCreatePlaylistClick: () -> Unit,
     loadFailedMessage: String,
     connectionFailedMessage: String,
 ) {
@@ -255,72 +251,6 @@ private fun HomeScreenScaffoldContent(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding() + 24.dp)
             ) {
-                item {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            stringResource(Res.string.playlists_section_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            modifier = Modifier.padding(24.dp)
-                        )
-
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            item {
-                                FavoriteCard(modifier = Modifier.clickable {
-                                    navController.navigate(
-                                        "favorites"
-                                    )
-                                })
-                            }
-                            items(state.feed.playlists.playlists) { playlist ->
-                                PlaylistCard(playlist, modifier = Modifier.clickable {
-                                    navController.navigate(
-                                        PlaylistScreenRoute(playlist.id)
-                                    )
-                                })
-                            }
-                            item {
-                                CreatePlaylistCard(
-                                    modifier = Modifier.clickable {
-                                        showCreatePlaylistDialog.value = true
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-                if (state.feed.followedArtists.count != 0) {
-                    item {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                stringResource(Res.string.followed_artists_section_title),
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(24.dp)
-                            )
-
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(state.feed.followedArtists.artists) { artist ->
-                                    Card(
-                                        title = artist.name,
-                                        subtitle = stringResource(Res.string.artist_card_subtitle),
-                                        pictureUrl = artist.avatarUrl,
-                                        modifier = Modifier.clickable {
-                                            navController.navigate(
-                                                ArtistScreenRoute(artist.id)
-                                            )
-                                        })
-                                }
-                            }
-                        }
-                    }
-                }
                 items(state.feed.sections) { section ->
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -334,24 +264,68 @@ private fun HomeScreenScaffoldContent(
                             contentPadding = PaddingValues(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            items(section.releases.releases) { release ->
-                                Card(
-                                    title = release.name,
-                                    subtitle = release.type.toLocalizedString(),
-                                    pictureUrl = release.coverUrl,
-                                    modifier = Modifier
-                                        .width(155.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                ReleaseScreenRoute(release.id)
-                                            )
-                                        })
+                            items(section.items) { item ->
+                                HomeFeedItemCard(item, navController)
+                            }
+                            if (section.items.any { it.type == HomeFeedItem.Type.playlist || it.type == HomeFeedItem.Type.favorites }) {
+                                item {
+                                    CreatePlaylistCard(
+                                        modifier = Modifier.clickable(onClick = onCreatePlaylistClick)
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeFeedItemCard(
+    item: HomeFeedItem,
+    navController: NavController,
+) {
+    when (item.type) {
+        HomeFeedItem.Type.release -> item.release?.let { release ->
+            Card(
+                title = release.name,
+                subtitle = release.type.toLocalizedString(),
+                pictureUrl = release.coverUrl,
+                fixedSize = true,
+                modifier = Modifier.clickable {
+                    navController.navigate(ReleaseScreenRoute(release.id))
+                },
+            )
+        }
+
+        HomeFeedItem.Type.playlist -> item.playlist?.let { playlist ->
+            PlaylistCard(
+                playlist,
+                modifier = Modifier.clickable {
+                    navController.navigate(PlaylistScreenRoute(playlist.id))
+                },
+            )
+        }
+
+        HomeFeedItem.Type.artist -> item.artist?.let { artist ->
+            Card(
+                title = artist.name,
+                subtitle = stringResource(Res.string.artist_card_subtitle),
+                pictureUrl = artist.avatarUrl,
+                fixedSize = true,
+                modifier = Modifier.clickable {
+                    navController.navigate(ArtistScreenRoute(artist.id))
+                },
+            )
+        }
+
+        HomeFeedItem.Type.favorites -> FavoriteCard(
+            modifier = Modifier.clickable {
+                navController.navigate("favorites")
+            },
+        )
     }
 }
 
@@ -364,6 +338,7 @@ private fun PlaylistCard(
         title = playlist.name,
         pictureUrl = playlist.coverUrl,
         modifier = modifier,
+        fixedSize = true,
     )
 }
 

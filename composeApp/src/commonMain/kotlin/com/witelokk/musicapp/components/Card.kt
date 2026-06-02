@@ -3,10 +3,11 @@ package com.witelokk.musicapp.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -32,27 +33,28 @@ fun Card(
     pictureUrl: String?,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    fixedSize: Boolean = false,
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
-    OutlinedCard(modifier = modifier.width(165.dp)) {
+    OutlinedCard(modifier = if (fixedSize) modifier.requiredWidth(165.dp) else modifier.fillMaxWidth()) {
         Column {
-            if (isImageLoading) {
-                Box(
-                    modifier = Modifier.size(155.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+            Box(
+                modifier = if (fixedSize) Modifier.requiredSize(165.dp) else Modifier.fillMaxWidth().aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    pictureUrl,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    onSuccess = { isImageLoading = false },
+                    onError = { isImageLoading = false },
+                    contentDescription = null,
+                    error = painterResource(Res.drawable.artist_placeholder),
+                )
+                if (isImageLoading) {
                     CircularProgressIndicator()
                 }
             }
-            AsyncImage(
-                pictureUrl,
-                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                contentScale = ContentScale.FillWidth,
-                onSuccess = { isImageLoading = false },
-                onError = { isImageLoading = false },
-                contentDescription = null,
-                error = painterResource(Res.drawable.artist_placeholder),
-            )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     title,
