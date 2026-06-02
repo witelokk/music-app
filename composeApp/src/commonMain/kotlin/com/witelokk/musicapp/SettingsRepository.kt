@@ -47,7 +47,7 @@ class SettingsRepository(
         dataStore.data.map { prefs -> prefs[PrefKeys.THEME] ?: "" }
 
     val serverUrl: Flow<String> =
-        dataStore.data.map { prefs -> prefs[PrefKeys.SERVER_URL] ?: DEFAULT_BASE_URL }
+        dataStore.data.map { prefs -> normalizeServerUrl(prefs[PrefKeys.SERVER_URL] ?: DEFAULT_BASE_URL) }
 
     val autoDownloadFavorites: Flow<Boolean> =
         dataStore.data.map { prefs -> prefs[PrefKeys.AUTO_DOWNLOAD_FAVORITES] ?: true }
@@ -123,7 +123,7 @@ class SettingsRepository(
     }
 
     suspend fun setServerUrl(value: String) {
-        val normalized = if (value.isBlank()) DEFAULT_BASE_URL else value
+        val normalized = normalizeServerUrl(value)
         dataStore.edit { prefs ->
             prefs[PrefKeys.SERVER_URL] = normalized
         }
