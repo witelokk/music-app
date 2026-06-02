@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +35,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.components.AppSnackbarHost
 import com.witelokk.musicapp.viewmodel.RegistrationScreenViewModel
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
@@ -113,7 +113,7 @@ fun RegistrationScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(title = { Text(stringResource(Res.string.registration_screen_title)) }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {

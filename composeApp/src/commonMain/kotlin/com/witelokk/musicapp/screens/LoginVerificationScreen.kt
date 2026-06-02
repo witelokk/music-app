@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.witelokk.musicapp.components.AppSnackbarHost
 import com.witelokk.musicapp.viewmodel.LoginVerificationScreenViewModel
 import kotlinx.serialization.Serializable
 import musicapp.composeapp.generated.resources.Res
@@ -99,7 +99,7 @@ fun LoginVerificationScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackHostState) },
+        snackbarHost = { AppSnackbarHost(snackHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Res.string.login_verification_title)) },

@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -41,6 +40,7 @@ import com.witelokk.musicapp.api.models.ReleaseType
 import com.witelokk.musicapp.api.models.SearchResultItem
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
+import com.witelokk.musicapp.components.AppSnackbarHost
 import com.witelokk.musicapp.components.Avatar
 import com.witelokk.musicapp.components.Card
 import com.witelokk.musicapp.components.CreatePlaylistCard
@@ -186,7 +186,7 @@ fun HomeScreen(
             viewModel.changeSongFavorite(song, favorite)
         },
         onPlaySongInQueue = { index -> viewModel.playSongInQueue(index) },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         HomeScreenScaffoldContent(
             innerPadding,

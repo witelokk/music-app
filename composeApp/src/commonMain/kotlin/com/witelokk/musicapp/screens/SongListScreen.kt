@@ -36,6 +36,7 @@ import com.witelokk.musicapp.api.models.PlaylistSummary
 import com.witelokk.musicapp.api.models.Song
 import com.witelokk.musicapp.cache.MediaCacheState
 import com.witelokk.musicapp.components.AddToPlaylistsDialog
+import com.witelokk.musicapp.components.AppSnackbarHost
 import com.witelokk.musicapp.components.PlayerSheetScaffold
 import com.witelokk.musicapp.components.SongCollectionList
 import com.witelokk.musicapp.data.PlayerState
@@ -83,7 +84,7 @@ internal fun SongListScreen(
     onPlayPause: () -> Unit,
     extraSongMenuItems: @Composable (song: Song, menuExpanded: MutableState<Boolean>) -> Unit = { _, _ -> },
     snackbarHost: @Composable (androidx.compose.material3.SnackbarHostState) -> Unit = {
-        androidx.compose.material3.SnackbarHost(it)
+        AppSnackbarHost(it)
     },
 ) {
     val scope = rememberCoroutineScope()

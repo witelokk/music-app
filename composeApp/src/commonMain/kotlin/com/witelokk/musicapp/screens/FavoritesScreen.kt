@@ -1,7 +1,6 @@
 package com.witelokk.musicapp.screens
 
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
+import com.witelokk.musicapp.components.AppSnackbarHost
 import com.witelokk.musicapp.viewmodel.FavoritesScreenViewModel
 import musicapp.composeapp.generated.resources.Res
 import musicapp.composeapp.generated.resources.*
@@ -60,7 +60,7 @@ fun FavoritesScreen(
         onSeekToPrevious = viewModel::seekPlayerToPrevious,
         onSeekToNext = viewModel::seekPlayerToNext,
         onPlayPause = viewModel::playPausePlayer,
-        snackbarHost = { _ -> SnackbarHost(snackbarHostState) },
+        snackbarHost = { _ -> AppSnackbarHost(snackbarHostState) },
         extraSongMenuItems = { song, _ ->
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.remove_from_favorite_songs_menu_item)) },
