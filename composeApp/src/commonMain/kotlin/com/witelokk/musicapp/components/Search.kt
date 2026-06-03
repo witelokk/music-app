@@ -158,14 +158,19 @@ fun SearchResults(
 
                 SongListItem(
                     song,
-                    modifier = itemModifier.clickable(enabled = isAvailable) { onResultClick(it) },
+                    modifier = Modifier
+                        .clickable(enabled = isAvailable) { onResultClick(it) }
+                        .then(itemModifier),
                     isAvailable = isAvailable,
                     cacheState = cacheState,
+                    showFavorite = false
                 )
             } else if (it.type == SearchResultItem.Type.artist && (filter == "Artists" || filter == null)) {
                 ArtistListItem(
                     it.artist!!,
-                    modifier = itemModifier.clickable { onResultClick(it) },
+                    modifier = Modifier
+                        .clickable { onResultClick(it) }
+                        .then(itemModifier),
                 )
             } else if (it.type == SearchResultItem.Type.playlist && (filter == "Playlists" || filter == null)) {
                 PlaylistListItem(
@@ -175,7 +180,9 @@ fun SearchResults(
                         id = it.playlist.id,
                         songsCount = it.playlist.songsCount,
                     ),
-                    modifier = itemModifier.clickable { onResultClick(it) },
+                    modifier = Modifier
+                        .clickable { onResultClick(it) }
+                        .then(itemModifier),
                 )
             }
         }

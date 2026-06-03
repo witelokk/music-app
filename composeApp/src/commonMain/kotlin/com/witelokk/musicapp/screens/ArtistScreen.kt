@@ -46,6 +46,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -147,7 +149,7 @@ fun ArtistScreen(
                     exit = fadeOut()
                 ) {
                     Column {
-                        Text(state.artist?.name ?: "")
+                        Text(state.artist?.name ?: "", overflow = TextOverflow.Ellipsis, maxLines = 1)
                     }
                 }
             }, navigationIcon = {
@@ -203,7 +205,10 @@ fun ArtistScreen(
                     item(span = { GridItemSpan(2) }) {
                         Column {
                             AsyncImage(
-                                state.artist?.coverUrl ?: "", null, modifier = Modifier
+                                state.artist?.coverUrl ?: "",
+                                null,
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(
                                         RoundedCornerShape(16.dp)

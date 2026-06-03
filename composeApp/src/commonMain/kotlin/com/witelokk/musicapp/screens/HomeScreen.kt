@@ -291,7 +291,7 @@ private fun HomeFeedItemCard(
         HomeFeedItem.Type.release -> item.release?.let { release ->
             Card(
                 title = release.name,
-                subtitle = release.type.toLocalizedString(),
+                subtitle = release.artists.names,
                 pictureUrl = release.coverUrl,
                 fixedSize = true,
                 modifier = Modifier.clickable {

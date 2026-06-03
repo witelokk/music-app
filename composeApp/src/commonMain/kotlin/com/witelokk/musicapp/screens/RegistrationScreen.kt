@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.components.AppSnackbarHost
@@ -115,7 +116,9 @@ fun RegistrationScreen(
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.registration_screen_title)) }, navigationIcon = {
+            TopAppBar(title = {
+                Text(stringResource(Res.string.registration_screen_title), overflow = TextOverflow.Ellipsis, maxLines = 1)
+            }, navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))
                 }

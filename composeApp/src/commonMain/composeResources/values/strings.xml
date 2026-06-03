@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">MusicApp</string>
     <string name="release_type_single">Single</string>
     <string name="release_type_album">Album</string>
     <string name="release_type_ep">EP</string>
@@ -10,7 +9,6 @@
     <string name="play_content_description">Play</string>
     <string name="shuffle_play_content_description">Shuffle play</string>
     <string name="artist_card_subtitle">Artist</string>
-    <string name="playlists_section_title">Playlists</string>
     <string name="verification_request_error_toast">Failed to send verification code</string>
     <string name="verification_request_rate_limited_toast">Too many attempts. Try again later</string>
     <string name="email_field_placeholder">Email</string>
@@ -31,10 +29,8 @@
     <string name="already_registered_toast">You are already registered</string>
     <string name="registration_verification_title">Confirm registration</string>
     <string name="settings_screen_title">Settings</string>
-    <string name="settings_account_section_title">Account</string>
     <string name="settings_name_label">Name: %1$s</string>
     <string name="settings_email_label">Email: %1$s</string>
-    <string name="settings_app_section_title">App</string>
     <string name="settings_appearance_section_title">Appearance</string>
     <string name="settings_theme_label">Theme</string>
     <string name="settings_theme_system_option">System</string>
@@ -58,7 +54,6 @@
     <string name="settings_logout_dialog_text">You will need to sign in again to use your account.</string>
     <string name="settings_app_data_clear_dialog_title">Clear app data?</string>
     <string name="settings_app_data_clear_dialog_text">This resets local settings, account data, server configuration and search history, then logs you out.</string>
-    <string name="song_caching">Song caching</string>
     <string name="sign_in_failed_toast">Sign in failed</string>
     <string name="load_failed_message">Failed to load data</string>
     <string name="connection_failed_message">Check your connection and try again</string>
@@ -70,7 +65,6 @@
     <string name="search_field_placeholder">Search songs, albums and artists</string>
     <string name="favorite_songs_title">Favorite songs</string>
     <string name="artist_popular_section_title">Popular</string>
-    <string name="recent_filter_label">Recent</string>
     <string name="recent_searches_title">Recent searches</string>
     <string name="clear_action">Clear</string>
     <string name="search_no_results_message">No results</string>
@@ -85,8 +79,6 @@
     <string name="remove_from_favorite_songs_menu_item">Remove from Favorite songs</string>
     <string name="no_favorite_songs_message">No favorite songs</string>
     <string name="queue_empty_message">Queue is empty</string>
-    <string name="playlist_content_description">Playlist</string>
-    <string name="followed_artists_section_title">Followed Artists</string>
     <string name="create_playlist_dialog_title">Create playlist</string>
     <string name="create_action">Create</string>
     <string name="edit_menu_item">Edit</string>
@@ -98,8 +90,6 @@
     <string name="edit_playlist_name_dialog_title">Edit playlist name</string>
     <string name="add_action">Add</string>
     <string name="cancel_action">Cancel</string>
-    <string name="server_url_field_label">Server URL</string>
-    <string name="server_url_field_placeholder">https://your-server.example.com/</string>
     <string name="artists_dialog_title">Artists</string>
     <string name="close_action">Close</string>
 </resources>

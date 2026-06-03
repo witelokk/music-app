@@ -206,19 +206,21 @@ private fun SongMetadata(
             song.name,
             style = MaterialTheme.typography.bodyLarge,
             color = if (isActive) MaterialTheme.colorScheme.primary else Color.Unspecified,
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             modifier = Modifier.height(24.dp)
         )
 
-        if (showDuration) {
-            Text(
-                formatDuration(song.durationSeconds.seconds),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            return
-        }
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             CacheStateIndicator(cacheState)
+
+            if (showDuration) {
+                Text(
+                    formatDuration(song.durationSeconds.seconds),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                return
+            }
 
             Text(
                 song.artists.joinToString(", ") { it.name },

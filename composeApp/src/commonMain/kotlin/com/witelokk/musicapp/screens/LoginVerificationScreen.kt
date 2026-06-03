@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.witelokk.musicapp.components.AppSnackbarHost
@@ -102,7 +103,9 @@ fun LoginVerificationScreen(
         snackbarHost = { AppSnackbarHost(snackHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.login_verification_title)) },
+                title = {
+                    Text(stringResource(Res.string.login_verification_title), overflow = TextOverflow.Ellipsis, maxLines = 1)
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Default.ArrowBack, stringResource(Res.string.navigate_back_content_description))

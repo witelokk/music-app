@@ -23,9 +23,6 @@ import kotlinx.coroutines.launch
 
 data class HomeViewModelState(
     val feed: HomeFeed = HomeFeed(
-        favoriteSongs = SongList(0, listOf()),
-        playlists = PlaylistsSummary(0, listOf()),
-        followedArtists = ArtistList(0, listOf(), ""),
         sections = listOf(),
     ),
     val isLoading: Boolean = true,

@@ -9,7 +9,6 @@
     <string name="play_content_description">Воспроизвести</string>
     <string name="shuffle_play_content_description">Перемешать и воспроизвести</string>
     <string name="artist_card_subtitle">Исполнитель</string>
-    <string name="playlists_section_title">Плейлисты</string>
     <string name="verification_request_error_toast">Не удалось отправить код подтверждения</string>
     <string name="verification_request_rate_limited_toast">Слишком много попыток. Попробуйте позже</string>
     <string name="email_field_placeholder">Электронная почта</string>
@@ -30,10 +29,8 @@
     <string name="already_registered_toast">Вы уже зарегистрированы</string>
     <string name="registration_verification_title">Подтвердить регистрацию</string>
     <string name="settings_screen_title">Настройки</string>
-    <string name="settings_account_section_title">Аккаунт</string>
     <string name="settings_name_label">Имя: %1$s</string>
     <string name="settings_email_label">Электронная почта: %1$s</string>
-    <string name="settings_app_section_title">Приложение</string>
     <string name="settings_appearance_section_title">Внешний вид</string>
     <string name="settings_theme_label">Тема</string>
     <string name="settings_theme_system_option">Системная</string>
@@ -57,7 +54,6 @@
     <string name="settings_logout_dialog_text">Чтобы снова использовать аккаунт, потребуется войти заново.</string>
     <string name="settings_app_data_clear_dialog_title">Очистить данные приложения?</string>
     <string name="settings_app_data_clear_dialog_text">Это сбросит локальные настройки, данные аккаунта, адрес сервера и историю поиска, а затем выполнит выход.</string>
-    <string name="song_caching">Кэширование песен</string>
     <string name="sign_in_failed_toast">Ошибка входа</string>
     <string name="load_failed_message">Не удалось загрузить данные</string>
     <string name="connection_failed_message">Проверьте подключение и попробуйте снова</string>
@@ -69,7 +65,6 @@
     <string name="search_field_placeholder">Поиск песен, альбомов и исполнителей</string>
     <string name="favorite_songs_title">Понравившееся</string>
     <string name="artist_popular_section_title">Популярное</string>
-    <string name="recent_filter_label">Недавнее</string>
     <string name="recent_searches_title">Недавние поиски</string>
     <string name="clear_action">Очистить</string>
     <string name="search_no_results_message">Нет результатов</string>
@@ -84,8 +79,6 @@
     <string name="remove_from_favorite_songs_menu_item">Удалить из понравившихся песен</string>
     <string name="no_favorite_songs_message">У вас нет понравившихся песен</string>
     <string name="queue_empty_message">Очередь пуста</string>
-    <string name="playlist_content_description">Плейлист</string>
-    <string name="followed_artists_section_title">Отслеживаемые исполнители</string>
     <string name="create_playlist_dialog_title">Создать плейлист</string>
     <string name="create_action">Создать</string>
     <string name="edit_menu_item">Редактировать</string>
@@ -97,8 +90,6 @@
     <string name="edit_playlist_name_dialog_title">Изменить название плейлиста</string>
     <string name="add_action">Добавить</string>
     <string name="cancel_action">Отмена</string>
-    <string name="server_url_field_label">Адрес сервера</string>
-    <string name="server_url_field_placeholder">https://ваш-сервер.example.com/</string>
     <string name="artists_dialog_title">Исполнители</string>
     <string name="close_action">Закрыть</string>
 </resources>
