@@ -4,6 +4,7 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
+        IosMediaDownloadBridgeRegistry.shared.register(bridge: NativeMediaDownloadBridge.shared)
         KoinInitIosKt.koin()
     }
 

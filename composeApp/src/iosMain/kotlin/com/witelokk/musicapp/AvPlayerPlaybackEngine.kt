@@ -6,6 +6,7 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.toBitmap
 import com.witelokk.musicapp.auth.AuthStore
+import com.witelokk.musicapp.cache.IosMediaCache
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,7 @@ import platform.darwin.dispatch_get_main_queue
 class AvPlayerPlaybackEngine(
     private val authStore: AuthStore,
     private val imageLoader: ImageLoader,
+    private val mediaCache: IosMediaCache,
 ) : PlaybackEngine {
     private var listener: PlaybackEngineListener? = null
 
@@ -174,6 +176,10 @@ class AvPlayerPlaybackEngine(
     }
 
     private fun createPlayerItem(url: NSURL): AVPlayerItem {
+        if (url.isFileURL()) {
+            return AVPlayerItem(uRL = url)
+        }
+
         val token = authStore.currentAccessToken
 
         if (token.isNotBlank()) {
@@ -355,7 +361,10 @@ class AvPlayerPlaybackEngine(
         configureAudioSession()
         configureRemoteCommands()
 
-        val url = NSURL.URLWithString(item.url) ?: return
+        val cachedUrl = mediaCache.cachedPlaybackUrl(item.url)
+        val url = cachedUrl
+            ?: NSURL.URLWithString(item.url)
+            ?: return
         val playerItem = createPlayerItem(url)
 
         val activePlayer = player ?: AVPlayer(playerItem).also { newPlayer ->

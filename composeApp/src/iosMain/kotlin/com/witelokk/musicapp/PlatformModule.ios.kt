@@ -5,9 +5,9 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import com.witelokk.musicapp.cache.IosMediaCache
 import com.witelokk.musicapp.cache.MediaCache
 import com.witelokk.musicapp.cache.MusicAppDatabase
-import com.witelokk.musicapp.cache.NoOpMediaCache
 import com.witelokk.musicapp.cache.getRoomDatabaseBuilder
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
@@ -52,12 +52,16 @@ actual val platformModule = module {
             .build()
     }
 
-    single<PlaybackEngine> {
-        AvPlayerPlaybackEngine(get(), get())
+    single {
+        IosMediaCache(get())
     }
 
     single<MediaCache> {
-        NoOpMediaCache()
+        get<IosMediaCache>()
+    }
+
+    single<PlaybackEngine> {
+        AvPlayerPlaybackEngine(get(), get(), get())
     }
 
     single<GoogleSignIn> {
